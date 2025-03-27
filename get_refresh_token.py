@@ -9,6 +9,23 @@ import logging
 # Desativar o cache do googleapiclient
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
+def atualizar_env_file(refresh_token):
+    """Atualiza o arquivo .env com o novo refresh_token."""
+    env_path = os.path.join(os.getcwd(), '.env')
+    try:
+        with open(env_path, 'r') as file:
+            lines = file.readlines()
+
+        with open(env_path, 'w') as file:
+            for line in lines:
+                if line.startswith("REFRESH_TOKEN="):
+                    file.write(f"REFRESH_TOKEN={refresh_token}\n")
+                else:
+                    file.write(line)
+        print(f"Arquivo .env atualizado com o novo REFRESH_TOKEN.")
+    except Exception as e:
+        print(f"Erro ao atualizar o arquivo .env: {e}")
+
 def obter_novo_refresh_token():
     CLIENT_ID = '1089000521121-ql963a6ah7p7d2m2ubjr3noll10kdqqq.apps.googleusercontent.com'
     CLIENT_SECRET = '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'
@@ -72,9 +89,10 @@ def obter_novo_refresh_token():
         response.raise_for_status()  # Levanta uma exceção para códigos de status HTTP 4xx/5xx
         tokens = response.json()
         refresh_token = tokens.get('refresh_token')
-        if (refresh_token):
+        if refresh_token:
             print("Refresh Token gerado com sucesso!")
             print(f"Refresh Token: {refresh_token}")
+            atualizar_env_file(refresh_token)  # Atualiza o arquivo .env
         else:
             print("Erro: Refresh Token não foi gerado. Verifique se o acesso offline está habilitado.")
     except requests.exceptions.RequestException as e:

@@ -1,4 +1,5 @@
 import os
+import logging  # Importação corrigida
 import matplotlib.pyplot as plt
 import smtplib
 import json
@@ -31,6 +32,8 @@ from time import sleep
 from selenium.webdriver.support import expected_conditions as EC
 import datetime
 from docx import Document
+import allure
+from fpdf import FPDF  # Adicionada biblioteca para gerar PDFs
 
 def login(context):
     try:
@@ -57,6 +60,8 @@ def esperar_e_executar(context, locator, metodo, *args):
         sleep(1)  # Pequeno delay para garantir a conclusão
 
 def before_all(context):
+    """Configura o ambiente antes de todos os testes."""
+    logging.basicConfig(level=logging.INFO)  # Configuração do logging
     chrome_options = Options()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--incognito")  # Modo anônimo
@@ -76,6 +81,17 @@ def before_all(context):
     if not os.path.exists('reports/evidencias'):
         os.makedirs('reports/evidencias')
     login(context)  # Executar o login antes dos testes
+    context.allure = allure  # Inicializa o Allure no contexto
+
+def before_scenario(context, scenario):
+    """Adiciona informações do cenário ao Allure."""
+    with allure.step(f"Iniciando cenário: {scenario.name}"):
+        logging.info(f"Iniciando cenário: {scenario.name}")  # Corrigido o uso do logging
+
+def before_step(context, step):
+    """Adiciona informações do passo ao Allure."""
+    with allure.step(f"Iniciando passo: {step.name}"):
+        logging.info(f"Iniciando passo: {step.name}")
 
 def sanitize_filename(filename):
     """
@@ -100,20 +116,48 @@ def after_step(context, step):
     # Manter a janela aberta em caso de erro
     if step.status == 'failed':
         context.driver.execute_script("window.onbeforeunload = function() {};")
+        try:
+            context.driver.save_screenshot(screenshot_path)
+            allure.attach.file(screenshot_path, name=step.name, attachment_type=allure.attachment_type.PNG)
+        except Exception as e:
+            logging.error(f"Erro ao capturar screenshot: {e}")
 
 def after_scenario(context, scenario):
+    """Adiciona informações do cenário ao Allure."""
     if scenario.status == 'failed':
         context.failed_scenarios.append(scenario.name)
+        allure.attach(f"Cenário falhou: {scenario.name}", name="Detalhes do Cenário", attachment_type=allure.attachment_type.TEXT)
     else:
         context.passed_scenarios.append(scenario.name)
+    logging.info(f"Finalizando cenário: {scenario.name}")  # Corrigido o uso do logging
 
 def after_all(context):
-    generate_report(context)
-    generate_summary_report(context)
-    generate_pdf_report(context)
-    send_email_report(context)
-    # Remover o fechamento automático do navegador
-    # context.driver.quit()
+    """Finaliza o ambiente após todos os testes."""
+    try:
+        # Validação de dados antes de gerar gráficos
+        total_passed = len(context.passed_steps)
+        total_failed = len(context.failed_steps)
+        if total_passed + total_failed == 0:
+            logging.warning("Nenhum passo foi executado. Gráficos não serão gerados.")
+            return
+
+        # Geração de gráficos corrigida
+        labels = ['Passos bem-sucedidos', 'Passos falhados']
+        sizes = [total_passed, total_failed]
+        if any(size <= 0 for size in sizes):
+            logging.warning("Dados inválidos para geração de gráficos. Gráficos não serão gerados.")
+            return
+
+        plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)
+        plt.axis('equal')
+        plt.savefig('reports/evidencias/resumo_grafico.png')
+        plt.close()
+    except Exception as e:
+        logging.error(f"Erro ao gerar gráficos: {e}")
+    finally:
+        if hasattr(context, 'driver'):
+            context.driver.quit()
+            logging.info("Navegador fechado com sucesso.")
 
 def generate_report(context):
     evidencia_template = 'modelos de evidencias/1.evidencia.docx'
@@ -231,204 +275,121 @@ def generate_summary_report(context):
     prs.save(resumo_dest)
 
 def generate_pdf_report(context):
-    template_path = 'modelos de evidencias/4.Relatorio de Teste.docx'
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')  # Corrigido para usar datetime.datetime.now()
-    pdf_dest = f'reports/evidencias/Relatorio_de_Teste_{timestamp}.pdf'
-
-    # Garante que a pasta "reports/evidencias" exista
-    os.makedirs('reports/evidencias', exist_ok=True)
-
-    doc = Document(template_path)
-    
-    # Adicionar sumário
-    doc.add_paragraph('Sumário', style='Normal').runs[0].bold = True
-    doc.add_paragraph('1. Gráfico de Barras de Resultados dos Testes', style='Normal')
-    doc.add_paragraph('2. Gráfico de Pizza de Cobertura de Código', style='Normal')
-    doc.add_paragraph('3. Resumo dos Testes', style='Normal')
-    doc.add_paragraph('4. Versões das ferramentas de teste utilizadas', style='Normal')
-    p = doc.add_paragraph()
-    p.paragraph_format.keep_with_next = True
-
-    # Adicionar gráficos e informações ao documento
-    total_passed = len(context.passed_steps)
-    total_failed = len(context.failed_steps)
-    total_steps = total_passed + total_failed
-    total_defects = len(context.failed_steps)
-    pass_percentage = (total_passed / total_steps) * 100 if total_steps > 0 else 0
-    fail_percentage = (total_failed / total_steps) * 100 if total_steps > 0 else 0
-
-    # Gráfico de Barras de Resultados dos Testes
-    p = doc.add_paragraph('1. Gráfico de Barras de Resultados dos Testes', style='Normal')
-    p.alignment = 0  # Alinhar à esquerda
-    bar_chart_path = f'reports/evidencias/bar_chart_{timestamp}.jpeg'
-    pie_chart_path = f'reports/evidencias/pie_chart_{timestamp}.jpeg'
-    plt.bar(['Aprovados', 'Reprovados', 'Em Aberto'], [total_passed, total_failed, 0], color=['#4CAF50', '#F44336', '#FFC107'])
-    plt.title('Resultados dos Testes')
-    plt.xlabel('Status')
-    plt.ylabel('Quantidade')
-    plt.savefig(bar_chart_path, format='jpeg')
-    plt.close()
-    doc.add_picture(bar_chart_path, width=DocxInches(4)).alignment = 1  # Centralizar o gráfico
-    os.remove(bar_chart_path)  # Exclui o arquivo após adicioná-lo ao documento
-    p = doc.add_paragraph()
-    p.paragraph_format.keep_with_next = True
-    
-    # Adicionar quebra de página antes do próximo gráfico
-    doc.add_page_break()
-
-    # Gráfico de Pizza de Cobertura de Código
-    # Adiciona parágrafos vazios para criar espaço no início do documento
-    p = doc.add_paragraph('2. Gráfico de Pizza de Cobertura de Código', style='Normal')
-    p.alignment = 0  # Alinhar à esquerda
-    plt.pie([pass_percentage, 100 - pass_percentage], labels=['Coberto', 'Não Coberto'], colors=['#4CAF50', '#F44336'], autopct='%1.1f%%', shadow=True, startangle=140)
-    plt.axis('equal')
-    plt.savefig(pie_chart_path, format='jpeg')
-    plt.close()
-    doc.add_picture(pie_chart_path, width=DocxInches(4)).alignment = 1  # Centralizar o gráfico
-    os.remove(pie_chart_path)  # Exclui o arquivo após adicioná-lo ao documento
-    p = doc.add_paragraph()
-    p.paragraph_format.keep_with_next = True
-
-    # Resumo dos Testes
-    p = doc.add_paragraph('3. Resumo dos Testes', style='Normal')
-    doc.add_paragraph(f'1. Número total de casos de teste executados: ').add_run(f'{total_steps}').bold = True
-    doc.add_paragraph(f'2. Número de casos de teste aprovados: ').add_run(f'{total_passed}').bold = True
-    doc.add_paragraph(f'3. Número de casos de teste reprovados: ').add_run(f'{total_failed}').bold = True
-    doc.add_paragraph(f'4. Número de casos de teste em aberto: ').add_run('0').bold = True
-    doc.add_paragraph(f'5. Percentual de aprovação: ').add_run(f'{pass_percentage:.2f}%').bold = True
-    doc.add_paragraph(f'6. Percentual de falha: ').add_run(f'{fail_percentage:.2f}%').bold = True
-    doc.add_paragraph(f'7. Número total de defeitos encontrados: ').add_run(f'{total_defects}').bold = True
-
-    # Ambiente de Teste
-    doc.add_paragraph()
-    p = doc.add_paragraph('4. Versões das ferramentas de teste utilizadas', style='Normal')
-    doc.add_paragraph('- Google Chrome: ').add_run(f'Vs {context.driver.capabilities["browserVersion"]}').bold = True
-    doc.add_paragraph('- VSCode: ').add_run('Vs 1.60.0').bold = True  # Exemplo de versão
-    doc.add_paragraph('- Selenium: ').add_run(f'Vs {webdriver.__version__}').bold = True
-    doc.add_paragraph('- Python: ').add_run('Vs 3.12.0').bold = True
-     
-    doc.save(f'reports/evidencias/Relatorio_de_Teste_{timestamp}.docx')
+    """Gera o relatório PDF com base nos resultados dos testes."""
     try:
-        # Converte o documento Word para PDF
-        convert(f'reports/evidencias/Relatorio_de_Teste_{timestamp}.docx', pdf_dest)
+        pdf_dest = 'reports/evidencias/Relatorio_de_Teste.pdf'
+
+        # Garante que a pasta "reports/evidencias" exista
+        os.makedirs(os.path.dirname(pdf_dest), exist_ok=True)
+
+        # Cria o PDF usando FPDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 10, txt="Relatório de Testes Automatizados", ln=True, align='C')
+        pdf.cell(200, 10, txt=f"Data: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}", ln=True, align='C')
+
+        # Adiciona informações sobre os passos
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Passos Bem-Sucedidos:", ln=True)
+        for step, _ in context.get("passed_steps", []):
+            pdf.cell(200, 10, txt=f"- {step}", ln=True)
+
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="Passos Falhados:", ln=True)
+        for step, _ in context.get("failed_steps", []):
+            pdf.cell(200, 10, txt=f"- {step}", ln=True)
+
+        # Salva o PDF
+        pdf.output(pdf_dest)
+        print(f"Relatório PDF gerado com sucesso: {pdf_dest}")
     except Exception as e:
-        print(f"Erro ao converter o documento para PDF: {e}")
-    finally:
-        # Garante que o objeto Word.Application seja encerrado corretamente, se o módulo comtypes estiver disponível
-        try:
-            import importlib
-            if importlib.util.find_spec("comtypes"):
-                import comtypes.client
-                word_app = comtypes.client.CreateObject("Word.Application")
-                word_app.Quit()
-            else:
-                print("Aviso: O módulo 'comtypes' não está instalado. Pule o encerramento do Word.Application.")
-        except Exception as e:
-            print(f"Erro ao encerrar o Word.Application: {e}")
+        logging.error(f"Erro ao gerar o relatório PDF: {e}")
+        raise
 
 def authenticate_gmail():
     SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-    creds = Credentials(
-        None,
-        refresh_token=REFRESH_TOKEN,
-        token_uri='https://oauth2.googleapis.com/token',
-        client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET
-    )
-    if creds.expired:
-        creds.refresh(Request())
-    return creds
+    try:
+        creds = Credentials(
+            None,
+            refresh_token=REFRESH_TOKEN,
+            token_uri='https://oauth2.googleapis.com/token',
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_SECRET
+        )
+        if creds.expired:
+            creds.refresh(Request())
+        return creds
+    except Exception as e:
+        logging.error(f"Erro ao autenticar no Gmail: {e}")
+        raise
 
 def send_email_report(context):
     creds = authenticate_gmail()
-    timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M')  # Corrigido para usar datetime.datetime.now()
-    current_date = datetime.datetime.now().strftime('%d/%m/%Y')  # Corrigido para usar datetime.datetime.now()
-    bar_chart_path = f'reports/evidencias/bar_chart_{timestamp}.jpeg'
-    pdf_report_path = f'reports/evidencias/Relatorio_de_Teste_{timestamp}.pdf'  # Definição da variável
+    allure_report_path = context.get("allure_report_path")  # Caminho do relatório HTML do Allure
+    pdf_report_path = context.get("pdf_report_path")  # Caminho do relatório PDF
+    test_failed = context.get("test_failed", False)
 
-    # Garante que o gráfico seja gerado antes de tentar usá-lo
-    if not os.path.exists(bar_chart_path):
-        print(f"Gerando o gráfico de barras em '{bar_chart_path}'...")
-        plt.bar(['Aprovados', 'Reprovados', 'Em Aberto'], [len(context.passed_steps), len(context.failed_steps), 0], color=['#4CAF50', '#F44336', '#FFC107'])
-        plt.title('Resultados dos Testes')
-        plt.xlabel('Status')
-        plt.ylabel('Quantidade')
-        plt.savefig(bar_chart_path, format='jpeg')
-        plt.close()
+    try:
+        # Verifica se o relatório HTML do Allure existe
+        if allure_report_path and not os.path.exists(allure_report_path):
+            logging.error(f"Relatório HTML do Allure não encontrado: {allure_report_path}")
+            raise FileNotFoundError(f"Relatório HTML do Allure não encontrado: {allure_report_path}")
 
-    # Verifica novamente se o gráfico foi gerado
-    if not os.path.exists(bar_chart_path):
-        raise FileNotFoundError(f"O gráfico de barras '{bar_chart_path}' não foi encontrado.")
+        # Verifica se o relatório PDF existe
+        if pdf_report_path and not os.path.exists(pdf_report_path):
+            logging.error(f"Relatório PDF não encontrado: {pdf_report_path}")
+            raise FileNotFoundError(f"Relatório PDF não encontrado: {pdf_report_path}")
 
-    # Garante que o relatório PDF exista antes de tentar usá-lo
-    if not os.path.exists(pdf_report_path):
-        raise FileNotFoundError(f"O relatório PDF '{pdf_report_path}' não foi encontrado.")
+        email_subject = "Relatório de Resultados dos Testes Automatizados"
+        email_body = f"""
+        <html>
+        <body>
+            <p>Prezados,</p>
+            <p>Segue o relatório detalhado dos testes automatizados realizados.</p>
+            <p>Status dos testes: {"Falharam" if test_failed else "Bem-sucedidos"}.</p>
+            <p>Os relatórios HTML do Allure e PDF estão anexados a este e-mail.</p>
+            <p>Atenciosamente,</p>
+            <p>Equipe de Automação de Testes</p>
+        </body>
+        </html>
+        """
 
-    total_test_cases = len(context.passed_steps) + len(context.failed_steps)  # Total de casos de teste executados
-    total_passed = len(context.passed_steps)
-    total_failed = len(context.failed_steps)
-    total_features = len(context.passed_scenarios) + len(context.failed_scenarios)  # Total de features
-    features_passed = len(context.passed_scenarios)
-    features_failed = len(context.failed_scenarios)
+        msg = MIMEMultipart()
+        msg['From'] = REMETENTE_DE_EMAIL
+        msg['To'] = 'matheus.drens@gmail.com'
+        msg['Subject'] = email_subject
+        msg.attach(MIMEText(email_body, 'html'))
 
-    # Converter a imagem do gráfico para Base64
-    with open(bar_chart_path, 'rb') as img_file:
-        grafico_base64 = base64.b64encode(img_file.read()).decode('utf-8')
+        # Adicionar relatório HTML do Allure como anexo
+        if allure_report_path and os.path.exists(allure_report_path):
+            with open(allure_report_path, 'rb') as f:
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', f'attachment; filename="Allure_Report.html"')
+                msg.attach(part)
 
-    email_subject = f"Relatório de Resultados dos Testes Automatizados – [Neoenergia - Liberalizados Diretrizes- {current_date}]"
-    email_body = f"""
-    <html>
-    <body>
-        <p>Prezados,</p>
-        <p>Gostaria de compartilhar o relatório detalhado dos resultados dos testes automatizados realizados para o projeto <b>Liberalizados Diretrizes</b> na data <b>{current_date}</b>. Abaixo, seguem as principais informações e conclusões:</p>
-        <p><b>1. Resumo dos Testes Executados:</b></p>
-        <ul>
-            <li>Total de Casos de Teste: <b>{total_test_cases}</b></li>
-            <li>Casos de Teste Aprovados: <b>{total_passed}</b></li>
-            <li>Casos de Teste Reprovados: <b>{total_failed}</b></li>
-            <li>Casos de Teste em Aberto: <b>0</b></li>
-        </ul>
-        <p><b>2. Resumo dos produtos Executados:</b></p>
-        <ul>
-            <li>Total de produtos testados: <b>{total_features}</b></li>
-            <li>Produtos Aprovados: <b>{features_passed}</b></li>
-            <li>Produtos Reprovados: <b>{features_failed}</b></li>
-            <li>Produtos em Aberto: <b>0</b></li>
-        </ul>
-        <p><b>3. Cenários que falharam:</b></p>
-        <ul>
-            {''.join(f'<li><b>{step.capitalize()}</b></li>' for step, _ in context.failed_steps)}
-        </ul>
-        <p><b>4. Recomendação e Próximos Passos:</b></p>
-        <ul>
-            <li>Ações Recomendadas: Recomendamos a análise e correção dos problemas identificados, seguida de uma nova rodada de testes para garantir a resolução das falhas identificadas e a qualidade do sistema.</li>
-        </ul>
-        <p><img src="data:image/jpeg;base64,{grafico_base64}" alt="Resumo Gráfico"></p>
-        <p>Estamos à disposição para tratar os resultados em detalhes, realizar testes assistidos e responder a quaisquer perguntas que possam surgir. Agradecemos a colaboração de todos e estamos comprometidos em garantir a qualidade e a estabilidade do sistema.</p>
-    </body>
-    </html>
-    """
+        # Adicionar relatório PDF como anexo
+        if pdf_report_path and os.path.exists(pdf_report_path):
+            with open(pdf_report_path, 'rb') as f:
+                part = MIMEBase('application', 'octet-stream')
+                part.set_payload(f.read())
+                encoders.encode_base64(part)
+                part.add_header('Content-Disposition', f'attachment; filename="Relatorio_de_Teste.pdf"')
+                msg.attach(part)
 
-    msg = MIMEMultipart()
-    msg['From'] = REMETENTE_DE_EMAIL
-    msg['To'] = 'matheus.drens@gmail.com'
-    msg['Subject'] = email_subject
-    msg.attach(MIMEText(email_body, 'html'))
+        raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+        message = {'raw': raw}
 
-    # Adicionar relatório PDF como anexo
-    if os.path.exists(pdf_report_path):
-        with open(pdf_report_path, 'rb') as f:
-            part = MIMEBase('application', 'octet-stream')
-            part.set_payload(f.read())
-            encoders.encode_base64(part)
-            part.add_header('Content-Disposition', f'attachment; filename="{os.path.basename(pdf_report_path)}"')
-            msg.attach(part)
-
-    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
-    message = {'raw': raw}
-
-    service = build('gmail', 'v1', credentials=creds)
-    service.users().messages().send(userId='me', body=message).execute()
+        service = build('gmail', 'v1', credentials=creds)
+        service.users().messages().send(userId='me', body=message).execute()
+        logging.info("E-mail enviado com sucesso!")
+    except Exception as e:
+        logging.error(f"Erro ao enviar o e-mail: {e}")
+        if "invalid_grant" in str(e):
+            logging.error("O token de autenticação é inválido ou expirou. Regere um novo refresh_token.")
+        raise
 
 def gerar_documento_evidencia(nome_teste, sucesso=True, erros=None):
     """
@@ -476,5 +437,3 @@ def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
 
     doc.save(nome_arquivo)
     print(f"Resumo gerado: {nome_arquivo}")
-
-

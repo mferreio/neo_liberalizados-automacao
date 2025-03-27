@@ -1,27 +1,24 @@
 import os
+from dotenv import load_dotenv
 
-EMAIL = 'mferreio.qa@gmail.com'
+# Carrega as variáveis de ambiente do arquivo .env
+load_dotenv()
 
-CLIENT_ID = '1089000521121-ql963a6ah7p7d2m2ubjr3noll10kdqqq.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
-REFRESH_TOKEN = '1//0hcqNzGqLbUlwCgYIARAAGBESNwF-L9Iru6MUVGtZbbNIvRBoIMZtGanhdXX1f2UtMl_QyAopsG5OQ9hsxFYsE0q72Dan5Rb-1OU'
+# Credenciais sensíveis
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
+LOGIN_EMAIL = os.getenv("LOGIN_EMAIL")
+LOGIN_PASSWORD = os.getenv("LOGIN_PASSWORD")
+LOGIN_USUARIO = os.getenv("LOGIN_USUARIO")
+REMETENTE_DE_EMAIL = os.getenv("REMETENTE_DE_EMAIL")
 
-# Credenciais de login
-REMETENTE_DE_EMAIL = 'mferreio.qa@gmail.com'
-LOGIN_EMAIL = 'E975263@iberdrola.com'
-LOGIN_PASSWORD = 'A02458719a*'
-LOGIN_USUARIO = 'E975263'
-
-#tela de cadastro
-TIPO_DE_PERFIL = 'ADMINISTRADOR'
-NOME = 'Joao Silva'
-EMAIL = 'joaosilva@teste.com.br'
-
-#tela para editar cadastro
-PESQUISAR_NOME_CADASTRADO = "Joao Silva"
-EDITAR_PERFIL = 'ADMINISTRADOR'
-EDITAR_NOME = "teste 123"
-EDITAR_EMAIL = "teste123@teste.com.br"
-
-#excluir cadastro
-EXCLUIR_NOME = "teste 123"
+# Dados de teste
+NOME = os.getenv("NOME")
+EMAIL = os.getenv("EMAIL")
+EDITAR_PERFIL = os.getenv("EDITAR_PERFIL")
+EDITAR_NOME = os.getenv("EDITAR_NOME")
+EDITAR_EMAIL = os.getenv("EDITAR_EMAIL")
+PESQUISAR_NOME_CADASTRADO = os.getenv("PESQUISAR_NOME_CADASTRADO")
+EXCLUIR_NOME = os.getenv("EXCLUIR_NOME")
+TIPO_DE_PERFIL = os.getenv("TIPO_DE_PERFIL")

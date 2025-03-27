@@ -1,0 +1,1 @@
+Cenário falhou: Excluir um usuário existente

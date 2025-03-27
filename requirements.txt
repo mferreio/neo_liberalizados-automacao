@@ -1,0 +1,12 @@
+selenium
+google-api-python-client
+matplotlib
+docx2pdf
+pyautogui
+behave
+allure-behave
+python-docx
+python-pptx
+google-auth-oauthlib
+requests
+python-dotenv

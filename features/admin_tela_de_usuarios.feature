@@ -58,13 +58,3 @@ Feature: Acessar a página de login e testar fluxo de tela de usuários
     When pesquisa um usuario cadastrado
     When clica em excluir e confirma
     Then navega até a tela de usuários - Perfil
-
-  # Scenario: Controle de acesso a módulos do sistema
-  #   Given que um usuário tem o e-mail "joao@email.com" e o perfil "Usuário"
-  #   When o usuário tenta acessar o módulo "Administração"
-  #   Then uma mensagem de erro "Acesso negado. Você não tem permissão para acessar este módulo." deve ser exibida
-
-  # Scenario: Usuário não administrador tenta acessar a tela de usuários
-  #   Given que o usuário está logado como "Usuário Comum"
-  #   When o usuário navega até a tela de usuários
-  #   Then uma mensagem de erro "Acesso negado. Somente administradores podem acessar esta tela." deve ser exibida
