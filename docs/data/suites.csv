@@ -1,2 +1,2 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","54719","Verificar o login com sucesso","","Fri Mar 28 14:00:52 BRT 2025","passed","Fri Mar 28 14:01:47 BRT 2025","","","",""
+"","49452","Verificar o login com sucesso","","Fri Mar 28 14:07:11 BRT 2025","failed","Fri Mar 28 14:08:00 BRT 2025","","","",""
