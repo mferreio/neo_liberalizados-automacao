@@ -21,7 +21,7 @@ class TeladeUsuariosPageLocators:
     PERFIL_PORTFOLIO_TRADING = (By.XPATH, "//*[@id='pn_id_25_1']")
     INPUT_NOME = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[3]/div[2]/input")
     INPUT_EMAIL = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[3]/div[3]/input")
-    BOTAO_EDITAR = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/div/p-table/div/div[2]/table/tbody/tr/td[5]/button[1]")
+    BOTAO_EDITAR = (By.XPATH, "//tbody[@class='p-element p-datatable-tbody']//button[@icon='pi pi-pencil']")
     FILTRO_NOME = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/div/p-table/div/div[2]/table/thead/tr[2]/th[1]/span/input")
     DROPDOWN_EDITAR_PERFIL = (By.CSS_SELECTOR, "#perfis")
     EDITAR_PERFIL_ADMINISTRADOR = (By.CSS_SELECTOR, "li[role='option'][aria-label='ADMINISTRADOR'].p-dropdown-item")
@@ -312,3 +312,4 @@ class TelaDeUsuariosPage:
         except TimeoutException:
             raise AssertionError("Usuário não encontrado ou botão 'excluir' não clicável.")
         sleep(2)
+        

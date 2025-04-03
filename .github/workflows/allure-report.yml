@@ -1,0 +1,33 @@
+name: Allure Report
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  generate-allure-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests and generate Allure report
+        run: |
+          npm run test
+          npm run allure:generate
+
+      - name: Deploy Allure report to GitHub Pages
+        run: npm run allure:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

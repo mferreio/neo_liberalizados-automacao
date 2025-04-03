@@ -5,12 +5,9 @@ from features.pages.login_page import LoginPageLocators
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO, TIPO_DE_PERFIL, EDITAR_NOME, EDITAR_EMAIL, PESQUISAR_NOME_CADASTRADO, EXCLUIR_NOME
 import logging
 from time import sleep
-import pyautogui
 from features.pages.tela_de_usuarios_pages import TelaDeUsuariosPage
 from credentials import EDITAR_NOME
-import datetime
 from docx import Document
-from io import BytesIO
 from selenium.webdriver.common.by import By
 from features.environment import gerar_documento_evidencia, gerar_resumo_testes
 import allure

@@ -1,1 +1,0 @@
-Cenário falhou: Cancelar exclusão de um usuário

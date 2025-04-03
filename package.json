@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "test": "your-test-command --output=reports/allure-results",
+    "allure:generate": "allure generate reports/allure-results --clean -o docs",
+    "allure:serve": "allure serve reports/allure-results",
+    "allure:report": "npm run test && npm run allure:generate && npm run allure:publish",
+    "allure:publish": "gh-pages -d docs -b allure_report"
+  },
+  "devDependencies": {
+    "gh-pages": "^5.0.0"
+  }
+}

@@ -1,17 +1,15 @@
 import os
 from dotenv import load_dotenv
 
-# Carrega as variáveis de ambiente do arquivo .env
+# Carrega as variáveis do arquivo .env
 load_dotenv()
 
-# Credenciais sensíveis
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-REFRESH_TOKEN = os.getenv("REFRESH_TOKEN")
+# Credenciais
 LOGIN_EMAIL = os.getenv("LOGIN_EMAIL")
-LOGIN_PASSWORD = os.getenv("LOGIN_PASSWORD")
-LOGIN_USUARIO = os.getenv("LOGIN_USUARIO")
+LOGIN_PASSWORD = os.getenv("LOGIN_PASSWORD")  # Adicionada variável LOGIN_PASSWORD
+LOGIN_USUARIO = os.getenv("LOGIN_USUARIO")  # Adicionada variável LOGIN_USUARIO, se necessário
 REMETENTE_DE_EMAIL = os.getenv("REMETENTE_DE_EMAIL")
+APP_PASSWORD = os.getenv("APP_PASSWORD")
 
 # Dados de teste
 NOME = os.getenv("NOME")

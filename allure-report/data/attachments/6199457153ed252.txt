@@ -1,1 +1,0 @@
-Cenário falhou: Administrador acessa a tela de usuários
