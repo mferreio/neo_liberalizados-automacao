@@ -5,7 +5,6 @@ import logging
 import shutil
 import datetime
 import stat
-from features.utils_general import send_email, generate_evidence
 from features.utils_allure import upload_to_github_pages
 
 def remove_readonly(func, path, excinfo):
@@ -25,9 +24,8 @@ def run_tests():
 
         # Limpa e cria os diretórios necessários
         for directory in [allure_results_dir, allure_report_dir, evidence_dir]:
-                shutil.rmtree(directory, onexc=remove_readonly)
-                shutil.rmtree(directory, onerror=remove_readonly)
-                os.makedirs(directory, exist_ok=True)
+            shutil.rmtree(directory, onexc=remove_readonly, ignore_errors=True)
+            os.makedirs(directory, exist_ok=True)
 
         # Caminho do Allure CLI
         allure_executable = r"C:\allure\bin\allure.bat"
@@ -53,7 +51,7 @@ def run_tests():
         repo_url = "https://github.com/mferreio/neo_liberalizados-automacao.git"
         upload_to_github_pages(allure_report_dir, repo_url)
 
-        # Retorna o contexto necessário para o envio de e-mail
+        # Retorna o contexto necessário
         allure_report_url = "https://mferreio.github.io/neo_liberalizados-automacao/"
         return {
             "allure_report_url": allure_report_url,
@@ -67,25 +65,7 @@ def run_tests():
 
 if __name__ == "__main__":
     try:
-        email_context = run_tests()
-        evidence_path = generate_evidence()
-
-        email_subject = "Relatório de Resultados dos Testes Automatizados"
-        email_body = f"""
-        <html>
-        <body>
-            <p>Prezados,</p>
-            <p>Segue o relatório detalhado dos testes realizados em {datetime.datetime.now().strftime('%d/%m/%Y')}.</p>
-            <ul>
-                <li><strong>Tempo total de execução:</strong> {(email_context["end_time"] - email_context["start_time"]).total_seconds() / 60:.2f} minutos</li>
-                <li><strong>Link do relatório Allure:</strong> <a href="{email_context["allure_report_url"]}" target="_blank">Clique aqui</a></li>
-            </ul>
-            <p>Atenciosamente,</p>
-            <p><strong>Equipe de Automação de Testes</strong></p>
-        </body>
-        </html>
-        """
-        send_email(subject=email_subject, body=email_body, recipient_email="matheus.drens@gmail.com", attachment_path=evidence_path)
-        print("E-mail enviado com sucesso!")
+        run_tests()
+        print("Testes executados com sucesso!")
     except Exception as e:
-        logging.error(f"Erro ao enviar o e-mail: {e}")
+        logging.error(f"Erro durante a execução dos testes: {e}")
