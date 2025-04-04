@@ -1,5 +1,6 @@
 import os
 import logging
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,6 +17,7 @@ from googleapiclient.discovery import build
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import base64
+import shutil
 
 def login(context):
     """Realiza o login no sistema."""
@@ -126,6 +128,41 @@ def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
     logging.info(f"Resumo gerado: {nome_arquivo}")
     return nome_arquivo
 
+def generate_allure_report():
+    """Gera o relatório Allure e envia para o GitHub Pages."""
+    allure_results_dir = "reports/allure-results"
+    allure_report_dir = "reports/allure-report"
+    allure_executable = r"C:\allure\bin\allure.bat"
+    repo_url = "https://github.com/mferreio/neo_liberalizados-automacao.git"
+    gh_pages_branch = "gh-pages"
+
+    try:
+        # Gera o relatório Allure
+        logging.info("Gerando o relatório Allure...")
+        subprocess.run([allure_executable, "generate", allure_results_dir, "-o", allure_report_dir, "--clean"], check=True)
+
+        # Configura o diretório para o GitHub Pages
+        logging.info("Enviando o relatório para o GitHub Pages...")
+        if os.path.exists(".gh-pages"):
+            shutil.rmtree(".gh-pages")
+        subprocess.run(["git", "clone", "--branch", gh_pages_branch, repo_url, ".gh-pages"], check=True)
+
+        # Copia o relatório para a pasta docs na branch gh-pages
+        docs_dir = os.path.join(".gh-pages", "docs")
+        if os.path.exists(docs_dir):
+            shutil.rmtree(docs_dir)
+        shutil.copytree(allure_report_dir, docs_dir)
+
+        # Faz commit e push para a branch gh-pages
+        subprocess.run(["git", "-C", ".gh-pages", "add", "."], check=True)
+        subprocess.run(["git", "-C", ".gh-pages", "commit", "-m", "Atualização do relatório Allure"], check=True)
+        subprocess.run(["git", "-C", ".gh-pages", "push"], check=True)
+
+        logging.info("Relatório enviado para o GitHub Pages com sucesso!")
+    except Exception as e:
+        logging.error(f"Erro ao gerar ou enviar o relatório Allure: {e}")
+        raise
+
 def send_email(subject, body, attachment_path=None):
     """
     Envia um e-mail utilizando a API do Gmail com autenticação de 2 fatores.
@@ -178,11 +215,14 @@ def send_email(subject, body, attachment_path=None):
         logging.error(f"Erro ao enviar e-mail: {e}")
 
 def after_all(context):
-    """Finaliza o ambiente após todos os testes e envia um e-mail com os resultados."""
+    """Finaliza o ambiente após todos os testes, gera o relatório Allure e envia um e-mail com os resultados."""
     try:
         if hasattr(context, 'driver'):
             context.driver.quit()
             logging.info("Navegador fechado com sucesso.")
+
+        # Gera o relatório Allure e envia para o GitHub Pages
+        generate_allure_report()
 
         # Configurar e enviar o e-mail
         email_subject = "Relatório de Resultados dos Testes Automatizados"
@@ -191,6 +231,8 @@ def after_all(context):
         <body>
             <p>Prezados,</p>
             <p>Os testes foram finalizados em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}.</p>
+            <p>O relatório Allure foi enviado para o GitHub Pages e pode ser acessado no link abaixo:</p>
+            <p><a href="https://mferreio.github.io/neo_liberalizados-automacao/" target="_blank">Relatório Allure</a></p>
             <p>Atenciosamente,</p>
             <p><strong>Equipe de Automação</strong></p>
         </body>
@@ -198,4 +240,4 @@ def after_all(context):
         """
         send_email(subject=email_subject, body=email_body)
     except Exception as e:
-        logging.error(f"Erro ao finalizar o ambiente ou enviar o e-mail: {e}")
+        logging.error(f"Erro ao finalizar o ambiente, gerar o relatório ou enviar o e-mail: {e}")
