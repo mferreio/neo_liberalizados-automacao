@@ -19,6 +19,8 @@ from email.mime.multipart import MIMEMultipart
 import base64
 import shutil
 import stat
+import matplotlib.pyplot as plt
+import io
 
 def login(context):
     """Realiza o login no sistema."""
@@ -231,6 +233,52 @@ def send_email(subject, body, attachment_path=None):
     except Exception as e:
         logging.error(f"Erro ao enviar e-mail: {e}")
 
+def gerar_grafico_percentual(total, falhas, titulo):
+    """Gera um gráfico de pizza com o percentual de falhas."""
+    sucesso = total - falhas
+    labels = ['Sucesso', 'Falhas']
+    sizes = [sucesso, falhas]
+    colors = ['#4CAF50', '#F44336']
+    explode = (0, 0.1)  # Destaque para falhas
+
+    # Evita divisão por zero ao gerar o gráfico
+    if total == 0:
+        sizes = [1]  # Exibe 100% como "Nenhum dado"
+        labels = ['Nenhum dado']
+        colors = ['#B0BEC5']  # Cor neutra para ausência de dados
+        explode = (0,)
+
+    fig, ax = plt.subplots(figsize=(4, 4))  # Reduz o tamanho do gráfico
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')  # Garante que o gráfico seja um círculo
+    ax.set_title(titulo, fontsize=10)
+
+    # Salva o gráfico em memória
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    buffer.close()
+    plt.close(fig)
+    return img_base64
+
+def get_allure_metrics():
+    """Obtém métricas do Allure Report a partir do arquivo summary.json."""
+    summary_path = os.path.join("reports", "allure-report", "widgets", "summary.json")
+    passed = failed = ignored = 0
+
+    try:
+        with open(summary_path, "r") as summary_file:
+            import json
+            summary = json.load(summary_file)
+            passed = summary.get("statistic", {}).get("passed", 0)
+            failed = summary.get("statistic", {}).get("failed", 0)
+            ignored = summary.get("statistic", {}).get("skipped", 0)
+    except Exception as e:
+        logging.error(f"Erro ao obter métricas do Allure Report: {e}")
+
+    return passed, failed, ignored
+
 def after_all(context):
     """Finaliza o ambiente após todos os testes, gera o relatório Allure e envia um e-mail com os resultados."""
     try:
@@ -238,26 +286,13 @@ def after_all(context):
             context.driver.quit()
             logging.info("Navegador fechado com sucesso.")
 
-        # Gera o relatório Allure e envia para o GitHub Pages
-        generate_allure_report()
+        # Calcula o tempo de execução
+        end_time = datetime.now()
+        execution_time = end_time - context.start_time
 
-        # Exemplo de lógica para sobrescrever relatórios antigos
-        report_file = os.path.join(context.report_output_path, 'index.html')  # Renomeia para 'index.html' para compatibilidade com GitHub Pages
-        os.makedirs(context.report_output_path, exist_ok=True)  # Garante que o diretório exista
-        # Geração do novo relatório
-        with open(report_file, 'w') as f:
-            f.write(f"""
-            <html>
-            <head>
-                <title>Relatório de Teste</title>
-            </head>
-            <body>
-                <h1>Relatório de Teste</h1>
-                <p>Data de geração: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
-                <p>Os resultados dos testes foram atualizados com sucesso.</p>
-            </body>
-            </html>
-            """)
+        # Obtém métricas do Allure Report
+        passed_scenarios, failed_scenarios, ignored_scenarios = get_allure_metrics()
+        total_cenarios = passed_scenarios + failed_scenarios + ignored_scenarios
 
         # Configurar e enviar o e-mail
         email_subject = f"[Neoenergia - Liberalizados Diretrizes] Report de automação {datetime.now().strftime('%d/%m/%Y')}"
@@ -295,12 +330,17 @@ def after_all(context):
             .ignored {{
                 color: orange;
             }}
+            .execution-time {{
+                font-size: 20px;
+                font-weight: bold;
+            }}
             </style>
         </head>
         <body>
             <h1>Relatório de Automação</h1>
             <p>Prezados,</p>
             <p>Segue o resumo dos testes realizados em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}:</p>
+            <p><strong>Tempo de execução:</strong> <span class="execution-time">{str(execution_time).split('.')[0]}</span></p>
             <table>
             <tr>
                 <th>Total de Cenários</th>
@@ -309,10 +349,10 @@ def after_all(context):
                 <th class="ignored">Cenários Ignorados</th>
             </tr>
             <tr>
-                <td>{len(context.passed_scenarios) + len(context.failed_scenarios)}</td>
-                <td class="success">{len(context.passed_scenarios)}</td>
-                <td class="failure">{len(context.failed_scenarios)}</td>
-                <td class="ignored">{0}</td> <!-- Ajuste conforme necessário -->
+                <td>{total_cenarios}</td>
+                <td class="success">{passed_scenarios}</td>
+                <td class="failure">{failed_scenarios}</td>
+                <td class="ignored">{ignored_scenarios}</td>
             </tr>
             </table>
             <p><strong>O relatório Allure pode ser acessado no link abaixo:</strong></p>
