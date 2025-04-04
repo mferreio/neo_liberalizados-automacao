@@ -9,30 +9,25 @@ def remove_readonly(func, path, excinfo):
     os.chmod(path, stat.S_IWRITE)
     func(path)
 
-def upload_to_github_pages(report_dir, repo_url, branch="allure_report"):
-    """Faz o upload do relatório Allure para o GitHub Pages na branch 'allure_report'."""
+def upload_to_github_pages(report_dir, repo_url, branch="gh-pages"):
+    """Faz o upload do relatório Allure para o GitHub Pages na branch 'gh-pages'."""
     try:
         if not os.path.exists(report_dir):
             raise FileNotFoundError(f"Diretório do relatório Allure não encontrado: {report_dir}")
         logging.info(f"Iniciando upload do relatório Allure do diretório: {report_dir}")
 
-        temp_repo_dir = "temp_repo"
+        temp_repo_dir = ".gh-pages"
 
         # Clona o repositório na branch especificada
         if os.path.exists(temp_repo_dir):
             shutil.rmtree(temp_repo_dir, onerror=remove_readonly)
         subprocess.run(["git", "clone", "--branch", branch, repo_url, temp_repo_dir], check=True)
 
-        # Copia os arquivos do relatório para a raiz do repositório
-        for item in os.listdir(report_dir):
-            source_path = os.path.join(report_dir, item)
-            dest_path = os.path.join(temp_repo_dir, item)
-            if os.path.isdir(source_path):
-                if os.path.exists(dest_path):
-                    shutil.rmtree(dest_path, onerror=remove_readonly)
-                shutil.copytree(source_path, dest_path)
-            else:
-                shutil.copy2(source_path, dest_path)
+        # Copia os arquivos do relatório para a pasta 'docs' no repositório
+        docs_dir = os.path.join(temp_repo_dir, "docs")
+        if os.path.exists(docs_dir):
+            shutil.rmtree(docs_dir, onerror=remove_readonly)
+        shutil.copytree(report_dir, docs_dir)
 
         # Faz o commit e o push para o repositório
         os.chdir(temp_repo_dir)
