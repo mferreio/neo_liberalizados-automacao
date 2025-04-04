@@ -18,6 +18,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import base64
 import shutil
+import stat
 
 def login(context):
     """Realiza o login no sistema."""
@@ -55,6 +56,12 @@ def before_all(context):
     os.makedirs('reports/screenshots', exist_ok=True)
     os.makedirs('reports/evidencias', exist_ok=True)
     os.makedirs('reports/allure-results', exist_ok=True)
+
+    context.report_output_path = os.path.join(os.getcwd(), 'docs')  # Define o diretório de saída como 'docs'
+    if not os.path.exists(context.report_output_path):
+        os.makedirs(context.report_output_path)  # Cria o diretório se não existir
+    context.github_pages_url = "https://mferreio.github.io/neo_liberalizados-automacao/"  # URL do GitHub Pages
+    context.github_pages_branch = "gh-pages"  # Define a branch usada para o GitHub Pages
 
     login(context)
 
@@ -128,6 +135,14 @@ def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
     logging.info(f"Resumo gerado: {nome_arquivo}")
     return nome_arquivo
 
+def reset_permissions(directory):
+    """Redefine permissões de um diretório e seus arquivos."""
+    for root, dirs, files in os.walk(directory):
+        for dir_name in dirs:
+            os.chmod(os.path.join(root, dir_name), stat.S_IRWXU)
+        for file_name in files:
+            os.chmod(os.path.join(root, file_name), stat.S_IRWXU)
+
 def generate_allure_report():
     """Gera o relatório Allure e envia para o GitHub Pages."""
     allure_results_dir = "reports/allure-results"
@@ -144,12 +159,14 @@ def generate_allure_report():
         # Configura o diretório para o GitHub Pages
         logging.info("Enviando o relatório para o GitHub Pages...")
         if os.path.exists(".gh-pages"):
+            reset_permissions(".gh-pages")  # Redefine permissões antes de excluir
             shutil.rmtree(".gh-pages")
         subprocess.run(["git", "clone", "--branch", gh_pages_branch, repo_url, ".gh-pages"], check=True)
 
         # Copia o relatório para a pasta docs na branch gh-pages
         docs_dir = os.path.join(".gh-pages", "docs")
         if os.path.exists(docs_dir):
+            reset_permissions(docs_dir)  # Redefine permissões antes de excluir
             shutil.rmtree(docs_dir)
         shutil.copytree(allure_report_dir, docs_dir)
 
@@ -224,15 +241,82 @@ def after_all(context):
         # Gera o relatório Allure e envia para o GitHub Pages
         generate_allure_report()
 
+        # Exemplo de lógica para sobrescrever relatórios antigos
+        report_file = os.path.join(context.report_output_path, 'index.html')  # Renomeia para 'index.html' para compatibilidade com GitHub Pages
+        os.makedirs(context.report_output_path, exist_ok=True)  # Garante que o diretório exista
+        # Geração do novo relatório
+        with open(report_file, 'w') as f:
+            f.write(f"""
+            <html>
+            <head>
+                <title>Relatório de Teste</title>
+            </head>
+            <body>
+                <h1>Relatório de Teste</h1>
+                <p>Data de geração: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
+                <p>Os resultados dos testes foram atualizados com sucesso.</p>
+            </body>
+            </html>
+            """)
+
         # Configurar e enviar o e-mail
-        email_subject = "Relatório de Resultados dos Testes Automatizados"
+        email_subject = f"[Neoenergia - Liberalizados Diretrizes] Report de automação {datetime.now().strftime('%d/%m/%Y')}"
         email_body = f"""
         <html>
+        <head>
+            <style>
+            body {{
+                font-family: Arial, sans-serif;
+                color: #333;
+            }}
+            h1 {{
+                color: #0056b3;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+            }}
+            th, td {{
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
+            }}
+            th {{
+                background-color: #f4f4f4;
+                color: #333;
+            }}
+            .success {{
+                color: green;
+            }}
+            .failure {{
+                color: red;
+            }}
+            .ignored {{
+                color: orange;
+            }}
+            </style>
+        </head>
         <body>
+            <h1>Relatório de Automação</h1>
             <p>Prezados,</p>
-            <p>Os testes foram finalizados em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}.</p>
-            <p>O relatório Allure foi enviado para o GitHub Pages e pode ser acessado no link abaixo:</p>
-            <p><a href="https://mferreio.github.io/neo_liberalizados-automacao/" target="_blank">Relatório Allure</a></p>
+            <p>Segue o resumo dos testes realizados em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}:</p>
+            <table>
+            <tr>
+                <th>Total de Cenários</th>
+                <th class="success">Cenários Aprovados</th>
+                <th class="failure">Cenários Falhados</th>
+                <th class="ignored">Cenários Ignorados</th>
+            </tr>
+            <tr>
+                <td>{len(context.passed_scenarios) + len(context.failed_scenarios)}</td>
+                <td class="success">{len(context.passed_scenarios)}</td>
+                <td class="failure">{len(context.failed_scenarios)}</td>
+                <td class="ignored">{0}</td> <!-- Ajuste conforme necessário -->
+            </tr>
+            </table>
+            <p><strong>O relatório Allure pode ser acessado no link abaixo:</strong></p>
+            <p><a href="https://mferreio.github.io/neo_liberalizados-automacao/" target="_blank">Clique aqui para acessar o relatório Allure</a></p>
             <p>Atenciosamente,</p>
             <p><strong>Equipe de Automação</strong></p>
         </body>
