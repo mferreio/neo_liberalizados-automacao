@@ -1,5 +1,5 @@
 from behave import given, when, then
-from features.pages.perfil_de_acesso_pages import PerfilDeAcessoPage
+from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
 
 @given('que eu sou um usuário com perfil {perfil}')
 def step_given_usuario_com_perfil(context, perfil):

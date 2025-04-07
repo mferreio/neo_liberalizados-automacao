@@ -5,7 +5,7 @@ import logging
 import shutil
 import datetime
 import stat
-from features.utils_allure import upload_to_github_pages
+from utils.utils_allure import upload_to_github_pages
 
 def remove_readonly(func, path, excinfo):
     """Remove o atributo somente leitura de arquivos/diretórios."""

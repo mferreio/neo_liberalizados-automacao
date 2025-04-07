@@ -1,7 +1,7 @@
 from behave import given, when, then
 from selenium.common.exceptions import StaleElementReferenceException
 from features.environment import esperar_e_executar
-from features.pages.login_page import LoginPageLocators
+from pages.login_page import LoginPageLocators
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
 import logging
 from time import sleep

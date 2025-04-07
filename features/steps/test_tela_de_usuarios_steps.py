@@ -1,11 +1,11 @@
 from behave import given, when, then
 from selenium.common.exceptions import StaleElementReferenceException
 from features.environment import esperar_e_executar
-from features.pages.login_page import LoginPageLocators
+from pages.login_page import LoginPageLocators
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO, TIPO_DE_PERFIL, EDITAR_NOME, EDITAR_EMAIL, PESQUISAR_NOME_CADASTRADO, EXCLUIR_NOME
 import logging
 from time import sleep
-from features.pages.tela_de_usuarios_pages import TelaDeUsuariosPage
+from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
 from credentials import EDITAR_NOME
 from docx import Document
 from selenium.webdriver.common.by import By

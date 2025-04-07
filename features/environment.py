@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException
 from time import sleep
 from datetime import datetime
 from credentials import LOGIN_EMAIL, REMETENTE_DE_EMAIL, DESTINATARIO
-from features.pages.login_page import LoginPage
+from pages.login_page import LoginPage
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
@@ -21,7 +21,7 @@ import shutil
 import stat
 import matplotlib.pyplot as plt
 import io
-from features.utils_allure import upload_to_github_pages  # Importa a função necessária
+from utils.utils_allure import upload_to_github_pages  # Importa a função necessária
 
 def login(context):
     """Realiza o login no sistema."""
