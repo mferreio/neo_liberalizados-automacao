@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.common.exceptions import TimeoutException
 from time import sleep
 
@@ -13,6 +14,8 @@ class LoginPageLocators:
     ADFS_USERNAME_FIELD = (By.XPATH, "//input[@type='text' and @placeholder='Nome de usuário']")
     ADFS_PASSWORD_FIELD = (By.XPATH, "//*[@id='passwordInput']")
     ADFS_LOGIN_BUTTON = (By.XPATH, "//*[@id='submitButton']")
+    VALIDAR_ADMINISTRADOR = (By.XPATH, "//span[text()='Administrador']")  # Exemplo de locator para validar administrador
+    VALIDAR_TRADING_E_PORTIFOLIO = (By.XPATH, "//span[text()='Portfólio e Trading']")  # Exemplo de locator para validar portfólio
 
 
 class LoginPage:
@@ -60,3 +63,19 @@ class LoginPage:
     def enter_adfs_password(self, password):
         password_field = self.driver.find_element(*LoginPageLocators.ADFS_PASSWORD_FIELD)
         password_field.send_keys(password)
+        
+    def validar_usuario_administrador(self):
+        try:
+            elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_ADMINISTRADOR)
+            assert elemento is not None, "Usuário não está logado como Administrador."
+            print("Usuário validado como Administrador.")
+        except NoSuchElementException:
+            raise AssertionError("Elemento de validação de Administrador não encontrado.")
+        
+    def validar_usuario_portifolio_e_trading(self):
+        try:
+            elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_TRADING_E_PORTIFOLIO)
+            assert elemento is not None, "Usuário não está logado como Portfólio e Trading."
+            print("Usuário validado como Portfólio e Trading.")
+        except NoSuchElementException:
+            raise AssertionError("Elemento de validação de Portfólio e Trading não encontrado.")

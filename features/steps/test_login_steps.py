@@ -1,13 +1,17 @@
 from behave import given, when, then
 from selenium.common.exceptions import StaleElementReferenceException
 from features.environment import esperar_e_executar
-from pages.login_page import LoginPageLocators
+from pages.login_page import LoginPageLocators, LoginPage
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
 import logging
 from time import sleep
 import pyautogui
 from features.environment import gerar_documento_evidencia
 import allure
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
 logging.basicConfig(level=logging.INFO)
 
@@ -30,8 +34,22 @@ def step_insert_email(context):
 @when('eu clico no botão Seguinte')
 @allure.step("Clicando no botão Seguinte")
 def step_click_next_button(context):
-    esperar_e_executar(context, LoginPageLocators.NEXT_BUTTON, context.login_page.click_next_button)
-    sleep(30)
+    try:
+        next_button = WebDriverWait(context.driver, 15).until(
+            EC.element_to_be_clickable(LoginPageLocators.NEXT_BUTTON)
+        )
+        next_button.click()
+        logging.info("Botão 'Seguinte' clicado com sucesso.")
+        WebDriverWait(context.driver, 15).until(
+            EC.presence_of_element_located(LoginPageLocators.ADFS_USERNAME_FIELD)
+        )
+        logging.info("Transição para a próxima etapa do login concluída com sucesso.")
+    except TimeoutException as e:
+        logging.error(f"Erro ao clicar no botão 'Seguinte': {e}")
+        context.failed_steps.append(f"Erro no passo 'eu clico no botão Seguinte': {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado ao clicar no botão 'Seguinte': {e}")
+        context.failed_steps.append(f"Erro inesperado no passo 'eu clico no botão Seguinte': {e}")
 
 @when('eu preencho o ADFS com usuário e senha')
 @allure.step("Preenchendo o ADFS com usuário e senha")
@@ -49,16 +67,17 @@ def step_fill_adfs(context):
 @then('eu verifico que o usuário acessou o sistema')
 @allure.step("Verificando que o usuário acessou o sistema")
 def step_verify_user_logged_in(context):
-    # Verifica a URL atual para confirmar que o usuário acessou o sistema
-    expected_url = "https://diretrizes.dev.neoenergia.net/"
-    current_url = context.driver.current_url
-
-    if current_url.startswith(expected_url):
-        context.is_logged_in = True
-    else:
-        context.is_logged_in = False
-        raise AssertionError(f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}.")
-    sleep(5)
+    try:
+        expected_url = "https://diretrizes.dev.neoenergia.net/"
+        current_url = context.driver.current_url
+        assert current_url.startswith(expected_url), f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}."
+        logging.info("Usuário acessou o sistema com sucesso.")
+    except AssertionError as e:
+        logging.error(f"Erro ao verificar acesso ao sistema: {e}")
+        context.failed_steps.append(f"Erro no passo 'eu verifico que o usuário acessou o sistema': {e}")
+    except Exception as e:
+        logging.error(f"Erro inesperado ao verificar acesso ao sistema: {e}")
+        context.failed_steps.append(f"Erro inesperado no passo 'eu verifico que o usuário acessou o sistema': {e}")
 
 @then('o sistema gera evidências do login')
 @allure.step("Gerando evidências do login")
@@ -68,3 +87,23 @@ def step_gera_evidencias_login(context):
         gerar_documento_evidencia(nome_teste="Teste de Login", sucesso=True)
     except Exception as e:
         print(f"Erro ao gerar evidências do login: {e}")
+        
+@given('que o usuário está logado como "Administrador"')
+@allure.step("Validando que o usuário está logado como Administrador")
+def validar_usuario_administrador(context):
+    try:
+        context.login_page = LoginPage(context.driver)
+        context.login_page.validar_usuario_administrador()
+    except Exception as e:
+        logging.error(f"Erro ao validar o usuário como Administrador: {e}")
+        raise
+    
+@given("que o usuário está logado como 'Trading Portifólio'")
+@allure.step("Validando que o usuário está logado como Trading/Portifólio")
+def validar_usuario_portifolio(context):
+    try:
+        context.login_page = LoginPage(context.driver)
+        context.login_page.validar_usuario_portifolio_e_trading()
+    except Exception as e:
+        logging.error(f"Erro ao validar o usuário como Trading Portifólio: {e}")
+        raise

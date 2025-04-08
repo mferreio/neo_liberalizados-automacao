@@ -6,9 +6,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from pages.login_page import LoginPageLocators
 from time import sleep
 from datetime import datetime
-from credentials import LOGIN_EMAIL, REMETENTE_DE_EMAIL, DESTINATARIO
+from credentials import LOGIN_EMAIL, REMETENTE_DE_EMAIL, DESTINATARIO, LOGIN_USUARIO, LOGIN_PASSWORD
 from pages.login_page import LoginPage
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -16,12 +17,14 @@ from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import pyautogui
 import base64
 import shutil
 import stat
 import matplotlib.pyplot as plt
 import io
 from utils.utils_allure import upload_to_github_pages  # Importa a função necessária
+from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
 
 def login(context):
     """Realiza o login no sistema."""
@@ -30,6 +33,21 @@ def login(context):
         context.login_page.clicar_botao_entrar()
         context.login_page.enter_email(context.login_email)
         context.login_page.click_next_button()
+        sleep(10)  # Aguarda a interface estar pronta para interação
+        pyautogui.write(LOGIN_USUARIO)  # Digita o usuário respeitando o caso das letras
+        pyautogui.press('tab')  # Navega até o campo de senha
+        sleep(1)
+        pyautogui.write(LOGIN_PASSWORD)  # Digita a senha respeitando o caso das letras
+        pyautogui.press('tab')  # Navega até o botão submit
+        sleep(1)
+        pyautogui.press('enter')  # Submete o login
+        sleep(10)
+        
+        # Aguarda a transição para a próxima página
+        WebDriverWait(context.driver, 15).until(
+            EC.url_contains("https://diretrizes.dev.neoenergia.net/")
+        )
+        logging.info("Login realizado com sucesso.")
     except TimeoutException as e:
         logging.error(f"Erro durante o login: {e}")
         context.driver.save_screenshot('reports/screenshots/timeout_exception.png')
@@ -50,7 +68,7 @@ def before_all(context):
     context.login_page = LoginPage(context.driver)
     context.login_email = LOGIN_EMAIL
     context.passed_steps = []
-    context.failed_steps = []
+    context.failed_steps = []  # Lista para armazenar os erros capturados
     context.passed_scenarios = []
     context.failed_scenarios = []
     context.start_time = datetime.now()
@@ -65,6 +83,8 @@ def before_all(context):
         os.makedirs(context.report_output_path)  # Cria o diretório se não existir
     context.github_pages_url = "https://mferreio.github.io/neo_liberalizados-automacao/"  # URL do GitHub Pages
     context.github_pages_branch = "gh-pages"  # Define a branch usada para o GitHub Pages
+
+    context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
     login(context)
 
@@ -279,7 +299,7 @@ def gerar_grafico_percentual_completo(sucesso, falhas, ignorados, titulo):
         explode = (0,)
 
     fig, ax = plt.subplots(figsize=(4, 4))  # Reduz o tamanho do gráfico
-    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1%%', startangle=90)
     ax.axis('equal')  # Garante que o gráfico seja um círculo
     ax.set_title(titulo, fontsize=10)
 
@@ -415,3 +435,11 @@ def after_all(context):
         send_email(subject=email_subject, body=email_body)
     except Exception as e:
         logging.error(f"Erro ao finalizar o ambiente, gerar o relatório ou enviar o e-mail: {e}")
+
+    if context.failed_steps:
+        logging.error("Os seguintes passos falharam durante a execução:")
+        for step in context.failed_steps:
+            logging.error(step)
+    if hasattr(context, 'driver'):
+        context.driver.quit()
+        logging.info("Navegador fechado com sucesso.")

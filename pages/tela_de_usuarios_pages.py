@@ -39,13 +39,7 @@ class TelaDeUsuariosPage:
     def __init__(self, driver):
         self.driver = driver
 
-    def validar_usuario_administrador(self):
-        try:
-            elemento = self.driver.find_element(*TeladeUsuariosPageLocators.VALIDAR_ADMINISTRADOR)
-            assert elemento is not None, "Usuário não está logado como Administrador."
-            print("Usuário validado como Administrador.")
-        except NoSuchElementException:
-            raise AssertionError("Elemento de validação de Administrador não encontrado.")
+    
         
     def clicar_botao_perfil(self):
         try:

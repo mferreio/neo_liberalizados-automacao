@@ -1,26 +1,9 @@
 from behave import given, when, then
-from selenium.common.exceptions import StaleElementReferenceException
-from features.environment import esperar_e_executar
-from pages.login_page import LoginPageLocators
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO, TIPO_DE_PERFIL, EDITAR_NOME, EDITAR_EMAIL, PESQUISAR_NOME_CADASTRADO, EXCLUIR_NOME
 import logging
-from time import sleep
 from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
-from credentials import EDITAR_NOME
-from docx import Document
-from selenium.webdriver.common.by import By
 from features.environment import gerar_documento_evidencia, gerar_resumo_testes
 import allure
-
-@given('que o usuário está logado como "Administrador"')
-@allure.step("Validando que o usuário está logado como Administrador")
-def validar_usuario_administrador(context):
-    try:
-        context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-        context.tela_de_usuarios_page.validar_usuario_administrador()
-    except Exception as e:
-        logging.error(f"Erro ao validar o usuário como Administrador: {e}")
-        raise
 
 @when('navega até a tela de usuários - Perfil')
 @allure.step("Navegando até a tela de usuários - Perfil")
