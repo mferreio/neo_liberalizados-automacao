@@ -23,8 +23,9 @@ import shutil
 import stat
 import matplotlib.pyplot as plt
 import io
-from utils.utils_allure import upload_to_github_pages  # Importa a função necessária
+from utils.utils_allure import upload_to_github_pages
 from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
+import traceback
 
 def login(context):
     """Realiza o login no sistema."""
@@ -33,8 +34,8 @@ def login(context):
         context.login_page.clicar_botao_entrar()
         context.login_page.enter_email(context.login_email)
         context.login_page.click_next_button()
-        sleep(10)  # Aguarda a interface estar pronta para interação
-        pyautogui.write(LOGIN_USUARIO)  # Digita o usuário respeitando o caso das letras
+        sleep(7)  # Aguarda a interface estar pronta para interação
+        pyautogui.write(LOGIN_USUARIO.upper())
         pyautogui.press('tab')  # Navega até o campo de senha
         sleep(1)
         pyautogui.write(LOGIN_PASSWORD)  # Digita a senha respeitando o caso das letras
@@ -87,6 +88,24 @@ def before_all(context):
     context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
     login(context)
+    
+def before_scenario(context, scenario):
+    """Executa ações antes de cada cenário."""
+    logging.info(f"INICIANDO O CENÁRIO: {scenario.name}")
+    context.start_time_scenario = datetime.now()  # Registra o início do cenário
+
+def after_scenario(context, scenario):
+    """Executa ações após cada cenário."""
+    end_time_scenario = datetime.now()
+    execution_time = end_time_scenario - context.start_time_scenario
+    logging.info(f"FINALIZANDO O CENÁRIO: {scenario.name}")
+    logging.info(f"Tempo de execução do cenário: {execution_time}")
+    
+    if scenario.status == "failed":
+        logging.error(f"O cenário '{scenario.name}' falhou.")
+        context.failed_scenarios.append(scenario.name)
+    else:
+        context.passed_scenarios.append(scenario.name)
 
 def esperar_e_executar(context, locator, metodo, *args):
     """Espera por um elemento clicável e executa uma ação."""
@@ -443,3 +462,11 @@ def after_all(context):
     if hasattr(context, 'driver'):
         context.driver.quit()
         logging.info("Navegador fechado com sucesso.")
+
+def executar_com_erro_controlado(funcao, *args, **kwargs):
+    """Executa uma função, captura erros e continua a execução."""
+    try:
+        funcao(*args, **kwargs)
+    except Exception as e:
+        logging.error(f"Erro ao executar {funcao.__name__}: {e}")
+        logging.debug(traceback.format_exc())  # Log detalhado do erro

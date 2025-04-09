@@ -5,6 +5,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from time import sleep
 from credentials import NOME, EMAIL
 from credentials import EDITAR_PERFIL, EDITAR_NOME, EDITAR_EMAIL, PESQUISAR_NOME_CADASTRADO, EXCLUIR_NOME
+import logging
+from pages.perfil_de_acesso_pages import PerfilDeAcessoPageLocators
 
 class TeladeUsuariosPageLocators:
     VALIDAR_ADMINISTRADOR = (By.XPATH, "//div[@class='flex align-items-center justify-content-between']//span[text()='Administrador']")
@@ -16,8 +18,8 @@ class TeladeUsuariosPageLocators:
     BTN_SALVAR_NOVO_CADASTRO = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[4]/button[2]")
     LINHAS_TABELA_USUARIOS = (By.XPATH, "//div[@class='card px-6 py-6']//div[@class='p-datatable-wrapper']//tbody[@class='p-element p-datatable-tbody']//tr[@class='ng-star-inserted']")
     COLUNA_NOME = ".//td[contains(@class, 'nome-coluna')]"
-    DROPDOWN_PERFIL = (By.XPATH, "//div[@id='pn_id_25']//span[@id='perfis' and @role='combobox']")  # Ajustado para maior precisão
-    PERFIL_ADMINISTRADOR = (By.XPATH, "//li[contains(@class, 'p-dropdown-item') and contains(., 'ADMINISTRADOR')]")
+    DROPDOWN_PERFIL = (By.XPATH, "//span[@role='combobox' and @aria-label='Selecione']")
+    PERFIL_ADMINISTRADOR = (By.XPATH, "//li[contains(@class, 'p-dropdown-item') and contains(@class, 'p-focus')]")
     PERFIL_PORTFOLIO_TRADING = (By.XPATH, "//*[@id='pn_id_25_1']")
     INPUT_NOME = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[3]/div[2]/input")
     INPUT_EMAIL = (By.XPATH, "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[3]/div[3]/input")
@@ -32,6 +34,8 @@ class TeladeUsuariosPageLocators:
     BOTAO_EXCLUIR_USUARIO = (By.CSS_SELECTOR, "tbody.p-element.p-datatable-tbody tr.ng-star-inserted td button[icon='pi pi-trash'].p-button-warning")
     BOTAO_CANCELAR_EXCLUSAO = (By.CSS_SELECTOR, "button[label='Não'][icon='pi pi-times'].p-button.p-component")
     BOTAO_CONFIRMAR_EXCLUSAO = (By.CSS_SELECTOR, "button[label='Sim'][icon='pi pi-check'].p-button.p-component")
+    BTN_DASHBOARD = (By.XPATH, "//li[@class='ng-tns-c183498709-6 ng-tns-c183498709-5 ng-star-inserted']")
+    MENSAGEM_SUCESSO = (By.XPATH, "//div[@data-pc-section='summary' and text()='Sucesso']")
     
     
 
@@ -51,6 +55,17 @@ class TelaDeUsuariosPage:
             sleep(2)  # Pequena pausa para garantir que a ação seja concluída
         except TimeoutException:
             raise AssertionError("O botão de perfil não foi encontrado ou não está clicável.")
+        
+    def clicar_botao_dashboardl(self):
+        try:
+            # Adicionada espera explícita para garantir que o botão esteja visível
+            botao_perfil = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(TeladeUsuariosPageLocators.BTN_DASHBOARD)
+            )
+            botao_perfil.click()
+            sleep(2)  # Pequena pausa para garantir que a ação seja concluída
+        except TimeoutException:
+            raise AssertionError("O botão dashboard não foi encontrado ou não está clicável.")
 
     def validar_tela_de_usuarios(self):
         try:
@@ -121,22 +136,28 @@ class TelaDeUsuariosPage:
             raise AssertionError("O dropdown de perfil não foi encontrado ou não está clicável.")
 
     def selecionar_perfil_usuario(self, tipo_perfil):
+        """Seleciona o perfil de usuário utilizando JavaScript para garantir a interação."""
         try:
             if tipo_perfil == "ADMINISTRADOR":
                 perfil = WebDriverWait(self.driver, 10).until(
-                    EC.element_to_be_clickable(TeladeUsuariosPageLocators.PERFIL_ADMINISTRADOR)
+                    EC.presence_of_element_located(TeladeUsuariosPageLocators.PERFIL_ADMINISTRADOR)
                 )
             elif tipo_perfil == "PORTFÓLIO E TRADING":
                 perfil = WebDriverWait(self.driver, 10).until(
-                    EC.element_to_be_clickable(TeladeUsuariosPageLocators.PERFIL_PORTFOLIO_TRADING)
+                    EC.presence_of_element_located(TeladeUsuariosPageLocators.PERFIL_PORTFOLIO_TRADING)
                 )
             else:
                 raise ValueError(f"Tipo de perfil desconhecido: {tipo_perfil}")
             
-            perfil.click()
+            # Força o clique no elemento usando JavaScript
+            self.driver.execute_script("arguments[0].click();", perfil)
+            logging.info(f"Perfil '{tipo_perfil}' selecionado com sucesso.")
             sleep(2)  # Pequena pausa para garantir que a ação seja concluída
         except TimeoutException:
             raise AssertionError(f"O perfil '{tipo_perfil}' não foi encontrado ou não está clicável.")
+        except Exception as e:
+            logging.error(f"Erro ao selecionar o perfil '{tipo_perfil}'. Detalhes: {e}")
+            raise
 
     def inserir_nome_email(self):
         try:
@@ -168,6 +189,16 @@ class TelaDeUsuariosPage:
             sleep(2)  # Pequena pausa para garantir que a ação seja concluída
         except TimeoutException:
             raise AssertionError("O botão 'Novo' não foi encontrado ou não está clicável.")
+
+    def validar_mensagem_sucesso(self):
+        try:
+            mensagem_sucesso = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(TeladeUsuariosPageLocators.MENSAGEM_SUCESSO)
+            )
+            assert mensagem_sucesso is not None, "Mensagem de sucesso não exibida."
+            print("Mensagem de sucesso exibida com sucesso.")
+        except TimeoutException:
+            raise AssertionError("Mensagem de sucesso não foi exibida.")
 
     def pesquisar_e_clicar_editar(self, pesquisar_nome_Cadastrado):
         try:
@@ -306,4 +337,3 @@ class TelaDeUsuariosPage:
         except TimeoutException:
             raise AssertionError("Usuário não encontrado ou botão 'excluir' não clicável.")
         sleep(2)
-        

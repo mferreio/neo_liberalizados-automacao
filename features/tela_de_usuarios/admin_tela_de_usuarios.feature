@@ -50,7 +50,7 @@ Feature: Acessar a página de login e testar fluxo de tela de usuários
     When clica em excluir e cancela a exclusao
     Then navega até a tela de usuários - Perfil
 
-    Scenario: Excluir um usuário existente
+  Scenario: Excluir um usuário existente
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
     When pesquisa um usuario cadastrado

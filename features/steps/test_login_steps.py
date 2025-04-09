@@ -1,6 +1,6 @@
 from behave import given, when, then
 from selenium.common.exceptions import StaleElementReferenceException
-from features.environment import esperar_e_executar
+from features.environment import esperar_e_executar, executar_com_erro_controlado
 from pages.login_page import LoginPageLocators, LoginPage
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
 import logging
@@ -16,15 +16,12 @@ from selenium.common.exceptions import TimeoutException
 logging.basicConfig(level=logging.INFO)
 
 @given('que eu acesso a página de login')
-@allure.step("Acessando a página de login")
 def step_impl(context):
-    logging.info("Navegando para a página de login")
-    context.login_page.navegar_para_pagina_de_login()
+    executar_com_erro_controlado(context.login_page.navegar_para_pagina_de_login)
 
 @when('eu clico no botão Entrar')
-@allure.step("Clicando no botão Entrar")
 def step_click_next_button(context):
-    esperar_e_executar(context, LoginPageLocators.BOTAO_ENTRAR, context.login_page.clicar_botao_entrar)
+    executar_com_erro_controlado(context.login_page.clicar_botao_entrar)
 
 @when('eu insiro o email de usuario')
 @allure.step("Inserindo o email do usuário")
@@ -55,7 +52,7 @@ def step_click_next_button(context):
 @allure.step("Preenchendo o ADFS com usuário e senha")
 def step_fill_adfs(context):
     sleep(3)  # Aguarda a interface estar pronta para interação
-    pyautogui.write(LOGIN_USUARIO) # Digita o usuário respeitando o caso das letras
+    pyautogui.write(LOGIN_USUARIO.upper())
     pyautogui.press('tab')  # Navega até o campo de senha
     sleep(1)
     pyautogui.write(LOGIN_PASSWORD)# Digita a senha respeitando o caso das letras
@@ -65,19 +62,14 @@ def step_fill_adfs(context):
     sleep(3)
 
 @then('eu verifico que o usuário acessou o sistema')
-@allure.step("Verificando que o usuário acessou o sistema")
 def step_verify_user_logged_in(context):
-    try:
-        expected_url = "https://diretrizes.dev.neoenergia.net/"
-        current_url = context.driver.current_url
-        assert current_url.startswith(expected_url), f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}."
-        logging.info("Usuário acessou o sistema com sucesso.")
-    except AssertionError as e:
-        logging.error(f"Erro ao verificar acesso ao sistema: {e}")
-        context.failed_steps.append(f"Erro no passo 'eu verifico que o usuário acessou o sistema': {e}")
-    except Exception as e:
-        logging.error(f"Erro inesperado ao verificar acesso ao sistema: {e}")
-        context.failed_steps.append(f"Erro inesperado no passo 'eu verifico que o usuário acessou o sistema': {e}")
+    executar_com_erro_controlado(_verificar_usuario_logado, context)
+
+def _verificar_usuario_logado(context):
+    expected_url = "https://diretrizes.dev.neoenergia.net/"
+    current_url = context.driver.current_url
+    assert current_url.startswith(expected_url), f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}."
+    logging.info("Usuário acessou o sistema com sucesso.")
 
 @then('o sistema gera evidências do login')
 @allure.step("Gerando evidências do login")

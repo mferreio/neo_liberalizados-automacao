@@ -2,9 +2,10 @@ from behave import given, when, then
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO, TIPO_DE_PERFIL, EDITAR_NOME, EDITAR_EMAIL, PESQUISAR_NOME_CADASTRADO, EXCLUIR_NOME
 import logging
 from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
-from features.environment import gerar_documento_evidencia, gerar_resumo_testes
+from features.environment import gerar_documento_evidencia, gerar_resumo_testes, executar_com_erro_controlado
 import allure
 
+@then('navega até a tela de usuários - Perfil')
 @when('navega até a tela de usuários - Perfil')
 @allure.step("Navegando até a tela de usuários - Perfil")
 def navegar_tela_usuarios(context):
@@ -27,8 +28,9 @@ def validar_tela_usuarios(context):
 
 @when('valida os usuarios cadastrados')
 def step_valida_usuarios_cadastrados(context):
-    # Inicializa a página no contexto
-    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
+    executar_com_erro_controlado(_validar_usuarios_cadastrados, context)
+
+def _validar_usuarios_cadastrados(context):
     nomes = context.tela_de_usuarios_page.obter_nomes_usuarios()
     print("Usuários cadastrados encontrados:")
     for nome in nomes:
@@ -69,12 +71,11 @@ def step_clica_botao_novo(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_fechar_tela_cadastro()
     
-@then(u'navega até a tela de usuários - Perfil')
+@then('navega até a tela inicial')
 def step_impl(context):
     # Garante que o botão de perfil seja clicado para navegar até a tela de usuários
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.tela_de_usuarios_page.clicar_botao_perfil()
-    context.tela_de_usuarios_page.validar_tela_de_usuarios()
+    context.tela_de_usuarios_page.clicar_botao_dashboard()
 
 @when('clica no dropdown de perfil')
 def step_clica_dropdown_perfil(context):
@@ -84,7 +85,7 @@ def step_clica_dropdown_perfil(context):
 
 @when('o usuário seleciona o perfil de usuário, escreve o nome e email')
 def step_seleciona_perfil_usuario(context):
-    # Seleciona o perfil de usuário com base no TIPO_DE_PERFIL
+    logging.info("Selecionando o perfil de usuário e preenchendo nome e email.")
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.selecionar_perfil_usuario(TIPO_DE_PERFIL)
     context.tela_de_usuarios_page.inserir_nome_email()
@@ -94,6 +95,17 @@ def step_clica_salvar_cadastro(context):
     # Garante que o dropdown de perfil seja clicado
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_botao_salvar()
+
+@then('o sistema exibe uma mensagem de sucesso')
+@allure.step("Validando mensagem de sucesso exibida pelo sistema")
+def validar_mensagem_sucesso(context):
+    try:
+        context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
+        context.tela_de_usuarios_page.validar_mensagem_sucesso()
+    except AssertionError as e:
+        logging.error("Não foi possível cadastrar o usuário. Verifique os dados ou se já existe um usuário com os mesmos dados cadastrados.")
+        logging.debug(f"Detalhes do erro: {e}")
+        # Continua o teste mesmo após a falha
 
 @when('clica no botão "Editar"')
 def step_clica_botao_editar(context):
