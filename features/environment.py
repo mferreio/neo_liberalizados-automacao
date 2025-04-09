@@ -88,11 +88,12 @@ def before_all(context):
     context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
     login(context)
-    
+
 def before_scenario(context, scenario):
     """Executa ações antes de cada cenário."""
     logging.info(f"INICIANDO O CENÁRIO: {scenario.name}")
     context.start_time_scenario = datetime.now()  # Registra o início do cenário
+    
 
 def after_scenario(context, scenario):
     """Executa ações após cada cenário."""
@@ -222,7 +223,7 @@ def generate_allure_report():
         logging.error(f"Erro ao gerar ou enviar o relatório Allure: {e}")
         raise
 
-def send_email(subject, body, attachment_path=None):
+def send_email(subject, body, attachment_path=None, recipients=None):
     """
     Envia um e-mail utilizando a API do Gmail com autenticação de 2 fatores.
     """
@@ -247,13 +248,13 @@ def send_email(subject, body, attachment_path=None):
 
     # Configurar e-mail
     sender_email = REMETENTE_DE_EMAIL
-    recipient_email = DESTINATARIO
-    if not sender_email or not recipient_email:
-        raise ValueError("As variáveis 'REMETENTE_DE_EMAIL' e 'DESTINATARIO' não estão configuradas no arquivo credentials.py.")
+    recipient_emails = recipients or [DESTINATARIO]
+    if not recipient_emails:
+        raise ValueError("A lista de destinatários está vazia.")
 
     message = MIMEMultipart()
     message['From'] = sender_email
-    message['To'] = recipient_email
+    message['To'] = ", ".join(recipient_emails)
     message['Subject'] = subject
     message.attach(MIMEText(body, 'html'))
 
@@ -451,7 +452,8 @@ def after_all(context):
         </body>
         </html>
         """
-        send_email(subject=email_subject, body=email_body)
+        recipients = [DESTINATARIO, "sergio.ferraz.almeida@emeal.nttdata.com"]
+        send_email(subject=email_subject, body=email_body, recipients=recipients)
     except Exception as e:
         logging.error(f"Erro ao finalizar o ambiente, gerar o relatório ou enviar o e-mail: {e}")
 

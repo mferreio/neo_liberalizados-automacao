@@ -68,7 +68,7 @@ class LoginPage:
         try:
             elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_ADMINISTRADOR)
             assert elemento is not None, "Usuário não está logado como Administrador."
-            print("Usuário validado como Administrador.")
+            print("Usuário logado como administrador.")
         except NoSuchElementException:
             raise AssertionError("Elemento de validação de Administrador não encontrado.")
         

@@ -15,3 +15,7 @@ def step_then_visualizar_todas_as_telas(context):
 @then('eu devo conseguir realizar todas as operações de \'Trading Portifólio\'')
 def step_then_operacoes_trading_portfolio(context):
     executar_com_erro_controlado(context.perfil_de_acesso_pages.realizar_operacoes_trading_portfolio)
+
+@then('o menu deve apresentar todas as opções disponíveis')
+def step_then_menu_apresenta_opcoes(context):
+    executar_com_erro_controlado(context.perfil_de_acesso_pages.validar_menu_apresenta_opcoes_administrador)

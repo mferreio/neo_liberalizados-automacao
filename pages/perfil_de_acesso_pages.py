@@ -96,20 +96,6 @@ class PerfilDeAcessoPage:
         assert elemento.is_displayed(), f"O acesso '{acesso['nome']}' não está sendo exibido na tela."
         logging.info(f"Confirmação: o acesso '{acesso['nome']}' está sendo exibido.")
 
-    def fechar_dialogo_bloqueador(self):
-        """Fecha qualquer diálogo ou overlay que esteja bloqueando a interação."""
-        try:
-            dialogo_bloqueador = WebDriverWait(self.driver, 2).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "p-dialog-mask"))
-            )
-            if dialogo_bloqueador.is_displayed():
-                logging.info("Fechando diálogo bloqueador.")
-                self.driver.find_element(By.XPATH, "//button[contains(@class, 'p-dialog-header-close')]").click()
-                WebDriverWait(self.driver, 2).until(EC.invisibility_of_element(dialogo_bloqueador))
-                logging.info("Diálogo bloqueador fechado com sucesso.")
-        except TimeoutException:
-            logging.info("Nenhum diálogo bloqueador encontrado.")
-
     def possui_acesso_total(self):
         """Clica e valida a exibição das telas especificadas."""
         telas = [
@@ -131,20 +117,19 @@ class PerfilDeAcessoPage:
 
     def _visualizar_tela(self, tela):
         logging.info(f"Clicando na tela: {tela['nome']}")
-        self.fechar_dialogo_bloqueador()
         WebDriverWait(self.driver, 2).until(EC.element_to_be_clickable(tela["botao"])).click()
         logging.info(f"Validando exibição da tela: {tela['nome']}")
 
         # Corrige a validação para lidar com diferentes tipos de validação
         if callable(tela["validacao"]):
-            assert tela["validacao"](self.driver), f"A tela '{tela['nome']}' não foi exibida corretamente."
+            assert tela["validacao"](self.driver), f"A tela '{tela['nome']}' não está sendo exibida."
         else:
             elemento = WebDriverWait(self.driver, 2).until(
                 EC.presence_of_element_located(tela["validacao"])
             )
-            assert elemento.is_displayed(), f"A tela '{tela['nome']}' não foi exibida corretamente."
+            assert elemento.is_displayed(), f"A tela '{tela['nome']}' não está sendo exibida."
 
-        logging.info(f"Confirmação: a tela '{tela['nome']}' foi exibida com sucesso.")
+        logging.info(f"A tela '{tela['nome']}' está sendo exibida.")
 
     def validar_exibicao_telas(self):
         """Valida se os elementos das telas estão sendo exibidos sem realizar cliques."""
@@ -190,4 +175,22 @@ class PerfilDeAcessoPage:
 
         for acesso in acessos:
             self.executar_com_erro_controlado(self._validar_acesso, acesso)
+
+    def validar_menu_apresenta_opcoes_administrador(self):
+        """Valida se o menu apresenta todas as opções disponíveis."""
+        opcoes_menu = [
+            {"nome": "DashBoard", "locator": PerfilDeAcessoPageLocators.DASHBOARD},
+            {"nome": "Diretriz Curto Prazo", "locator": PerfilDeAcessoPageLocators.DIRETRIZ_CURTO_PRAZO},
+            {"nome": "Diretriz I-REC", "locator": PerfilDeAcessoPageLocators.DIRETRIZ_I_REC},
+            {"nome": "Diretriz Semanal", "locator": PerfilDeAcessoPageLocators.DIRETRIZ_SEMANAL},
+            {"nome": "Diretriz Diária", "locator": PerfilDeAcessoPageLocators.DIRETRIZ_DIARIA},
+            {"nome": "Preços de Mercado e Diretriz", "locator": PerfilDeAcessoPageLocators.PRECOS_MERCADO_DIRETRIZ},
+            {"nome": "BBCE", "locator": PerfilDeAcessoPageLocators.BBCE},
+            {"nome": "CNAE", "locator": PerfilDeAcessoPageLocators.CNAE},
+            {"nome": "Shape Deterministico", "locator": PerfilDeAcessoPageLocators.SHAPE_DETERMINISTICO},
+            {"nome": "Produtos", "locator": PerfilDeAcessoPageLocators.PRODUTOS},
+        ]
+
+        for opcao in opcoes_menu:
+            self.executar_com_erro_controlado(self._validar_acesso, opcao)
 

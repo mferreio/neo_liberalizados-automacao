@@ -47,6 +47,7 @@ def step_click_next_button(context):
     except Exception as e:
         logging.error(f"Erro inesperado ao clicar no botão 'Seguinte': {e}")
         context.failed_steps.append(f"Erro inesperado no passo 'eu clico no botão Seguinte': {e}")
+    sleep(7)
 
 @when('eu preencho o ADFS com usuário e senha')
 @allure.step("Preenchendo o ADFS com usuário e senha")

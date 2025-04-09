@@ -1,12 +1,12 @@
 Feature: Acessar a página de login e testar fluxo de tela de usuários
 
-  Scenario: Acessar a página de login com sucesso
-    Given que eu acesso a página de login
-    When eu clico no botão Entrar
-    When eu insiro o email de usuario
-    When eu clico no botão Seguinte
-    When eu preencho o ADFS com usuário e senha
-    Then eu verifico que o usuário acessou o sistema
+  # Scenario: Acessar a página de login com sucesso
+  #   Given que eu acesso a página de login
+  #   When eu clico no botão Entrar
+  #   When eu insiro o email de usuario
+  #   When eu clico no botão Seguinte
+  #   When eu preencho o ADFS com usuário e senha
+  #   Then eu verifico que o usuário acessou o sistema
 
   Scenario: Administrador acessa a tela de usuários
     Given que o usuário está logado como "Administrador"
