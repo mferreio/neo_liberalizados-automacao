@@ -4,7 +4,7 @@ Feature: Gerenciamento de Evidências
   Para garantir o armazenamento e consulta de forma segura
 
 Scenario: Enviar um arquivo de evidências com sucesso
-  Given que o usuário está logado com perfil "Trading"
+  Given que o usuário está logado no sistema
   When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
   Then o sistema deve armazenar o arquivo no bucket do S3
   When deve exibir a mensagem "Arquivo enviado com sucesso"
