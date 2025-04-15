@@ -3,8 +3,11 @@ Feature: Gerenciamento de Evidências
   Quero gerenciar arquivos de evidências
   Para garantir o armazenamento e consulta de forma segura
 
-Scenario: Enviar um arquivo de evidências com sucesso
+Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo
   Given que o usuário está logado no sistema
+  When o usuário acessa a aba "diretriz Curto Prazo"
+  When o sistema clica no botão Novo
+  When o usuário preenche o campo Data Fim
   When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
   Then o sistema deve armazenar o arquivo no bucket do S3
   When deve exibir a mensagem "Arquivo enviado com sucesso"
