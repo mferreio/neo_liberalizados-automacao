@@ -8,7 +8,10 @@ from time import sleep
 class PerfilDeAcessoPortfolioTradingLocators:
     """Locators para a página de Perfil de Acesso - Trading/Portfólio."""
     MODULOS_PRODUTOS = (By.XPATH, "//div[@class='modulos-produtos']")
-    MODULO_ESPECIFICO = (By.XPATH, "//div[@class='modulo-especifico']")
+    MODULO_DIRETRIZES = (By.XPATH, "//div[text()='Diretrizes']")
+    MODULO_PROPOSTA_DIRETRIZES = (By.XPATH, "//div[text()='Prêmio de Proposta de Diretrizes']")
+    MODULO_PREMIOS_PADRAO = (By.XPATH, "//div[text()='Prêmios Padrão']")
+    MODULO_PREMIOS = (By.XPATH, "//div[text()='Prêmios']")
     BOTAO_VISUALIZAR = (By.XPATH, "//button[text()='Visualizar']")
     BOTAO_EDITAR = (By.XPATH, "//button[text()='Editar']")
     BOTAO_EXCLUIR = (By.XPATH, "//button[text()='Excluir']")
@@ -37,9 +40,15 @@ class PerfilDeAcessoPage:
 
     def verificar_acesso_modulo_especifico(self, modulo):
         """Verifica se o usuário tem acesso a um módulo específico."""
+        locators = {
+            "Diretrizes": PerfilDeAcessoPortfolioTradingLocators.MODULO_DIRETRIZES,
+            "Prêmio de Proposta de Diretrizes": PerfilDeAcessoPortfolioTradingLocators.MODULO_PROPOSTA_DIRETRIZES,
+            "Prêmios Padrão": PerfilDeAcessoPortfolioTradingLocators.MODULO_PREMIOS_PADRAO,
+            "Prêmios": PerfilDeAcessoPortfolioTradingLocators.MODULO_PREMIOS,
+        }
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.MODULO_ESPECIFICO)
+                EC.presence_of_element_located(locators[modulo])
             )
             logging.info(f"Acesso ao módulo '{modulo}' verificado com sucesso.")
         except TimeoutException:

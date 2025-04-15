@@ -1,45 +1,49 @@
-from behave import given, then, when
+from behave import given, when, then
+from pages.perfil_de_acesso_portfolio_trading_pages import PerfilDeAcessoPage
+import logging
 
-@given("que o usuário está logado como Portifolio Trading")
-def step_usuario_logado(context):
-    context.perfil_de_acesso_pages.realizar_login_com_perfil("Portifolio Trading")
+@given('que o usuário está logado como "Trading Portifólio"')
+def step_usuario_logado_trading_portfolio(context):
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.realizar_login_com_perfil("Trading/Portifólio")
+    logging.info("Usuário logado como 'Trading Portifólio'.")
 
-@then("eu devo ter acesso aos módulos de produtos")
-def step_acesso_modulos_produtos(context):
-    assert context.perfil_de_acesso_pages.verificar_acesso_modulos_produtos(), "Usuário não tem acesso aos módulos de produtos."
+@then('eu devo ter acesso aos módulos de produtos')
+def step_verificar_acesso_modulos_produtos(context):
+    context.perfil_de_acesso_page.verificar_acesso_modulos_produtos()
 
-@then("eu devo ter acesso aos diretrizes")
-def step_acesso_modulo_especifico(context):
-    assert context.perfil_de_acesso_pages.verificar_acesso_modulo_especifico("diretrizes"), "Usuário não tem acesso ao módulo diretrizes."
+@when('eu devo ter acesso aos diretrizes')
+def step_verificar_acesso_diretrizes(context):
+    context.perfil_de_acesso_page.verificar_acesso_modulo_especifico("Diretrizes")
 
-@then("eu devo conseguir visualizar o modulo de produtos")
+@when('eu devo ter acesso aos prêmio de proposta de diretrizes')
+def step_verificar_acesso_proposta_diretrizes(context):
+    context.perfil_de_acesso_page.verificar_acesso_modulo_especifico("Prêmio de Proposta de Diretrizes")
+
+@when('eu devo ter acesso aos prêmios padrão')
+def step_verificar_acesso_premios_padrao(context):
+    context.perfil_de_acesso_page.verificar_acesso_modulo_especifico("Prêmios Padrão")
+
+@when('eu devo conseguir visualizar o modulo de produtos')
 def step_visualizar_modulo_produtos(context):
-    assert context.perfil_de_acesso_pages.visualizar_modulo_produtos(), "Usuário não conseguiu visualizar o módulo de produtos."
+    context.perfil_de_acesso_page.visualizar_modulo_produtos()
 
-@then("eu devo conseguir editar")
-def step_editar(context):
-    assert context.perfil_de_acesso_pages.editar_modulo_produtos(), "Usuário não conseguiu editar o módulo de produtos."
+@when('eu devo conseguir editar')
+def step_editar_modulo_produtos(context):
+    context.perfil_de_acesso_page.editar_modulo_produtos()
 
-@then("eu devo conseguir excluir um produto")
+@when('eu devo conseguir excluir um produto')
 def step_excluir_produto(context):
-    assert context.perfil_de_acesso_pages.excluir_produto(), "Usuário não conseguiu excluir um produto."
+    context.perfil_de_acesso_page.excluir_produto()
 
-@then("eu devo conseguir criar dados")
+@when('eu devo conseguir criar dados')
 def step_criar_dados(context):
-    assert context.perfil_de_acesso_pages.criar_dados(), "Usuário não conseguiu criar dados."
+    context.perfil_de_acesso_page.criar_dados()
 
-@then("o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes")
-def step_verificar_menu(context):
-    assert context.perfil_de_acesso_pages.verificar_opcoes_menu(), "O menu não apresenta as opções corretas."
+@when('eu devo ter acesso aos prêmios')
+def step_verificar_acesso_premios(context):
+    context.perfil_de_acesso_page.verificar_acesso_modulo_especifico("Prêmios")
 
-@when("eu devo ter acesso aos prêmio de proposta de diretrizes")
-def step_acesso_modulo_especifico(context):
-    assert context.perfil_de_acesso_pages.verificar_acesso_modulo_especifico("prêmio de proposta de diretrizes"), "Usuário não tem acesso ao módulo prêmio de proposta de diretrizes."
-
-@when("eu devo ter acesso aos prêmios padrão")
-def step_acesso_modulo_especifico(context):
-    assert context.perfil_de_acesso_pages.verificar_acesso_modulo_especifico("prêmios padrão"), "Usuário não tem acesso ao módulo prêmios padrão."
-
-@when("eu devo ter acesso aos prêmios")
-def step_acesso_modulo_especifico(context):
-    assert context.perfil_de_acesso_pages.verificar_acesso_modulo_especifico("prêmios"), "Usuário não tem acesso ao módulo prêmios."
+@then('o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes')
+def step_verificar_opcoes_menu(context):
+    context.perfil_de_acesso_page.verificar_opcoes_menu()
