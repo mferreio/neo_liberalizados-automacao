@@ -14,8 +14,8 @@ class LoginPageLocators:
     ADFS_USERNAME_FIELD = (By.XPATH, "//input[@type='text' and @placeholder='Nome de usuário']")
     ADFS_PASSWORD_FIELD = (By.XPATH, "//*[@id='passwordInput']")
     ADFS_LOGIN_BUTTON = (By.XPATH, "//*[@id='submitButton']")
-    VALIDAR_ADMINISTRADOR = (By.XPATH, "//span[text()='Administrador']")  # Exemplo de locator para validar administrador
-    VALIDAR_TRADING_E_PORTIFOLIO = (By.XPATH, "//span[text()='Portfólio e Trading']")  # Exemplo de locator para validar portfólio
+    VALIDAR_ADMINISTRADOR = (By.XPATH, "//span[text()='Administrador']")
+    VALIDAR_TRADING_E_PORTIFOLIO = (By.CSS_SELECTOR, "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary")  # Exemplo de locator para validar portfólio
 
 
 class LoginPage:
@@ -43,15 +43,15 @@ class LoginPage:
     def enter_email(self, email):
         email_field = self.driver.find_element(*LoginPageLocators.EMAIL_FIELD)
         email_field.send_keys(email)
-        
+
     def click_next_button(self):
         next_button = self.driver.find_element(*LoginPageLocators.NEXT_BUTTON)
         next_button.click()
-        
+
     def click_opcoes_avancadas_button(self):
         avanced_options_button = self.driver.find_element(*LoginPageLocators.AVANCED_OPTIONS_BUTTON)
         avanced_options_button.click()
-        
+
     def click_ir_para_neoenergia_button(self):
         ir_neoenergia_button = self.driver.find_element(*LoginPageLocators.GO_TO_NEOENERGIA_BUTTON)
         ir_neoenergia_button.click()
@@ -63,7 +63,7 @@ class LoginPage:
     def enter_adfs_password(self, password):
         password_field = self.driver.find_element(*LoginPageLocators.ADFS_PASSWORD_FIELD)
         password_field.send_keys(password)
-        
+
     def validar_usuario_administrador(self):
         try:
             elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_ADMINISTRADOR)
@@ -71,7 +71,7 @@ class LoginPage:
             print("Usuário logado como administrador.")
         except NoSuchElementException:
             raise AssertionError("Elemento de validação de Administrador não encontrado.")
-        
+
     def validar_usuario_portifolio_e_trading(self):
         try:
             elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_TRADING_E_PORTIFOLIO)

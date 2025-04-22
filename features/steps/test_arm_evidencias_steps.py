@@ -97,3 +97,15 @@ def step_preencher_campos_obrigatorios(context):
     except Exception as e:
         logging.error(f"Erro ao preencher os campos obrigatórios: {e}")
         raise
+
+@when('usuário retorna a tela inicial')
+def step_retorna_tela_inicial(context):
+    """Retorna para a página inicial."""
+    try:
+        logging.info('Retornando para a página inicial.')
+        evidencias_page = ArmEvidenciasPage(context.driver)
+        evidencias_page.retorna_tela_inicial()
+        sleep(4)
+    except Exception as e:
+        logging.error(f"Erro ao retornar para a página inicial: {e}")
+        raise

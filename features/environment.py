@@ -9,21 +9,14 @@ from selenium.common.exceptions import TimeoutException
 from pages.login_page import LoginPageLocators
 from time import sleep
 from datetime import datetime
-from credentials import LOGIN_EMAIL, REMETENTE_DE_EMAIL, DESTINATARIO, LOGIN_USUARIO, LOGIN_PASSWORD
+from credentials import LOGIN_EMAIL, LOGIN_USUARIO, LOGIN_PASSWORD
 from pages.login_page import LoginPage
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 import pyautogui
 import base64
 import shutil
 import stat
 import matplotlib.pyplot as plt
 import io
-from utils.utils_allure import upload_to_github_pages
 from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
 import traceback
 
@@ -43,7 +36,7 @@ def login(context):
         sleep(1)
         pyautogui.press('enter')  # Submete o login
         sleep(10)
-        
+
         # Aguarda a transição para a próxima página
         WebDriverWait(context.driver, 15).until(
             EC.url_contains("https://diretrizes.dev.neoenergia.net/")
@@ -87,13 +80,21 @@ def before_all(context):
 
     context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
-    login(context)
+    context.skip_login = False
+
+def before_feature(context, feature):
+    """Executa ações antes de cada feature."""
+    logging.info(f"INICIANDO A FEATURE: {feature.name}")
+    if "perfil_de_acesso_nao_logado.feature" in feature.filename:
+        context.skip_login = True
+    else:
+        context.skip_login = False
+        login(context)
 
 def before_scenario(context, scenario):
     """Executa ações antes de cada cenário."""
     logging.info(f"INICIANDO O CENÁRIO: {scenario.name}")
     context.start_time_scenario = datetime.now()  # Registra o início do cenário
-    
 
 def after_scenario(context, scenario):
     """Executa ações após cada cenário."""
@@ -101,7 +102,7 @@ def after_scenario(context, scenario):
     execution_time = end_time_scenario - context.start_time_scenario
     logging.info(f"FINALIZANDO O CENÁRIO: {scenario.name}")
     logging.info(f"Tempo de execução do cenário: {execution_time}")
-    
+
     if scenario.status == "failed":
         logging.error(f"O cenário '{scenario.name}' falhou.")
         context.failed_scenarios.append(scenario.name)
@@ -186,94 +187,6 @@ def reset_permissions(directory):
         for file_name in files:
             os.chmod(os.path.join(root, file_name), stat.S_IRWXU)
 
-def generate_allure_report():
-    """Gera o relatório Allure e envia para o GitHub Pages."""
-    allure_results_dir = "reports/allure-results"
-    allure_report_dir = "reports/allure-report"
-    allure_executable = r"C:\allure\bin\allure.bat"
-    repo_url = "https://github.com/mferreio/neo_liberalizados-automacao.git"
-    gh_pages_branch = "gh-pages"
-
-    try:
-        # Gera o relatório Allure
-        logging.info("Gerando o relatório Allure...")
-        subprocess.run([allure_executable, "generate", allure_results_dir, "-o", allure_report_dir, "--clean"], check=True)
-
-        # Configura o diretório para o GitHub Pages
-        logging.info("Enviando o relatório para o GitHub Pages...")
-        if os.path.exists(".gh-pages"):
-            reset_permissions(".gh-pages")  # Redefine permissões antes de excluir
-            shutil.rmtree(".gh-pages")
-        subprocess.run(["git", "clone", "--branch", gh_pages_branch, repo_url, ".gh-pages"], check=True)
-
-        # Copia o relatório para a pasta docs na branch gh-pages
-        docs_dir = os.path.join(".gh-pages", "docs")
-        if os.path.exists(docs_dir):
-            reset_permissions(docs_dir)  # Redefine permissões antes de excluir
-            shutil.rmtree(docs_dir)
-        shutil.copytree(allure_report_dir, docs_dir)
-
-        # Faz commit e push para a branch gh-pages
-        subprocess.run(["git", "-C", ".gh-pages", "add", "."], check=True)
-        subprocess.run(["git", "-C", ".gh-pages", "commit", "-m", "Atualização do relatório Allure"], check=True)
-        subprocess.run(["git", "-C", ".gh-pages", "push"], check=True)
-
-        logging.info("Relatório enviado para o GitHub Pages com sucesso!")
-    except Exception as e:
-        logging.error(f"Erro ao gerar ou enviar o relatório Allure: {e}")
-        raise
-
-def send_email(subject, body, attachment_path=None, recipients=None):
-    """
-    Envia um e-mail utilizando a API do Gmail com autenticação de 2 fatores.
-    """
-    SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-    credentials_path = 'credentials.json'
-    token_path = 'token.json'
-    fixed_port = 8080  # Porta fixa para o redirecionamento
-
-    # Carregar ou atualizar credenciais
-    creds = None
-    if os.path.exists(token_path):
-        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(credentials_path, SCOPES)
-            flow.redirect_uri = f"http://localhost:{fixed_port}/"  # Usar URI fixo
-            creds = flow.run_local_server(port=fixed_port, prompt='consent')
-        with open(token_path, 'w') as token_file:
-            token_file.write(creds.to_json())
-
-    # Configurar e-mail
-    sender_email = REMETENTE_DE_EMAIL
-    recipient_emails = recipients or [DESTINATARIO]
-    if not recipient_emails:
-        raise ValueError("A lista de destinatários está vazia.")
-
-    message = MIMEMultipart()
-    message['From'] = sender_email
-    message['To'] = ", ".join(recipient_emails)
-    message['Subject'] = subject
-    message.attach(MIMEText(body, 'html'))
-
-    # Adicionar anexo, se fornecido
-    if attachment_path and os.path.exists(attachment_path):
-        with open(attachment_path, 'rb') as attachment:
-            part = MIMEText(attachment.read(), 'base64')
-            part.add_header('Content-Disposition', f'attachment; filename={os.path.basename(attachment_path)}')
-            message.attach(part)
-
-    # Enviar e-mail usando Gmail API
-    try:
-        service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
-        raw_message = {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode()}
-        service.users().messages().send(userId="me", body=raw_message).execute()
-        logging.info("E-mail enviado com sucesso!")
-    except Exception as e:
-        logging.error(f"Erro ao enviar e-mail: {e}")
-
 def gerar_grafico_percentual(total, falhas, titulo):
     """Gera um gráfico de pizza com o percentual de falhas."""
     sucesso = total - falhas
@@ -353,7 +266,7 @@ def get_allure_metrics():
     return passed, failed, ignored
 
 def after_all(context):
-    """Finaliza o ambiente após todos os testes, gera o relatório Allure e envia um e-mail com os resultados."""
+    """Finaliza o ambiente após todos os testes."""
     try:
         if hasattr(context, 'driver'):
             context.driver.quit()
@@ -363,19 +276,6 @@ def after_all(context):
         end_time = datetime.now()
         execution_time = end_time - context.start_time
 
-        # Gera o relatório Allure
-        allure_results_dir = "reports/allure-results"
-        allure_report_dir = "reports/allure-report"
-        allure_executable = r"C:\allure\bin\allure.bat"
-        repo_url = "https://github.com/mferreio/neo_liberalizados-automacao.git"
-        gh_pages_branch = "gh-pages"
-
-        logging.info("Gerando o relatório Allure...")
-        subprocess.run([allure_executable, "generate", allure_results_dir, "-o", allure_report_dir, "--clean"], check=True)
-
-        logging.info("Enviando o relatório para o GitHub Pages...")
-        upload_to_github_pages(allure_report_dir, repo_url, gh_pages_branch)
-
         # Obtém métricas do Allure Report
         passed_scenarios, failed_scenarios, ignored_scenarios = get_allure_metrics()
         total_cenarios = passed_scenarios + failed_scenarios + ignored_scenarios
@@ -383,87 +283,11 @@ def after_all(context):
         # Calcula o percentual de falhas
         percentual_falhas = (failed_scenarios / total_cenarios * 100) if total_cenarios > 0 else 0
 
-        # Configurar e enviar o e-mail
-        email_subject = f"[Neoenergia - Liberalizados Diretrizes] Report de automação {datetime.now().strftime('%d/%m/%Y')}"
-        email_body = f"""
-        <html>
-        <head>
-            <style>
-            body {{
-                font-family: Arial, sans-serif;
-                color: #333;
-            }}
-            h1 {{
-                color: #0056b3;
-            }}
-            table {{
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-            }}
-            th, td {{
-                border: 1px solid #ddd;
-                padding: 8px;
-                text-align: center;
-            }}
-            th {{
-                background-color: #f4f4f4;
-                color: #333;
-            }}
-            .success {{
-                color: green;
-            }}
-            .failure {{
-                color: red;
-            }}
-            .ignored {{
-                color: orange;
-            }}
-            .execution-time {{
-                font-size: 20px;
-                font-weight: bold;
-            }}
-            </style>
-        </head>
-        <body>
-            <h1>Relatório de Automação</h1>
-            <p>Prezados,</p>
-            <p>Segue o resumo dos testes realizados em {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}</p>
-            <p><strong>Tempo de execução:</strong> <span class="execution-time">{str(execution_time).split('.')[0]}</span></p>
-            <p><strong>Percentual de falhas:</strong> <span class="execution-time">{percentual_falhas:.2f}%</span></p>
-            <table>
-            <tr>
-                <th>Total de Cenários</th>
-                <th class="success">Cenários Aprovados</th>
-                <th class="failure">Cenários Falhados</th>
-                <th class="ignored">Cenários Ignorados</th>
-            </tr>
-            <tr>
-                <td>{total_cenarios}</td>
-                <td class="success">{passed_scenarios}</td>
-                <td class="failure">{failed_scenarios}</td>
-                <td class="ignored">{ignored_scenarios}</td>
-            </tr>
-            </table>
-            <p><strong>O relatório Allure pode ser acessado no link abaixo:</strong></p>
-            <p><a href="https://mferreio.github.io/neo_liberalizados-automacao/" target="_blank">Clique aqui para acessar o relatório Allure</a></p>
-            <p>Atenciosamente,</p>
-            <p><strong>Equipe de Automação</strong></p>
-        </body>
-        </html>
-        """
-        recipients = [DESTINATARIO, "sergio.ferraz.almeida@emeal.nttdata.com"]
-        send_email(subject=email_subject, body=email_body, recipients=recipients)
+        logging.info(f"Resumo dos testes: Total: {total_cenarios}, Sucesso: {passed_scenarios}, Falhas: {failed_scenarios}, Ignorados: {ignored_scenarios}")
+        logging.info(f"Tempo de execução: {execution_time}")
+        logging.info(f"Percentual de falhas: {percentual_falhas:.2f}%")
     except Exception as e:
-        logging.error(f"Erro ao finalizar o ambiente, gerar o relatório ou enviar o e-mail: {e}")
-
-    if context.failed_steps:
-        logging.error("Os seguintes passos falharam durante a execução:")
-        for step in context.failed_steps:
-            logging.error(step)
-    if hasattr(context, 'driver'):
-        context.driver.quit()
-        logging.info("Navegador fechado com sucesso.")
+        logging.error(f"Erro ao finalizar o ambiente: {e}")
 
 def executar_com_erro_controlado(funcao, *args, **kwargs):
     """Executa uma função, captura erros e continua a execução."""

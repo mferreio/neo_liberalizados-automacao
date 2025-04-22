@@ -5,45 +5,51 @@ Feature: Gerenciamento de Perfis de Acesso
 
     Scenario: Usuário Trading/Portifólio acessa a aplicação diretrizes
         Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo ter acesso aos diretrizes
+        When eu devo ter acesso aos módulos de produtos
+        Then eu devo ter acesso aos diretrizes
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação prêmio de proposta de diretrizes
+     Scenario: Usuário Trading/Portifólio acessa a aplicação prêmio de proposta de diretrizes
         Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo ter acesso aos prêmio de proposta de diretrizes
+        When eu devo ter acesso aos módulos de produtos
+        Then eu devo ter acesso aos prêmio de proposta de diretrizes
+        When usuário retorna a tela inicial
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação prêmios padrão
+     Scenario: Usuário Trading/Portifólio acessa a aplicação prêmios padrão
         Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo ter acesso aos prêmios padrão
+        When eu devo ter acesso aos módulos de produtos
+    #     Then eu devo ter acesso aos prêmios padrão // "Produto está sendo desenvolvido, não existe prêmio padrão ainda"
+        When usuário retorna a tela inicial
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação visualizar
+     Scenario: Usuário Trading/Portifólio acessa a aplicação visualizar
         Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo conseguir visualizar o modulo de produtos
+        When eu devo ter acesso aos módulos de produtos
+        Then eu devo conseguir visualizar o modulo de produtos
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação editar
+     Scenario: Usuário Trading/Portifólio acessa a aplicação editar
         Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo conseguir editar
+        When eu devo ter acesso aos módulos de produtos
+        When Usuário acessa o produto Diario Semanal na aba produtos
+        When Usuário pesquisa pelo ano
+        When Usuário seleciona o produto de acordo com o que for estipulado
+        When Usuário clica no botão editar
+        Then o sistema exibe a pagina de edição do produto
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação excluir
-        Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo conseguir excluir um produto
+    # Scenario: Usuário Trading/Portifólio acessa a aplicação excluir
+    #     Given que o usuário está logado como 'Trading Portifólio'
+    #     When eu devo ter acesso aos módulos de produtos
+    #     Then eu devo conseguir excluir um produto
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação criar dados
-        Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo conseguir criar dados
+    # Scenario: Usuário Trading/Portifólio acessa a aplicação criar dados
+    #     Given que o usuário está logado como 'Trading Portifólio'
+    #     When eu devo ter acesso aos módulos de produtos
+    #     Then eu devo conseguir criar dados
 
-    Scenario: Usuário Trading/Portifólio acessa a aplicação prêmios
-        Given que o usuário está logado como 'Trading Portifólio'
-        Then eu devo ter acesso aos módulos de produtos
-        When eu devo ter acesso aos prêmios
+    # Scenario: Usuário Trading/Portifólio acessa a aplicação prêmios
+    #     Given que o usuário está logado como 'Trading Portifólio'
+    #     When eu devo ter acesso aos módulos de produtos
+    #     Then eu devo ter acesso aos prêmios
 
-    Scenario: Acesso ao menu pelo Trading/Portifólio
-        Given que o usuário está logado como 'Trading Portifólio'
-        Then o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes
+    # Scenario: Acesso ao menu pelo Trading/Portifólio
+    #     Given que o usuário está logado como 'Trading Portifólio'
+    #     Then o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes
 

@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 import logging
 import os
+from selenium.common.exceptions import TimeoutException
 
 
 class ArmEvidenciasSelectors:
@@ -154,4 +155,17 @@ class ArmEvidenciasPage:
                 campo.send_keys(premio)
         except Exception as e:
             logging.error(f"Erro ao preencher os campos 'Prêmio': {e}")
+            raise
+
+    def retorna_tela_inicial(self):
+        """Retorna para a página inicial."""
+        try:
+            logging.info("Navegando para a página inicial.")
+            self.driver.get("https://diretrizes.dev.neoenergia.net/")
+            WebDriverWait(self.driver, 10).until(
+                EC.url_to_be("https://diretrizes.dev.neoenergia.net/")
+            )
+            logging.info("Usuário retornou para a página inicial com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao retornar para a página inicial.")
             raise

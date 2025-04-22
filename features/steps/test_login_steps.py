@@ -37,16 +37,18 @@ def step_click_next_button(context):
         )
         next_button.click()
         logging.info("Botão 'Seguinte' clicado com sucesso.")
-        WebDriverWait(context.driver, 15).until(
-            EC.presence_of_element_located(LoginPageLocators.ADFS_USERNAME_FIELD)
-        )
-        logging.info("Transição para a próxima etapa do login concluída com sucesso.")
     except TimeoutException as e:
         logging.error(f"Erro ao clicar no botão 'Seguinte': {e}")
         context.failed_steps.append(f"Erro no passo 'eu clico no botão Seguinte': {e}")
     except Exception as e:
         logging.error(f"Erro inesperado ao clicar no botão 'Seguinte': {e}")
         context.failed_steps.append(f"Erro inesperado no passo 'eu clico no botão Seguinte': {e}")
+        WebDriverWait(context.driver, 15).until(
+            EC.presence_of_element_located(LoginPageLocators.ADFS_USERNAME_FIELD)
+        )
+        logging.info("Transição para a próxima etapa do login concluída com sucesso.")
+    except Exception as e:
+        logging.error("ADFS não carregou corretamente.")
     sleep(7)
 
 @when('eu preencho o ADFS com usuário e senha')
@@ -80,7 +82,7 @@ def step_gera_evidencias_login(context):
         gerar_documento_evidencia(nome_teste="Teste de Login", sucesso=True)
     except Exception as e:
         print(f"Erro ao gerar evidências do login: {e}")
-        
+
 @given('que o usuário está logado como "Administrador"')
 @allure.step("Validando que o usuário está logado como Administrador")
 def validar_usuario_administrador(context):
@@ -90,7 +92,7 @@ def validar_usuario_administrador(context):
     except Exception as e:
         logging.error(f"Erro ao validar o usuário como Administrador: {e}")
         raise
-    
+
 @given("que o usuário está logado como 'Trading Portifólio'")
 @allure.step("Validando que o usuário está logado como Trading/Portifólio")
 def validar_usuario_portifolio(context):
