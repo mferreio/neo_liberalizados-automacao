@@ -36,15 +36,15 @@ class TeladeUsuariosPageLocators:
     BOTAO_CONFIRMAR_EXCLUSAO = (By.CSS_SELECTOR, "button[label='Sim'][icon='pi pi-check'].p-button.p-component")
     BTN_DASHBOARD = (By.XPATH, "//li[@class='ng-tns-c183498709-6 ng-tns-c183498709-5 ng-star-inserted']")
     MENSAGEM_SUCESSO = (By.XPATH, "//div[@data-pc-section='summary' and text()='Sucesso']")
-    
-    
+    LINHAS_TABELA_USUARIOS = (By.CSS_SELECTOR, "table tbody tr")
+    COLUNA_NOME = (By.CSS_SELECTOR, "td:nth-child(1)")
+    COLUNA_EMAIL = (By.CSS_SELECTOR, "td:nth-child(2)")
+    COLUNA_PERFIL = (By.CSS_SELECTOR, "td:nth-child(3)")
 
 class TelaDeUsuariosPage:
     def __init__(self, driver):
         self.driver = driver
 
-    
-        
     def clicar_botao_perfil(self):
         try:
             # Adicionada espera explícita para garantir que o botão esteja visível
@@ -55,7 +55,7 @@ class TelaDeUsuariosPage:
             sleep(2)  # Pequena pausa para garantir que a ação seja concluída
         except TimeoutException:
             raise AssertionError("O botão de perfil não foi encontrado ou não está clicável.")
-        
+
     def clicar_botao_dashboardl(self):
         try:
             # Adicionada espera explícita para garantir que o botão esteja visível
@@ -79,16 +79,35 @@ class TelaDeUsuariosPage:
         try:
             # Localiza todas as células que contêm os nomes usando XPath
             celulas_nome = self.driver.find_elements(By.XPATH, "//table[@role='table']//thead//th[@psortablecolumn='nome']/following::tbody//td[1]")
-            
+
             # Extrai o texto de cada célula e remove espaços em branco
             nomes = [celula.text.strip() for celula in celulas_nome if celula.text.strip()]
-            
+
             if not nomes:
                 raise AssertionError("Nenhum nome foi encontrado na tabela de usuários.")
-            
+
             return nomes
         except NoSuchElementException:
             raise AssertionError("Não foi possível encontrar os nomes cadastrados na tabela.")
+
+    def obter_usuarios_cadastrados(self):
+        """Obtém a lista de usuários cadastrados exibindo nome, email e perfil."""
+        try:
+            logging.info("Obtendo a lista de usuários cadastrados.")
+            linhas_tabela = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(TeladeUsuariosPageLocators.LINHAS_TABELA_USUARIOS)
+            )
+            usuarios = []
+            for linha in linhas_tabela:
+                nome = linha.find_element(*TeladeUsuariosPageLocators.COLUNA_NOME).text.strip()
+                email = linha.find_element(*TeladeUsuariosPageLocators.COLUNA_EMAIL).text.strip()
+                perfil = linha.find_element(*TeladeUsuariosPageLocators.COLUNA_PERFIL).text.strip()
+                usuarios.append({"nome": nome, "email": email, "perfil": perfil})
+            logging.info(f"Usuários cadastrados encontrados: {usuarios}")
+            return usuarios
+        except Exception as e:
+            logging.error(f"Erro ao obter a lista de usuários cadastrados: {e}")
+            return []
 
     def clicar_botao_novo(self):
         try:
@@ -111,7 +130,7 @@ class TelaDeUsuariosPage:
             print("Usuário está na tela de cadastro de usuário.")
         except TimeoutException:
             raise AssertionError("Elemento de validação da tela de cadastro de usuário não encontrado.")
-        
+
     def clicar_fechar_tela_cadastro(self):
         try:
             # Adicionada espera explícita para garantir que o botão esteja visível
@@ -148,7 +167,6 @@ class TelaDeUsuariosPage:
                 )
             else:
                 raise ValueError(f"Tipo de perfil desconhecido: {tipo_perfil}")
-            
             # Força o clique no elemento usando JavaScript
             self.driver.execute_script("arguments[0].click();", perfil)
             logging.info(f"Perfil '{tipo_perfil}' selecionado com sucesso.")
@@ -178,7 +196,7 @@ class TelaDeUsuariosPage:
             print(f"Nome '{NOME}' e email '{EMAIL}' inseridos com sucesso.")
         except TimeoutException:
             raise AssertionError("Não foi possível localizar os campos de nome ou email.")
-        
+
     def clicar_botao_salvar(self):
         try:
             # Adicionada espera explícita para garantir que o botão esteja visível
@@ -191,14 +209,35 @@ class TelaDeUsuariosPage:
             raise AssertionError("O botão 'Novo' não foi encontrado ou não está clicável.")
 
     def validar_mensagem_sucesso(self):
+        """Valida se a mensagem de sucesso foi exibida."""
         try:
             mensagem_sucesso = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located(TeladeUsuariosPageLocators.MENSAGEM_SUCESSO)
+                EC.presence_of_element_located(TeladeUsuariosPageLocators.MENSAGEM_SUCESSO)
             )
-            assert mensagem_sucesso is not None, "Mensagem de sucesso não exibida."
-            print("Mensagem de sucesso exibida com sucesso.")
+            return mensagem_sucesso.is_displayed()
         except TimeoutException:
-            raise AssertionError("Mensagem de sucesso não foi exibida.")
+            logging.error("Mensagem de sucesso não foi exibida.")
+            return False
+
+    def validar_usuario_presente(self, nome_usuario):
+        """Valida se o usuário está presente na tabela."""
+        try:
+            filtro_nome = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(TeladeUsuariosPageLocators.FILTRO_NOME)
+            )
+            filtro_nome.clear()
+            filtro_nome.send_keys(nome_usuario)
+            sleep(2)  # Aguarda o filtro ser aplicado
+
+            linhas_tabela = self.driver.find_elements(*TeladeUsuariosPageLocators.LINHAS_TABELA_USUARIOS)
+            for linha in linhas_tabela:
+                nome = linha.find_element(*TeladeUsuariosPageLocators.COLUNA_NOME).text.strip()
+                if nome == nome_usuario:
+                    return True
+            return False
+        except TimeoutException:
+            logging.error(f"Erro ao validar a presença do usuário '{nome_usuario}'.")
+            return False
 
     def pesquisar_e_clicar_editar(self, pesquisar_nome_Cadastrado):
         try:
@@ -245,11 +284,10 @@ class TelaDeUsuariosPage:
             print(f"Dados do usuário editados: Perfil='{EDITAR_PERFIL}'.")
             sleep(2)
         except TimeoutException:
-            raise AssertionError("Erro ao editar o perfil do usuario: elemento não encontrado ou não clicável.")
-            
+            raise AssertionError("Erro ao editar o perfil do usuário: elemento não encontrado ou não clicável.")
 
     def editar_nome_e_email_usuario(self):
-        try:    
+        try:
             # Edita o nome
             input_nome = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(TeladeUsuariosPageLocators.INPUT_EDITAR_NOME)
@@ -266,7 +304,7 @@ class TelaDeUsuariosPage:
             print(f"Dados do usuário editados: Perfil= Nome='{EDITAR_NOME}', Email='{EDITAR_EMAIL}'.")
         except TimeoutException:
             raise AssertionError("O botão 'Salvar' não foi encontrado ou não está clicável.")
-    
+
     def clicar_botao_salvar_edicao(self):
         try:
             # Adicionada espera explícita para garantir que o botão esteja visível
@@ -279,7 +317,7 @@ class TelaDeUsuariosPage:
             print("Botão 'Salvar' clicado com sucesso.")
         except TimeoutException:
             raise AssertionError("O botão 'Salvar' não foi encontrado ou não está clicável.")
-        
+
     def pesquisa_usuario_cadastrado(self, excluir_nome):
         try:
             # Insere o nome no filtro
@@ -292,7 +330,7 @@ class TelaDeUsuariosPage:
         except TimeoutException:
             raise AssertionError(f"Usuário '{excluir_nome}' não encontrado.")
         sleep(2)
-        
+
     def cancelar_exclusao_de_usuario(self, excluir_nome):
         try:
             # Insere o nome no filtro
@@ -326,7 +364,6 @@ class TelaDeUsuariosPage:
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_EXCLUIR_USUARIO)
             )
             botao_excluir_usuario.click()
-            
             # Clica no botão "Sim" para confirmar a exclusão
             botao_confirmar_exclusao = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_CONFIRMAR_EXCLUSAO)

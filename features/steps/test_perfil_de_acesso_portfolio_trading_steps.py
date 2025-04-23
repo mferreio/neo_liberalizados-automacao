@@ -88,3 +88,39 @@ def step_validar_pagina_edicao_produto(context):
     assert context.perfil_de_acesso_page.validar_pagina_edicao_produto(), \
         "O título da página de edição do produto não foi encontrado."
     logging.info("Usuário está na página de edição do produto.")
+
+@when('Usuário clica no botão excluir')
+def step_clicar_botao_excluir(context):
+    """Clica no botão excluir."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.clicar_botao_excluir()
+    logging.info("Usuário clicou no botão excluir.")
+
+@then('eu devo acessar a tela para excluir um produto')
+def step_validar_tela_exclusao_produto(context):
+    """Valida que o sistema exibiu a tela de exclusão do produto."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    assert context.perfil_de_acesso_page.validar_tela_exclusao_produto(), \
+        "A tela de exclusão do produto não foi exibida."
+    logging.info("Tela de exclusão do produto exibida com sucesso.")
+
+@when('Usuário clica em novo produto')
+def step_clicar_em_novo_produto(context):
+    """Clica no botão 'Novo Produto'."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.clicar_em_novo_produto()
+    logging.info("Usuário clicou no botão 'Novo Produto'.")
+
+@when('Usuário preenche os campos obrigatórios')
+def step_preencher_campos_obrigatorios(context):
+    """Preenche os campos obrigatórios para criar um novo produto."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.preencher_campos_obrigatorios()
+    logging.info("Usuário preencheu os campos obrigatórios.")
+
+@when('Usuário clica em cadastrar')
+def step_clicar_em_cadastrar(context):
+    """Clica no botão 'Cadastrar Produto'."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.clicar_em_cadastrar_produto()
+    logging.info("Usuário clicou no botão 'Cadastrar Produto'.")

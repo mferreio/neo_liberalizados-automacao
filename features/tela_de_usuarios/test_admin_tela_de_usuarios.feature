@@ -13,9 +13,10 @@ Feature: Testar a usabilidade da tela de usuários para o administrador
   Scenario: Cancelar processo para adicionar um novo usuário
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
+    When valida os usuarios cadastrados exibindo nome, email e perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     Then o usuário fecha a tela de cadastro e é direcionado para a tela de usuários
-    And valida que nenhum novo usuário foi adicionado
+    When valida que nenhum novo usuário foi adicionado
 
   Scenario: Adicionar um novo usuário
     Given que o usuário está logado como "Administrador"

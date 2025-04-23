@@ -30,6 +30,20 @@ class PerfilDeAcessoPortfolioTradingLocators:
     BTN_EDITAR_PROD = (By.CSS_SELECTOR, "div.flex > button.p-element.p-ripple.p-button-rounded.p-button-success.mr-2.p-button.p-component.p-button-icon-only.ng-star-inserted > span.p-button-icon.pi.pi-pencil")
     ABRIR_MODULO_PRODUTOS = (By.XPATH, "//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]")
     TITULO_PAGINA_EDICAO_PRODUTO = (By.CSS_SELECTOR, "div.card.px-6.py-6 > div.p-fluid > p.text-3xl.font-bold.text-green-500")
+    EXCLUIR_PRODUTO = (By.XPATH, "//button[contains(@class, 'p-button-warning')]")
+    VALIDAR_TELA_EXCLUSAO_PRODUTOS = (By.XPATH, "//span[contains(text(), 'Você tem certeza de que quer deletar')]")
+    DROPDOWN_MES = (By.XPATH, "//span[@id='mes' and @role='combobox' and @class='p-element p-dropdown-label p-inputtext p-placeholder ng-star-inserted']")
+    MES_NOVO_PRODUTO = lambda mes: (By.XPATH, f"//span[text()='{mes.upper()}']/parent::li")
+    ANO_NOVO_PRODUTO = (By.XPATH, "//span[@data-pc-name='inputnumber']")
+    DROPDOWN_PERFIL = (By.XPATH, "//span[@aria-label='Selecione o perfil']")
+    PERFIL_NOVO_PRODUTO = lambda perfil: (By.XPATH, f"//li[@aria-label='{perfil}']")
+    DROPDOWN_SUBMERCADO = (By.XPATH, "//span[@aria-label='Selecione o submercado']")
+    SUBMERCADO_NOVO_PRODUTO = lambda submercado: (By.XPATH, f"//li[@aria-label='{submercado}']")
+    DROPDOWN_TIPOPRODUTO = (By.XPATH, "//span[@aria-label='Selecione o tipoProduto']")
+    TIPOPRODUTO_NOVO_PRODUTO = lambda tipo: (By.XPATH, f"//li[@aria-label='{tipo.upper()}']")
+    BTN_CADASTRAR_PRODUTO = (By.XPATH, "//button[@label='Cadastrar']")
+
+
 
 class PerfilDeAcessoPage:
     def __init__(self, driver):
@@ -307,3 +321,91 @@ class PerfilDeAcessoPage:
             return False
         sleep(2)
 
+    def clicar_botao_excluir(self):
+        """Clica no botão excluir."""
+        try:
+            logging.info("Clicando no botão excluir.")
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.EXCLUIR_PRODUTO)
+            ).click()
+            logging.info("Botão excluir clicado com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao clicar no botão excluir.")
+            raise
+
+    def validar_tela_exclusao_produto(self):
+        """Valida se a tela de exclusão do produto está visível."""
+        try:
+            logging.info("Validando a existência da tela de exclusão do produto.")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_TELA_EXCLUSAO_PRODUTOS)
+            )
+            logging.info("Tela de exclusão do produto validada com sucesso.")
+            return True
+        except TimeoutException:
+            logging.error("Tela de exclusão do produto não encontrada.")
+            return False
+        sleep(2)
+
+    def clicar_em_cadastrar_produto(self):
+        """Clica no botão 'Cadastrar Produto'."""
+        try:
+            logging.info("Clicando no botão 'Cadastrar Produto'.")
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BTN_CADASTRAR_PRODUTO)
+            ).click()
+            logging.info("Botão 'Cadastrar Produto' clicado com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao clicar no botão 'Cadastrar Produto'.")
+            raise
+
+    def preencher_campos_obrigatorios(self):
+        """Preenche os campos obrigatórios para criar um novo produto."""
+        from credentials import MES_NOVO_PRODUTO, ANO_NOVO_PRODUTO, PERFIL_NOVO_PRODUTO, SUBMERCADO_NOVO_PRODUTO, TIPOPRODUTO_NOVO_PRODUTO
+
+        try:
+            # Selecionar o mês
+            logging.info("Abrindo o dropdown de mês.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_MES)
+            logging.info(f"Selecionando o mês: {MES_NOVO_PRODUTO}.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.MES_NOVO_PRODUTO(MES_NOVO_PRODUTO))
+
+            # Informar o ano
+            logging.info(f"Informando o ano: {ANO_NOVO_PRODUTO}.")
+            ano_input = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.ANO_NOVO_PRODUTO)
+            )
+            ano_input.clear()
+            ano_input.send_keys(ANO_NOVO_PRODUTO)
+
+            # Selecionar o perfil
+            logging.info("Abrindo o dropdown de perfil.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_PERFIL)
+            logging.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.PERFIL_NOVO_PRODUTO(PERFIL_NOVO_PRODUTO))
+
+            # Selecionar o submercado
+            logging.info("Abrindo o dropdown de submercado.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_SUBMERCADO)
+            logging.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.SUBMERCADO_NOVO_PRODUTO(SUBMERCADO_NOVO_PRODUTO))
+
+            # Selecionar o tipo de produto
+            logging.info("Abrindo o dropdown de tipo de produto.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_TIPOPRODUTO)
+            logging.info(f"Selecionando o tipo de produto: {TIPOPRODUTO_NOVO_PRODUTO}.")
+            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.TIPOPRODUTO_NOVO_PRODUTO(TIPOPRODUTO_NOVO_PRODUTO))
+
+        except TimeoutException as e:
+            logging.error(f"Erro ao preencher os campos obrigatórios: {e}")
+            raise
+
+    def _interagir_com_elemento(self, locator):
+        """Interage com um elemento, utilizando JavaScript caso necessário."""
+        try:
+            elemento = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(locator))
+            elemento.click()
+        except Exception:
+            logging.warning("Interagindo com o elemento via JavaScript.")
+            elemento = self.driver.find_element(*locator)
+            self.driver.execute_script("arguments[0].click();", elemento)
