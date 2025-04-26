@@ -80,16 +80,30 @@ def before_all(context):
 
     context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
-    context.skip_login = False
+    # Realiza o login apenas uma vez antes de todos os testes
+    try:
+        login(context)
+    except Exception as e:
+        logging.error(f"Erro ao realizar login antes de todos os testes: {e}")
+        raise
 
 def before_feature(context, feature):
     """Executa ações antes de cada feature."""
     logging.info(f"INICIANDO A FEATURE: {feature.name}")
-    if "perfil_de_acesso_nao_logado.feature" in feature.filename:
-        context.skip_login = True
+
+    # Verifica se a feature é '07_perfil_de_acesso_nao_logado.feature'
+    if "07_perfil_de_acesso_nao_logado.feature" in feature.filename:
+        try:
+            logging.info("Limpando o cache do navegador e acessando a URL inicial para garantir que o usuário não está logado.")
+            context.driver.delete_all_cookies()  # Limpa o cache do navegador
+            context.driver.get("https://diretrizes.dev.neoenergia.net/")  # Acessa a URL inicial
+            logging.info("Cache limpo e URL inicial acessada com sucesso.")
+        except Exception as e:
+            logging.error(f"Erro ao preparar o ambiente para a feature '07_perfil_de_acesso_nao_logado.feature': {e}")
+            raise
     else:
-        context.skip_login = False
-        login(context)
+        context.driver.get("https://diretrizes.dev.neoenergia.net/")
+        logging.info("Nenhuma ação adicional necessária para esta feature, pois o login já foi realizado no before_all.")
 
 def before_scenario(context, scenario):
     """Executa ações antes de cada cenário."""

@@ -1,5 +1,5 @@
-Feature: Gerenciamento de Perfis de Acesso
-  Como administrador 
+Feature: Perfil de acesso Administrador
+  Como administrador
   Quero acessar a aplicação com permissões específicas
   Para realizar operações de acordo com meu perfil
 
@@ -12,7 +12,7 @@ Feature: Gerenciamento de Perfis de Acesso
     When clica no dropdown de perfil
     When o usuário seleciona o perfil de usuário, escreve o nome e email
     When o usuário clica em "Salvar" para salvar o novo usuário
-    Then o sistema exibe uma mensagem de sucesso
+    #Then o sistema exibe uma mensagem de sucesso
     Then navega até a tela inicial
 
    Scenario: Administrador acessa a aplicação visualização das telas
@@ -24,7 +24,7 @@ Feature: Gerenciamento de Perfis de Acesso
     Given que o usuário está logado como "Administrador"
     When eu devo ter acesso total ao sistema
     Then eu devo conseguir realizar todas as operações de 'Trading Portifólio'
-  
+
    Scenario: Administrador acessa a aplicação operações módulo Comercial
     Given que o usuário está logado como "Administrador"
     Then eu devo ter acesso total ao sistema

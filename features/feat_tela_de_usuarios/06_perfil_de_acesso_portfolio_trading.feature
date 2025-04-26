@@ -1,4 +1,4 @@
-Feature: Gerenciamento de Perfis de Acesso
+Feature: Perfil de acesso Portifólio/Trading
   Como usuário Trading/Portifólio
   Quero acessar a aplicação com permissões específicas
   Para realizar operações de acordo com meu perfil
@@ -52,7 +52,7 @@ Feature: Gerenciamento de Perfis de Acesso
          When Usuário acessa o produto Diario Semanal na aba produtos
          When Usuário clica em novo produto
          When Usuário preenche os campos obrigatórios
-         When Usuário clica em cadastrar
+         When Usuário clica em cadastrar produto
          Then eu devo conseguir criar dados
 
     # Scenario: Usuário Trading/Portifólio acessa a aplicação prêmios

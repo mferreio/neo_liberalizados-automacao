@@ -1,4 +1,4 @@
-Feature: Gerenciamento de Evidências
+Feature: Armazenamento de evidências
   Como usuário
   Quero gerenciar arquivos de evidências
   Para garantir o armazenamento e consulta de forma segura

@@ -1,4 +1,4 @@
-Feature: Testar a usabilidade da tela de usuários para o administrador
+Feature: Acessar o sistema como administrador e testar fluxo de tela de usuários
 
   Scenario: Administrador acessa a tela de usuários
     Given que o usuário está logado como "Administrador"

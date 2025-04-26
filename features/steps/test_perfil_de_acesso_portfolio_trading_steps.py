@@ -118,7 +118,7 @@ def step_preencher_campos_obrigatorios(context):
     context.perfil_de_acesso_page.preencher_campos_obrigatorios()
     logging.info("Usuário preencheu os campos obrigatórios.")
 
-@when('Usuário clica em cadastrar')
+@when('Usuário clica em cadastrar produto')
 def step_clicar_em_cadastrar(context):
     """Clica no botão 'Cadastrar Produto'."""
     context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)

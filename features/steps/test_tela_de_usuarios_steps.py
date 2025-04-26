@@ -37,13 +37,6 @@ def _validar_usuarios_cadastrados(context):
     for nome in nomes:
         print(f"- {nome}")
 
-@when('valida os usuarios cadastrados exibindo nome, email e perfil')
-def step_valida_usuarios_cadastrados(context):
-    """Valida os usuários cadastrados exibindo nome, email e perfil."""
-    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.usuarios_iniciais = context.tela_de_usuarios_page.obter_usuarios_cadastrados()
-    logging.info(f"Usuários cadastrados inicialmente: {context.usuarios_iniciais}")
-
 @when('valida que nenhum novo usuário foi adicionado')
 def step_valida_novos_usuarios(context):
     """Valida que nenhum novo usuário foi adicionado."""

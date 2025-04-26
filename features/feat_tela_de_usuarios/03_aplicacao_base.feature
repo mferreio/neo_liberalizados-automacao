@@ -1,4 +1,4 @@
-Feature: Gerenciamento de Perfis de Acesso
+Feature: Aplicação Base - Tela de usuários
   Como administrador
   Quero acessar a aplicação com permissões específicas
   Para realizar operações de acordo com meu perfil
