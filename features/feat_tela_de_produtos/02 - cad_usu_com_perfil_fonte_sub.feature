@@ -1,4 +1,4 @@
-Feature: Acessar o Cadastro de Usuários com Perfil, Fonte e Submercado
+Feature: Cadastro de Usuários com Perfil, Fonte e Submercado
 
     Scenario: Escolha de perfil durante o cadastro
         Given que o usuário está logado no sistema

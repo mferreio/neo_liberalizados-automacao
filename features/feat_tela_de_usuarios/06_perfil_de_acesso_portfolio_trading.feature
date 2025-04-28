@@ -30,7 +30,7 @@ Feature: Perfil de acesso Portifólio/Trading
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário pesquisa pelo ano
-        When Usuário seleciona o produto de acordo com o que for estipulado
+        When Usuário seleciona o produto
         When Usuário clica no botão editar
         Then o sistema exibe a pagina de edição do produto
         When usuário retorna a tela inicial
@@ -40,7 +40,7 @@ Feature: Perfil de acesso Portifólio/Trading
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário pesquisa pelo ano
-        When Usuário seleciona o produto de acordo com o que for estipulado
+        When Usuário seleciona o produto
         When Usuário clica no botão excluir
         Then eu devo acessar a tela para excluir um produto
         When usuário retorna a tela inicial

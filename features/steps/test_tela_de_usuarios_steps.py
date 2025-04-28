@@ -144,7 +144,9 @@ def step_clicar_botao_exclui_usuario(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.cancelar_exclusao_de_usuario(EXCLUIR_NOME)
 
+@given('clica em excluir e confirma')
 @when('clica em excluir e confirma')
+@then('clica em excluir e confirma')
 def step_clicar_botao_exclui_usuario(context):
     # Clica para excluir e confirma a exclusão do usuário
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)

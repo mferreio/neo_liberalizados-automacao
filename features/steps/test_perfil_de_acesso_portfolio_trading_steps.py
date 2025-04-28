@@ -69,7 +69,7 @@ def step_pesquisar_por_ano(context):
     context.perfil_de_acesso_page.pesquisar_por_ano()
     logging.info("Usuário pesquisou pelo ano estipulado.")
 
-@when('Usuário seleciona o produto de acordo com o que for estipulado')
+@when('Usuário seleciona o produto')
 def step_selecionar_produto_estipulado(context):
     """Seleciona o produto de acordo com os valores estipulados no arquivo credentials."""
     context.perfil_de_acesso_page.selecionar_produto_estipulado()
@@ -96,6 +96,7 @@ def step_clicar_botao_excluir(context):
     context.perfil_de_acesso_page.clicar_botao_excluir()
     logging.info("Usuário clicou no botão excluir.")
 
+@when('eu devo acessar a tela para excluir um produto')
 @then('eu devo acessar a tela para excluir um produto')
 def step_validar_tela_exclusao_produto(context):
     """Valida que o sistema exibiu a tela de exclusão do produto."""
