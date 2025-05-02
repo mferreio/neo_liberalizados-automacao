@@ -1,4 +1,4 @@
-import logging
+import logging, ipdb
 from time import sleep
 from behave import given, when, then
 from pages.arm_evidencias_pages import ArmEvidenciasPage
@@ -59,15 +59,15 @@ def step_validar_arquivo_anexado(context):
         logging.error(f"Erro ao validar o armazenamento do arquivo 'evidencia_imagem.jpg': {e}")
         raise
 
-@then('usuário clica em cadastrar')
+@then('usuário clica em salvar')
 def step_clicar_em_cadastrar(context):
     try:
-        logging.info('Clicando no botão "Cadastrar".')
+        logging.info('Clicando no botão "Salvar".')
         evidencias_page = ArmEvidenciasPage(context.driver)
-        evidencias_page.clicar_em_cadastrar()
+        evidencias_page.clicar_em_salvar()
         sleep(4)
     except Exception as e:
-        logging.error(f"Erro ao clicar no botão 'Cadastrar': {e}")
+        logging.error(f"Erro ao clicar no botão 'Salvar': {e}")
         raise
 
 @when('sistema exibe mensagem de sucesso ou erro')
@@ -91,8 +91,12 @@ def step_preencher_campos_obrigatorios(context):
     try:
         logging.info('Preenchendo os campos obrigatórios.')
         evidencias_page = ArmEvidenciasPage(context.driver)
-        evidencias_page.preencher_campo_descricao("teste")
+        from dotenv import load_dotenv
+        import os
+        load_dotenv()
+        descricao = os.getenv('DESCRICAO')
         evidencias_page.preencher_campo_premio("10")
+        evidencias_page.preencher_campo_descricao(descricao)
         sleep(4)
     except Exception as e:
         logging.error(f"Erro ao preencher os campos obrigatórios: {e}")

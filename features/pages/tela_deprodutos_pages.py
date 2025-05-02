@@ -17,9 +17,27 @@ class TelaDeProdutosPageLocators:
     SUBMERCADO_SE = (By.XPATH, "//li[@aria-label='SE']")
     SUBMERCADO_S = (By.XPATH, "//li[@aria-label='S']")
     SUBMERCADO_N = (By.XPATH, "//li[@aria-label='N']")
+    PRODUTOS_INATIVOS = (By.XPATH, "//tr[@class='ng-star-inserted']/td[6][span[@class='p-column-title' and text()='Ativo'] and contains(text(), 'Näo')]")
+    MES_PRODUTO = (By.XPATH, "//td[1][span[@class='p-column-title' and text()='Mês']]")
+    ANO_PRODUTO = (By.XPATH, "//td[2][span[@class='p-column-title' and text()='Ano']]")
+    BTN_SIM_EXCLUIR_PROD = (By.XPATH, "//div[@role='dialog']//button[contains(., 'Sim') and span[@class='p-button-label']]")
+    BTN_NAO_EXCLUIR_PROD = (By.XPATH, "//div[@role='dialog']//button[contains(., 'Não') and span[@class='p-button-label']]")
+    MSG_CONFIRMA_EXCLUSAO_PROD = (By.XPATH, "//p-toast//div[contains(., 'Produto Deletado') and @data-pc-section='detail']")
+    URL_TELA_PRODUTOS = "https://diretrizes.dev.neoenergia.net/pages/default-products"
 
 class TelaDeProdutosPage:
-    # ...existing code...
+
+    def validar_tela_cadastro(self):
+        """Valida se o elemento da tela de cadastro de produtos está presente."""
+        try:
+            logging.info("Validando a presença do elemento da tela de cadastro de produtos.")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//p[contains(@class, 'text-3xl') and contains(@class, 'font-bold') and contains(@class, 'text-green-500')]")
+            ))
+            return True
+        except TimeoutException:
+            logging.error("Elemento da tela de cadastro de produtos não encontrado.")
+            return False
 
     def obter_opcoes_disponiveis_no_dropdown(self):
         """Abre o dropdown de perfil e extrai as opções disponíveis."""
@@ -128,3 +146,175 @@ class TelaDeProdutosPage:
         except TimeoutException:
             logging.error("Erro ao extrair as opções do dropdown de submercado: elemento não encontrado ou não clicável.")
             raise AssertionError("Erro ao extrair as opções do dropdown de submercado.")
+
+    def obter_dados_produtos(self):
+        """Coleta os dados de todos os produtos listados na tabela."""
+        try:
+            logging.info("Coletando dados dos produtos listados na tabela.")
+
+            # Localiza todas as linhas da tabela
+            linhas = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, "//tbody/tr[@class='ng-star-inserted']"))
+            )
+
+            produtos = []
+
+            for linha in linhas:
+                mes = linha.find_element(By.XPATH, ".//td[1][span[@class='p-column-title' and text()='Mês']]").text.strip()
+                ano = linha.find_element(By.XPATH, ".//td[2][span[@class='p-column-title' and text()='Ano']]").text.strip()
+                perfil = linha.find_element(By.XPATH, ".//td[span[@class='p-column-title'][text()='Perfil']]").text.strip()
+                submercado = linha.find_element(By.XPATH, ".//td[span[@class='p-column-title'][text()='Submercado']]").text.strip()
+                tipo = linha.find_element(By.XPATH, ".//td[5][span[@class='p-column-title' and text()='Tipo de Produto']]").text.strip()
+
+                produtos.append({
+                    "mes": mes,
+                    "ano": ano,
+                    "perfil": perfil,
+                    "submercado": submercado,
+                    "tipo": tipo
+                })
+
+            logging.info(f"Dados coletados: {produtos}")
+            return produtos
+        except TimeoutException:
+            logging.error("Erro ao coletar os dados dos produtos: elemento não encontrado ou não clicável.")
+            raise AssertionError("Erro ao coletar os dados dos produtos.")
+
+    def obter_novos_produtos(self, produtos_anteriores):
+        """Compara a lista atual de produtos com a lista anterior e retorna os novos produtos."""
+        try:
+            logging.info("Coletando a lista atual de produtos para comparação.")
+            produtos_atuais = self.obter_dados_produtos()
+
+            # Filtra os novos produtos
+            novos_produtos = [produto for produto in produtos_atuais if produto not in produtos_anteriores]
+
+            if novos_produtos:
+                logging.info(f"Novos produtos encontrados: {novos_produtos}")
+            else:
+                logging.info("Nenhum novo produto foi encontrado.")
+
+            return novos_produtos
+        except Exception as e:
+            logging.error(f"Erro ao comparar listas de produtos: {e}")
+            raise
+
+    def inativar_produto(self):
+        """Seleciona o botão de inativação de um produto e confirma a ação."""
+        try:
+            logging.info("Tentando inativar o produto da primeira linha.")
+
+            # Localiza e clica no botão de inativação
+            botao_inativar = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[@aria-label='desabilitar' and contains(@class, 'p-element') and contains(@class, 'p-ripple') and contains(@class, 'p-button-rounded') and contains(@class, 'p-button-secondary') and contains(@class, 'mr-2') and contains(@class, 'p-button') and contains(@class, 'p-component') and contains(@class, 'p-button-icon-only') and contains(@class, 'ng-star-inserted')]")
+            ))
+            botao_inativar.click()
+
+            logging.info("Botão de inativação clicado com sucesso.")
+
+            # Localiza e clica no botão "Sim" para confirmar
+            botao_confirmar = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//span[contains(@class, 'p-button-label') and text()='Sim']"))
+            )
+            botao_confirmar.click()
+
+            logging.info("Produto inativado com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao tentar inativar o produto: elemento não encontrado ou não clicável.")
+            raise AssertionError("Erro ao tentar inativar o produto.")
+
+    def validar_mensagem_inativacao(self):
+        """Valida se a mensagem de inativação do produto é exibida e retorna o texto."""
+        try:
+            logging.info("Validando a exibição da mensagem de inativação do produto.")
+            mensagem_elemento = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'p-toast-detail')]"))
+            )
+            mensagem_texto = mensagem_elemento.text.strip()
+            logging.info(f"Mensagem exibida: {mensagem_texto}")
+            return mensagem_texto
+        except TimeoutException:
+            logging.error("Mensagem de inativação do produto não foi exibida.")
+            return None
+
+    def obter_produtos_inativos(self):
+        """Coleta os dados dos produtos inativos listados na tabela."""
+        try:
+            logging.info("Coletando dados dos produtos inativos.")
+
+            # Localiza os produtos inativos
+            produtos_inativos_elementos = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(TelaDeProdutosPageLocators.PRODUTOS_INATIVOS)
+            )
+
+            produtos_inativos = []
+
+            for elemento in produtos_inativos_elementos:
+                mes = elemento.find_element(*TelaDeProdutosPageLocators.MES_PRODUTO).text.strip()
+                ano = elemento.find_element(*TelaDeProdutosPageLocators.ANO_PRODUTO).text.strip()
+
+                produtos_inativos.append({
+                    "mes": mes,
+                    "ano": ano
+                })
+
+            logging.info(f"Produtos inativos encontrados: {produtos_inativos}")
+            return produtos_inativos
+        except TimeoutException:
+            logging.info("Nenhum produto inativo foi encontrado.")
+            return []
+
+    def confirmar_exclusao_produto(self):
+        """Clica no botão 'Sim' para confirmar a exclusão de um produto."""
+        try:
+            logging.info("Confirmando a exclusão do produto.")
+            botao_sim = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(TelaDeProdutosPageLocators.BTN_SIM_EXCLUIR_PROD)
+            )
+            botao_sim.click()
+            logging.info("Exclusão do produto confirmada com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao tentar confirmar a exclusão do produto: botão 'Sim' não encontrado ou não clicável.")
+            raise AssertionError("Erro ao tentar confirmar a exclusão do produto.")
+
+    def validar_mensagem_confirmacao_exclusao(self):
+        """Valida se a mensagem de confirmação da exclusão do produto é exibida e retorna o texto."""
+        try:
+            logging.info("Validando a exibição da mensagem de confirmação da exclusão do produto.")
+            mensagem_elemento = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(TelaDeProdutosPageLocators.MSG_CONFIRMA_EXCLUSAO_PROD)
+            )
+            mensagem_texto = mensagem_elemento.text.strip()
+            logging.info(f"Mensagem exibida: {mensagem_texto}")
+            return mensagem_texto
+        except TimeoutException:
+            logging.error("Mensagem de confirmação da exclusão do produto não foi exibida.")
+            return None
+
+    def nao_confirmar_exclusao_produto(self):
+        """Não confirma a exclusão de um produto clicando no botão 'Não'."""
+        try:
+            logging.info("Clicando no botão não para a exclusão do produto.")
+            botao_nao = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(TelaDeProdutosPageLocators.BTN_NAO_EXCLUIR_PROD)
+            )
+            botao_nao.click()
+            logging.info("Exclusão do produto não confirmada com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao tentar não confirmar a exclusão do produto: botão 'Não' não encontrado ou não clicável.")
+            raise AssertionError("Erro ao tentar não confirmar a exclusão do produto.")
+
+    def validar_tela_produtos(self):
+        """Valida se o usuário está na tela de produtos pelo link da página."""
+        try:
+            logging.info("Validando se o usuário está na tela de produtos.")
+            current_url = self.driver.current_url
+            if current_url == TelaDeProdutosPageLocators.URL_TELA_PRODUTOS:
+                logging.info("Usuário retornou à tela de produtos com sucesso.")
+                return True
+            else:
+                logging.error(f"URL atual ({current_url}) não corresponde à esperada ({TelaDeProdutosPageLocators.URL_TELA_PRODUTOS}).")
+                return False
+        except Exception as e:
+            logging.error(f"Erro ao validar a tela de produtos: {e}")
+            return False

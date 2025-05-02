@@ -8,7 +8,7 @@ Feature: Acessar a página de login e testar fluxo de tela de usuários
   Scenario: Visualizar usuários cadastrados
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
-    Then valida os usuarios cadastrados
+    Then valida os usuarios cadastrados exibindo nome, email e perfil
 
   Scenario: Cancelar processo para adicionar um novo usuário
     Given que o usuário está logado como "Administrador"
@@ -17,12 +17,12 @@ Feature: Acessar a página de login e testar fluxo de tela de usuários
     Then o usuário fecha a tela de cadastro e é direcionado para a tela de usuários
     When navega até a tela de usuários - Perfil
 
-  Scenario: Adicionar um novo usuário
+  Scenario: Adicionar um novo usuário administrador
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
-    When o usuário seleciona o perfil de usuário, escreve o nome e email
+    When o usuário seleciona o perfil de administrador, escreve o nome e email
     When o usuário clica em "Salvar" para salvar o novo usuário
     Then navega até a tela de usuários - Perfil
 
@@ -39,12 +39,14 @@ Feature: Acessar a página de login e testar fluxo de tela de usuários
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
     When pesquisa um usuario cadastrado
-    When clica em excluir e cancela a exclusao
+    When clica em excluir
+    When clica em nao e cancela a exclusao
     Then navega até a tela de usuários - Perfil
 
   Scenario: Excluir um usuário existente
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
     When pesquisa um usuario cadastrado
-    When clica em excluir e confirma
+    When clica em excluir
+    When clica em sim para confirmar a exclusao
     Then navega até a tela de usuários - Perfil

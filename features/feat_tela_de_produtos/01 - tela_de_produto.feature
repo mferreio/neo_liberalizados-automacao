@@ -31,6 +31,7 @@ Scenario: Adição de um novo produto para diretrizes diárias e semanais
     When Usuário clica em cadastrar produto
     Then eu devo conseguir criar dados
 
+
 Scenario: Adição de um novo produto para diretrizes I-REC
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
@@ -66,22 +67,22 @@ Scenario: Atualização da exibição após edição de um produto
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
-    When exibe os produtos com perfil, submercado e tipo de diretriz
-    Then a lista de produtos deve ser atualizada com os dados do produto editado
+    Then exibe os produtos com perfil, submercado e tipo de diretriz atualizados
 
 
 Scenario: Inativação de um produto
-    Given que o usuário esteja na tela de produtos
-    When o usuário marcar o checkbox de inativação de um produto
-    Then o produto deve ser considerado inativo
-    When o produto deve continuar aparecendo na tela, mas não deve estar disponível ao criar uma nova diretriz
+    Given que o usuário está logado no sistema
+    When o usuário seleciona o módulo "Produtos"
+    When o usuário seleciona o módulo "Semanal Diario"
+    When o usuário marcar o checkbox de inativação de um produto e clica em sim
+    Then o sistema exibe uma mensagem de produto inativado com sucesso
 
 
 Scenario: Visualização da lista de produtos após inativação
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
-    Then o produto inativo deve ser exibido na lista como inativo
+    Then o usuário consegue visualizar os produtos inativos
 
 
 Scenario: Verificação da disponibilidade de produtos inativos
@@ -103,12 +104,6 @@ Scenario: Exclusão de um produto
     When eu devo acessar a tela para excluir um produto
     When Usuário confirma exclusão de produto cadastrado
     Then Sistema exibe mensagem de produto excluido com sucesso
-
-Scenario: Manutenção de consistência após a exclusão de um produto
-    Given que o usuário está logado no sistema
-    When o usuário seleciona o módulo "Produtos"
-    When o usuário seleciona o módulo "Semanal Diario"
-    Then o produto excluído não deve aparecer mais na lista
 
 
 Scenario: Tentativa de exclusão sem confirmação

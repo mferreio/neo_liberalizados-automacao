@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 import logging
 from time import sleep
-import ipdb
 from selenium.webdriver.common.keys import Keys
 
 class PerfilDeAcessoPortfolioTradingLocators:
@@ -58,7 +57,6 @@ class PerfilDeAcessoPage:
     def validar_acesso_modulos_produtos(self):
         """Valida se o elemento MODULOS_PRODUTOS está visível na tela."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS)
             )
@@ -66,7 +64,6 @@ class PerfilDeAcessoPage:
             return True
         except TimeoutException:
             logging.error("Usuário não tem acesso ao Módulo Produtos.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             return False
         sleep(2)
 
@@ -86,7 +83,6 @@ class PerfilDeAcessoPage:
     def clicar_em_produtos(self):
         """Clica no elemento Produtos."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             logging.info("Clicando no elemento Produtos.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.CLICAR_MODULOS_PRODUTOS)
@@ -94,14 +90,12 @@ class PerfilDeAcessoPage:
             logging.info("Clique no elemento Produtos realizado com sucesso.")
         except TimeoutException:
             logging.error("Erro ao clicar no elemento Produtos.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             raise
         sleep(2)
 
     def visualizar_modulo_produtos(self):
         """Visualiza o módulo de produtos."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             botao_visualizar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_VISUALIZAR)
             )
@@ -114,7 +108,6 @@ class PerfilDeAcessoPage:
     def editar_modulo_produtos(self):
         """Edita o módulo de produtos."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             botao_editar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_EDITAR)
             )
@@ -127,7 +120,6 @@ class PerfilDeAcessoPage:
     def excluir_produto(self):
         """Exclui um produto."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             botao_excluir = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_EXCLUIR)
             )
@@ -140,7 +132,6 @@ class PerfilDeAcessoPage:
     def criar_dados(self):
         """Cria novos dados."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             botao_criar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_CRIAR)
             )
@@ -153,7 +144,6 @@ class PerfilDeAcessoPage:
     def verificar_opcoes_menu(self):
         """Verifica se o menu apresenta as opções corretas."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.MENU_OPCOES)
             )
@@ -165,7 +155,6 @@ class PerfilDeAcessoPage:
     def validar_texto_perfil(self, texto_esperado):
         """Valida se o texto do elemento IDENTIFICADOR_DE_PERFIL corresponde ao texto esperado."""
         try:
-            ipdb.set_trace()  # Inicia o depurador
             elemento = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.IDENTIFICADOR_DE_PERFIL)
             )
@@ -186,7 +175,6 @@ class PerfilDeAcessoPage:
             logging.info("Usuário com acesso ao produto Semanal/Diário.")
         except TimeoutException:
             logging.error("Erro: Produto Semanal/Diário não está visível na tela.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             return False
 
         try:
@@ -196,7 +184,6 @@ class PerfilDeAcessoPage:
             logging.info("Usuário com acesso ao produto I-Rec.")
         except TimeoutException:
             logging.error("Erro: Produto I-Rec não está visível na tela.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             return False
 
         try:
@@ -206,7 +193,6 @@ class PerfilDeAcessoPage:
             logging.info("Usuário com acesso ao produto Curto Prazo.")
         except TimeoutException:
             logging.error("Erro: Produto Curto Prazo não está visível na tela.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             return False
 
         sleep(2)
@@ -234,7 +220,6 @@ class PerfilDeAcessoPage:
             logging.info("Título 'Gerenciar Produtos Diário/Semanal' validado com sucesso.")
         except TimeoutException:
             logging.error("Erro ao acessar ou validar o título do produto Diário/Semanal.")
-            ipdb.set_trace()  # Inicia o depurador
             raise
         sleep(2)
 
@@ -247,7 +232,6 @@ class PerfilDeAcessoPage:
             ).click()
         except TimeoutException:
             logging.error("Erro ao clicar na aba produtos.")
-            ipdb.set_trace()  # Inicia o depurador
             raise
         sleep(2)
 
@@ -260,7 +244,6 @@ class PerfilDeAcessoPage:
             ).click()
         except TimeoutException:
             logging.error("Erro ao selecionar o produto Diário Semanal.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             raise
         sleep(2)
 
@@ -278,7 +261,6 @@ class PerfilDeAcessoPage:
             campo_ano.send_keys(Keys.ENTER)
         except TimeoutException:
             logging.error("Erro ao pesquisar pelo ano.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             raise
         sleep(2)
 
@@ -290,7 +272,6 @@ class PerfilDeAcessoPage:
             # Implementar lógica para selecionar o produto com base nos valores de CONS_PROD_MES, CONS_PROD_PERFIL, CONS_PROD_SUBMERCADO e CONS_PROD_TIPO_DE_PROD
         except TimeoutException:
             logging.error("Erro ao selecionar o produto estipulado.")
-            ipdb.set_trace()  # Inicia o depurador
             raise
         sleep(2)
 
@@ -303,7 +284,6 @@ class PerfilDeAcessoPage:
             ).click()
         except TimeoutException:
             logging.error("Erro ao clicar no botão editar.")
-            ipdb.set_trace()  # Inicia o depurador para analisar o erro
             raise
         sleep(2)
 

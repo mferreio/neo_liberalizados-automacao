@@ -12,7 +12,7 @@ Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz C
   When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
   Then o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
   # When deve exibir a mensagem "Arquivo enviado com sucesso" // "Sistema deve exibir um popup de sucesso ao armazenar, verificar se existe um bug para essa correção".
-  Then usuário clica em cadastrar
+  Then usuário clica em salvar
   # When sistema exibe mensagem de sucesso ou erro // "Verificar com o desenvolvedor como faço para pegar o xpath deste elemento"
   When retorna a pagina inicial
 

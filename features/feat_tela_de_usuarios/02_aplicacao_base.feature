@@ -45,7 +45,6 @@ Scenario: O usuário acessa o botão para adicionar um novo item
     When o módulo "Produtos" está visível no menu lateral
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Curto Prazo"
-    When ele deve ver um botão "Adicionar Novo Item"
     When o usuário clica em "Adicionar Novo Item"
     Then deve ser direcionado para um formulário para registrar um novo item
 

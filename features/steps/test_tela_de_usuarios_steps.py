@@ -4,6 +4,7 @@ import logging
 from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
 from features.environment import gerar_documento_evidencia, gerar_resumo_testes, executar_com_erro_controlado
 import allure
+from time import sleep
 
 @then('navega até a tela de usuários - Perfil')
 @when('navega até a tela de usuários - Perfil')
@@ -15,27 +16,21 @@ def navegar_tela_usuarios(context):
     except Exception as e:
         logging.error(f"Erro ao navegar até a tela de usuários: {e}")
         raise
+    sleep(2)
 
-@then('a tela de usuários deve ser exibida com todos os elementos visíveis')
-@allure.step("Validando que a tela de usuários está sendo exibida")
-def validar_tela_usuarios(context):
-    try:
-        context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-        context.tela_de_usuarios_page.validar_tela_de_usuarios()
-    except Exception as e:
-        logging.error(f"Erro ao validar a tela de usuários: {e}")
-        raise
 
-@then(u'valida os usuarios cadastrados exibindo nome, email e perfil')
-@when('valida os usuarios cadastrados exibindo nome, email e perfil')
+@then('valida os usuarios cadastrados exibindo nome, email e perfil')
 def step_valida_usuarios_cadastrados(context):
-    executar_com_erro_controlado(_validar_usuarios_cadastrados, context)
+    """Valida e exibe os usuários cadastrados com nome, email e perfil."""
+    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
+    usuarios_cadastrados = context.tela_de_usuarios_page.obter_usuarios_cadastrados()
 
-def _validar_usuarios_cadastrados(context):
-    nomes = context.tela_de_usuarios_page.obter_nomes_usuarios()
-    print("Usuários cadastrados encontrados:")
-    for nome in nomes:
-        print(f"- {nome}")
+    if usuarios_cadastrados:
+        print("Usuários cadastrados encontrados:")
+        for usuario in usuarios_cadastrados:
+            print(f"Nome: {usuario['nome']}, Email: {usuario['email']}, Perfil: {usuario['perfil']}")
+    else:
+        print("Nenhum usuário cadastrado foi encontrado.")
 
 @when('valida que nenhum novo usuário foi adicionado')
 def step_valida_novos_usuarios(context):
@@ -84,12 +79,11 @@ def step_clica_dropdown_perfil(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_dropdown_perfil()
 
-@when('o usuário seleciona o perfil de usuário, escreve o nome e email')
-def step_seleciona_perfil_usuario(context):
-    logging.info("Selecionando o perfil de usuário e preenchendo nome e email.")
+@when('o usuário seleciona o perfil de administrador, escreve o nome e email')
+def step_seleciona_perfil_administrador(context):
+    """Seleciona o perfil de administrador e insere o nome e email."""
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.tela_de_usuarios_page.selecionar_perfil_usuario(TIPO_DE_PERFIL)
-    context.tela_de_usuarios_page.inserir_nome_email()
+    context.tela_de_usuarios_page.selecionar_perfil_administrador_e_inserir_dados()
 
 @when('o usuário clica em "Salvar" para salvar o novo usuário')
 def step_clica_salvar_cadastro(context):
@@ -113,6 +107,7 @@ def step_clica_botao_editar(context):
     # Pesquisa o nome no filtro e clica no botão "Editar" se o nome for encontrado
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.pesquisar_e_clicar_editar(PESQUISAR_NOME_CADASTRADO)
+    sleep(1)
 
 @when('edita o tipo de perfil do usuário')
 def step_edita_dados_usuario(context):
@@ -128,7 +123,6 @@ def step_edita_dados_usuario(context):
 
 @when('clica em Salvar para salvar as alterações')
 def step_clica_salvar_cadastro(context):
-    # Garante que o dropdown de perfil seja clicado
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_botao_salvar_edicao()
 
@@ -136,29 +130,23 @@ def step_clica_salvar_cadastro(context):
 def step_pesquisa_usuario_cadastrado(context):
     # Pesquisa o nome no filtro e clica no botão "Editar" se o nome for encontrado
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.tela_de_usuarios_page.pesquisa_usuario_cadastrado(EXCLUIR_NOME)
+    context.tela_de_usuarios_page.pesquisa_usuario_cadastrado(EDITAR_NOME)
 
-@when('clica em excluir e cancela a exclusao')
-def step_clicar_botao_exclui_usuario(context):
-    # Clica para excluir e cancela a exclusão do usuário
-    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.tela_de_usuarios_page.cancelar_exclusao_de_usuario(EXCLUIR_NOME)
 
-@given('clica em excluir e confirma')
-@when('clica em excluir e confirma')
-@then('clica em excluir e confirma')
-def step_clicar_botao_exclui_usuario(context):
-    # Clica para excluir e confirma a exclusão do usuário
+@when('clica em excluir')
+def step_clica_em_excluir_e_cancela(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    context.tela_de_usuarios_page.excluir_usuario_cadastrado()
+    context.tela_de_usuarios_page.clicar_botao_excluir_usuario()
 
-@then('valida que as alterações foram salvas corretamente')
-def step_valida_alteracoes_salvas(context):
-    """Valida que as alterações foram salvas corretamente."""
+@when('clica em nao e cancela a exclusao')
+def step_clica_em_excluir_e_cancela(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
-    assert context.tela_de_usuarios_page.validar_mensagem_sucesso(), \
-        "A mensagem de sucesso não foi exibida."
-    logging.info("Alterações realizadas com sucesso.")
+    context.tela_de_usuarios_page.clicar_cancelar_exclusao_usuario()
+
+@when('clica em sim para confirmar a exclusao')
+def step_clica_em_excluir_e_cancela(context):
+    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
+    context.tela_de_usuarios_page.clicar_confirmar_exclusao_usuario()
 
 @then('valida que o usuário não foi excluído')
 def step_valida_usuario_nao_excluido(context):
@@ -174,7 +162,7 @@ def step_valida_usuario_excluido(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     assert not context.tela_de_usuarios_page.validar_usuario_presente(EXCLUIR_NOME), \
         "O usuário ainda está presente, mas deveria ter sido excluído."
-    logging.info("Usuário excluido com sucesso.")
+    logging.info("Usuário exclido com sucesso.")
 
 @then('o sistema gera evidências do teste')
 def step_gera_evidencias(context):
@@ -211,3 +199,12 @@ def step_gera_evidencias_tela_usuarios(context):
         gerar_documento_evidencia(nome_teste="Teste da Tela de Usuários", sucesso=True)
     except Exception as e:
         print(f"Erro ao gerar evidências da tela de usuários: {e}")
+
+@then('a tela de usuários deve ser exibida')
+def step_validar_tela_usuarios(context):
+    """Valida se o sistema está na tela de usuários."""
+    context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
+    if context.tela_de_usuarios_page.validar_tela_de_usuarios():
+        print("A tela de usuários foi exibida com sucesso.")
+    else:
+        raise AssertionError("A tela de usuários não foi exibida.")

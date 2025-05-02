@@ -27,14 +27,14 @@ def login(context):
         context.login_page.clicar_botao_entrar()
         context.login_page.enter_email(context.login_email)
         context.login_page.click_next_button()
-        sleep(7)  # Aguarda a interface estar pronta para interação
+        sleep(8)
         pyautogui.write(LOGIN_USUARIO.upper())
-        pyautogui.press('tab')  # Navega até o campo de senha
+        pyautogui.press('tab')
         sleep(1)
-        pyautogui.write(LOGIN_PASSWORD)  # Digita a senha respeitando o caso das letras
-        pyautogui.press('tab')  # Navega até o botão submit
+        pyautogui.write(LOGIN_PASSWORD)
+        pyautogui.press('tab')
         sleep(1)
-        pyautogui.press('enter')  # Submete o login
+        pyautogui.press('enter') 
         sleep(10)
 
         # Aguarda a transição para a próxima página

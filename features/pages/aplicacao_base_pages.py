@@ -2,8 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-import logging
-import time
+import time, logging, ipdb
 
 class AplicacaoBaseLocators:
     """Locators para a página base da aplicação."""
@@ -17,15 +16,15 @@ class AplicacaoBaseLocators:
     BOTAO_TRADING_PORTFOLIO = (By.XPATH, "//button[text()='Trading/Portifólio']")
     URL_PAGINA_PRINCIPAL = "https://diretrizes.dev.neoenergia.net/"
     MODULO_SEMANAL_DIARIO = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])")
-    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (By.XPATH, "//h5[text()='Gerenciar Produtos Diário/Semanal']")
+    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (By.XPATH, "//h5[text()='Gerenciar Produtos (Diário/Semanal)']")
     MODULO_IREC = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])")
-    MODULO_CURTO_PRAZO = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[3]/a[1]/span[1])")
-    ELEMENTO_TELA_PRODUTOS_IREC = (By.XPATH, "//h5[text()='Gerenciar Produtos I-REC']")
-    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (By.XPATH, "//h5[text()='Gerenciar Produtos Curto Prazo']")
+    MODULO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
+    ELEMENTO_TELA_PRODUTOS_IREC = (By.XPATH, "//h5[text()='Gerenciar Produtos (I-REC)']")
+    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (By.XPATH, "//h5[text()='Gerenciar Produtos (Curto Prazo)']")
     LISTA_PRODUTOS = (By.XPATH, "//tr[@class='ng-star-inserted']/td[position()=1][span[text()='Mês']]")
-    BOTAO_NOVO_ITEM = (By.XPATH, "//button[contains(@class, 'p-button-success') and contains(@class, 'p-element') and span[text()='Novo']]")
-    FORMULARIO_VALIDACAO = (By.XPATH, "//div[@class='p-fluid']/p[@class='text-3xl font-bold text-green-500']")
-    BOTAO_VOLTAR = (By.XPATH, "//button[contains(@class, 'p-button-secondary') and contains(@class, 'p-button-text') and span[text()='Voltar']]")
+    BOTAO_NOVO_ITEM = (By.XPATH, "//button[span[text()='Novo']]")
+    FORMULARIO_VALIDACAO = (By.XPATH, "//p[text()=' Cadastro de Produto - Curto Prazo ']")
+    BOTAO_VOLTAR = (By.XPATH, "//button[span[text()='Voltar']]")
     URL_PAGINA_INICIAL = "https://diretrizes.dev.neoenergia.net/"
 
 class AplicacaoBasePage:
@@ -232,7 +231,6 @@ class AplicacaoBasePage:
 
     def clicar_modulo_curto_prazo(self):
         """Clica no módulo 'Curto Prazo' no menu lateral."""
-        time.sleep(1)
         try:
             modulo_curto_prazo = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(AplicacaoBaseLocators.MODULO_CURTO_PRAZO)
