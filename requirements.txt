@@ -10,3 +10,13 @@ python-pptx
 google-auth-oauthlib
 requests
 python-dotenv
+ipdb
+[INFO] Initializing environment for https://github.com/psf/black.
+[INFO] Initializing environment for https://github.com/pre-commit/mirrors-flake8.
+An unexpected error has occurred: CalledProcessError: command: ('C:\\Users\\mferreio\\AppData\\Local\\Programs\\Git\\mingw64\\libexec\\git-core\\git.EXE', 'fetch', 'origin', '--tags')
+return code: 128
+stdout: (none)
+stderr:
+    remote: Repository not found.
+    fatal: repository 'https://github.com/pre-commit/mirrors-flake8/' not found
+Check the log at C:\Users\mferreio\.cache\pre-commit\pre-commit.log

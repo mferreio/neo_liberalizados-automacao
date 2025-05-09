@@ -1,24 +1,26 @@
-import os
-import logging
-import subprocess
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-from pages.login_page import LoginPageLocators
-from time import sleep
-from datetime import datetime
-from credentials import LOGIN_EMAIL, LOGIN_USUARIO, LOGIN_PASSWORD
-from pages.login_page import LoginPage
-import pyautogui
 import base64
+import io
+import logging
+import os
 import shutil
 import stat
-import matplotlib.pyplot as plt
-import io
-from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
+import subprocess
 import traceback
+from datetime import datetime
+from time import sleep
+
+import matplotlib.pyplot as plt
+import pyautogui
+from pages.login_page import LoginPage, LoginPageLocators
+from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
+
 
 def login(context):
     """Realiza o login no sistema."""
@@ -29,12 +31,12 @@ def login(context):
         context.login_page.click_next_button()
         sleep(8)
         pyautogui.write(LOGIN_USUARIO.upper())
-        pyautogui.press('tab')
+        pyautogui.press("tab")
         sleep(1)
         pyautogui.write(LOGIN_PASSWORD)
-        pyautogui.press('tab')
+        pyautogui.press("tab")
         sleep(1)
-        pyautogui.press('enter') 
+        pyautogui.press("enter")
         sleep(10)
 
         # Aguarda a transição para a próxima página
@@ -44,8 +46,9 @@ def login(context):
         logging.info("Login realizado com sucesso.")
     except TimeoutException as e:
         logging.error(f"Erro durante o login: {e}")
-        context.driver.save_screenshot('reports/screenshots/timeout_exception.png')
+        context.driver.save_screenshot("reports/screenshots/timeout_exception.png")
         raise
+
 
 def before_all(context):
     """Configura o ambiente antes de todos os testes."""
@@ -56,7 +59,9 @@ def before_all(context):
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--incognito")
     chrome_options.add_argument("--ignore-certificate-errors")
-    chrome_options.add_argument(f"--remote-debugging-port={fixed_port}")  # Configura a porta
+    chrome_options.add_argument(
+        f"--remote-debugging-port={fixed_port}"
+    )  # Configura a porta
     context.driver = webdriver.Chrome(options=chrome_options)
     context.driver.delete_all_cookies()
     context.login_page = LoginPage(context.driver)
@@ -68,15 +73,21 @@ def before_all(context):
     context.start_time = datetime.now()
 
     # Garante que as pastas necessárias existam
-    os.makedirs('reports/screenshots', exist_ok=True)
-    os.makedirs('reports/evidencias', exist_ok=True)
-    os.makedirs('reports/allure-results', exist_ok=True)
+    os.makedirs("reports/screenshots", exist_ok=True)
+    os.makedirs("reports/evidencias", exist_ok=True)
+    os.makedirs("reports/allure-results", exist_ok=True)
 
-    context.report_output_path = os.path.join(os.getcwd(), 'docs')  # Define o diretório de saída como 'docs'
+    context.report_output_path = os.path.join(
+        os.getcwd(), "docs"
+    )  # Define o diretório de saída como 'docs'
     if not os.path.exists(context.report_output_path):
         os.makedirs(context.report_output_path)  # Cria o diretório se não existir
-    context.github_pages_url = "https://mferreio.github.io/neo_liberalizados-automacao/"  # URL do GitHub Pages
-    context.github_pages_branch = "gh-pages"  # Define a branch usada para o GitHub Pages
+    context.github_pages_url = (
+        "https://mferreio.github.io/neo_liberalizados-automacao/"  # URL do GitHub Pages
+    )
+    context.github_pages_branch = (
+        "gh-pages"  # Define a branch usada para o GitHub Pages
+    )
 
     context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
 
@@ -87,6 +98,7 @@ def before_all(context):
         logging.error(f"Erro ao realizar login antes de todos os testes: {e}")
         raise
 
+
 def before_feature(context, feature):
     """Executa ações antes de cada feature."""
     logging.info(f"INICIANDO A FEATURE: {feature.name}")
@@ -94,21 +106,31 @@ def before_feature(context, feature):
     # Verifica se a feature é '07_perfil_de_acesso_nao_logado.feature'
     if "07_perfil_de_acesso_nao_logado.feature" in feature.filename:
         try:
-            logging.info("Limpando o cache do navegador e acessando a URL inicial para garantir que o usuário não está logado.")
+            logging.info(
+                "Limpando o cache do navegador e acessando a URL inicial para garantir que o usuário não está logado."
+            )
             context.driver.delete_all_cookies()  # Limpa o cache do navegador
-            context.driver.get("https://diretrizes.dev.neoenergia.net/")  # Acessa a URL inicial
+            context.driver.get(
+                "https://diretrizes.dev.neoenergia.net/"
+            )  # Acessa a URL inicial
             logging.info("Cache limpo e URL inicial acessada com sucesso.")
         except Exception as e:
-            logging.error(f"Erro ao preparar o ambiente para a feature '07_perfil_de_acesso_nao_logado.feature': {e}")
+            logging.error(
+                f"Erro ao preparar o ambiente para a feature '07_perfil_de_acesso_nao_logado.feature': {e}"
+            )
             raise
     else:
         context.driver.get("https://diretrizes.dev.neoenergia.net/")
-        logging.info("Nenhuma ação adicional necessária para esta feature, pois o login já foi realizado no before_all.")
+        logging.info(
+            "Nenhuma ação adicional necessária para esta feature, pois o login já foi realizado no before_all."
+        )
+
 
 def before_scenario(context, scenario):
     """Executa ações antes de cada cenário."""
     logging.info(f"INICIANDO O CENÁRIO: {scenario.name}")
     context.start_time_scenario = datetime.now()  # Registra o início do cenário
+
 
 def after_scenario(context, scenario):
     """Executa ações após cada cenário."""
@@ -123,11 +145,13 @@ def after_scenario(context, scenario):
     else:
         context.passed_scenarios.append(scenario.name)
 
+
 def esperar_e_executar(context, locator, metodo, *args):
     """Espera por um elemento clicável e executa uma ação."""
-    from selenium.webdriver.support.ui import WebDriverWait
-    from selenium.webdriver.support import expected_conditions as EC
     from time import sleep
+
+    from selenium.webdriver.support import expected_conditions as EC
+    from selenium.webdriver.support.ui import WebDriverWait
 
     try:
         WebDriverWait(context.driver, 20).until(EC.element_to_be_clickable(locator))
@@ -138,12 +162,14 @@ def esperar_e_executar(context, locator, metodo, *args):
     finally:
         sleep(1)
 
+
 def gerar_documento_evidencia(nome_teste, sucesso=True, erros=None):
     """
     Gera um documento de evidência ou bug com base no modelo fornecido.
     """
-    from docx import Document
     import os
+
+    from docx import Document
 
     data_teste = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     if sucesso:
@@ -169,12 +195,14 @@ def gerar_documento_evidencia(nome_teste, sucesso=True, erros=None):
     logging.info(f"Documento gerado: {nome_arquivo}")
     return nome_arquivo
 
+
 def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
     """
     Gera um documento de resumo com métricas dos testes realizados.
     """
-    from docx import Document
     import os
+
+    from docx import Document
 
     modelo = "modelos de evidencias/3.Resumo.docx"
     data_teste = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -193,6 +221,7 @@ def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
     logging.info(f"Resumo gerado: {nome_arquivo}")
     return nome_arquivo
 
+
 def reset_permissions(directory):
     """Redefine permissões de um diretório e seus arquivos."""
     for root, dirs, files in os.walk(directory):
@@ -201,63 +230,80 @@ def reset_permissions(directory):
         for file_name in files:
             os.chmod(os.path.join(root, file_name), stat.S_IRWXU)
 
+
 def gerar_grafico_percentual(total, falhas, titulo):
     """Gera um gráfico de pizza com o percentual de falhas."""
     sucesso = total - falhas
-    labels = ['Sucesso', 'Falhas']
+    labels = ["Sucesso", "Falhas"]
     sizes = [sucesso, falhas]
-    colors = ['#4CAF50', '#F44336']
+    colors = ["#4CAF50", "#F44336"]
     explode = (0, 0.1)  # Destaque para falhas
 
     # Evita divisão por zero ao gerar o gráfico
     if total == 0:
         sizes = [1]  # Exibe 100% como "Nenhum dado"
-        labels = ['Nenhum dado']
-        colors = ['#B0BEC5']  # Cor neutra para ausência de dados
+        labels = ["Nenhum dado"]
+        colors = ["#B0BEC5"]  # Cor neutra para ausência de dados
         explode = (0,)
 
     fig, ax = plt.subplots(figsize=(4, 4))  # Reduz o tamanho do gráfico
-    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-    ax.axis('equal')  # Garante que o gráfico seja um círculo
+    ax.pie(
+        sizes,
+        explode=explode,
+        labels=labels,
+        colors=colors,
+        autopct="%1.1f%%",
+        startangle=90,
+    )
+    ax.axis("equal")  # Garante que o gráfico seja um círculo
     ax.set_title(titulo, fontsize=10)
 
     # Salva o gráfico em memória
     buffer = io.BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.savefig(buffer, format="png", bbox_inches="tight")
     buffer.seek(0)
-    img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
     buffer.close()
     plt.close(fig)
     return img_base64
 
+
 def gerar_grafico_percentual_completo(sucesso, falhas, ignorados, titulo):
     """Gera um gráfico de pizza com os percentuais de sucesso, falhas e ignorados."""
     total = sucesso + falhas + ignorados
-    labels = ['Sucesso', 'Falhas', 'Ignorados']
+    labels = ["Sucesso", "Falhas", "Ignorados"]
     sizes = [sucesso, falhas, ignorados]
-    colors = ['#4CAF50', '#F44336', '#FFC107']
+    colors = ["#4CAF50", "#F44336", "#FFC107"]
     explode = (0, 0.1, 0)  # Destaque para falhas
 
     # Evita divisão por zero ao gerar o gráfico
     if total == 0:
         sizes = [1]  # Exibe 100% como "Nenhum dado"
-        labels = ['Nenhum dado']
-        colors = ['#B0BEC5']  # Cor neutra para ausência de dados
+        labels = ["Nenhum dado"]
+        colors = ["#B0BEC5"]  # Cor neutra para ausência de dados
         explode = (0,)
 
     fig, ax = plt.subplots(figsize=(4, 4))  # Reduz o tamanho do gráfico
-    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1%%', startangle=90)
-    ax.axis('equal')  # Garante que o gráfico seja um círculo
+    ax.pie(
+        sizes,
+        explode=explode,
+        labels=labels,
+        colors=colors,
+        autopct="%1.1%%",
+        startangle=90,
+    )
+    ax.axis("equal")  # Garante que o gráfico seja um círculo
     ax.set_title(titulo, fontsize=10)
 
     # Salva o gráfico em memória
     buffer = io.BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.savefig(buffer, format="png", bbox_inches="tight")
     buffer.seek(0)
-    img_base64 = base64.b64encode(buffer.read()).decode('utf-8')
+    img_base64 = base64.b64encode(buffer.read()).decode("utf-8")
     buffer.close()
     plt.close(fig)
     return img_base64
+
 
 def get_allure_metrics():
     """Obtém métricas do Allure Report a partir do arquivo summary.json."""
@@ -267,6 +313,7 @@ def get_allure_metrics():
     try:
         with open(summary_path, "r") as summary_file:
             import json
+
             summary = json.load(summary_file)
             passed = summary.get("statistic", {}).get("passed", 0)
             failed = summary.get("statistic", {}).get("failed", 0)
@@ -279,10 +326,11 @@ def get_allure_metrics():
     failed += broken
     return passed, failed, ignored
 
+
 def after_all(context):
     """Finaliza o ambiente após todos os testes."""
     try:
-        if hasattr(context, 'driver'):
+        if hasattr(context, "driver"):
             context.driver.quit()
             logging.info("Navegador fechado com sucesso.")
 
@@ -295,13 +343,18 @@ def after_all(context):
         total_cenarios = passed_scenarios + failed_scenarios + ignored_scenarios
 
         # Calcula o percentual de falhas
-        percentual_falhas = (failed_scenarios / total_cenarios * 100) if total_cenarios > 0 else 0
+        percentual_falhas = (
+            (failed_scenarios / total_cenarios * 100) if total_cenarios > 0 else 0
+        )
 
-        logging.info(f"Resumo dos testes: Total: {total_cenarios}, Sucesso: {passed_scenarios}, Falhas: {failed_scenarios}, Ignorados: {ignored_scenarios}")
+        logging.info(
+            f"Resumo dos testes: Total: {total_cenarios}, Sucesso: {passed_scenarios}, Falhas: {failed_scenarios}, Ignorados: {ignored_scenarios}"
+        )
         logging.info(f"Tempo de execução: {execution_time}")
         logging.info(f"Percentual de falhas: {percentual_falhas:.2f}%")
     except Exception as e:
         logging.error(f"Erro ao finalizar o ambiente: {e}")
+
 
 def executar_com_erro_controlado(funcao, *args, **kwargs):
     """Executa uma função, captura erros e continua a execução."""

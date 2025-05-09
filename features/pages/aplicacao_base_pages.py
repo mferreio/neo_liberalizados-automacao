@@ -1,13 +1,24 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import logging
+import time
+
+import ipdb
 from selenium.common.exceptions import TimeoutException
-import time, logging, ipdb
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 
 class AplicacaoBaseLocators:
     """Locators para a página base da aplicação."""
-    MENU_LATERAL = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[1]/div[1])")
-    MODULO_REGISTRO_ITENS = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])")
+
+    MENU_LATERAL = (
+        By.XPATH,
+        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[1]/div[1])",
+    )
+    MODULO_REGISTRO_ITENS = (
+        By.XPATH,
+        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",
+    )
     LISTA_ITENS_CADASTRADOS = (By.XPATH, "//div[@class='lista-itens']")
     BOTAO_ADICIONAR_NOVO_ITEM = (By.XPATH, "//button[text()='Adicionar Novo Item']")
     FORMULARIO_NOVO_ITEM = (By.XPATH, "//form[@id='form-novo-item']")
@@ -15,17 +26,39 @@ class AplicacaoBaseLocators:
     BOTAO_ADMINISTRADOR = (By.XPATH, "//button[text()='Administrador']")
     BOTAO_TRADING_PORTFOLIO = (By.XPATH, "//button[text()='Trading/Portifólio']")
     URL_PAGINA_PRINCIPAL = "https://diretrizes.dev.neoenergia.net/"
-    MODULO_SEMANAL_DIARIO = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])")
-    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (By.XPATH, "//h5[text()='Gerenciar Produtos (Diário/Semanal)']")
-    MODULO_IREC = (By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])")
+    MODULO_SEMANAL_DIARIO = (
+        By.XPATH,
+        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",
+    )
+    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (
+        By.XPATH,
+        "//h5[text()='Gerenciar Produtos (Diário/Semanal)']",
+    )
+    MODULO_IREC = (
+        By.XPATH,
+        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])",
+    )
     MODULO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
-    ELEMENTO_TELA_PRODUTOS_IREC = (By.XPATH, "//h5[text()='Gerenciar Produtos (I-REC)']")
-    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (By.XPATH, "//h5[text()='Gerenciar Produtos (Curto Prazo)']")
-    LISTA_PRODUTOS = (By.XPATH, "//tr[@class='ng-star-inserted']/td[position()=1][span[text()='Mês']]")
+    ELEMENTO_TELA_PRODUTOS_IREC = (
+        By.XPATH,
+        "//h5[text()='Gerenciar Produtos (I-REC)']",
+    )
+    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (
+        By.XPATH,
+        "//h5[text()='Gerenciar Produtos (Curto Prazo)']",
+    )
+    LISTA_PRODUTOS = (
+        By.XPATH,
+        "//tr[@class='ng-star-inserted']/td[position()=1][span[text()='Mês']]",
+    )
     BOTAO_NOVO_ITEM = (By.XPATH, "//button[span[text()='Novo']]")
-    FORMULARIO_VALIDACAO = (By.XPATH, "//p[text()=' Cadastro de Produto - Curto Prazo ']")
+    FORMULARIO_VALIDACAO = (
+        By.XPATH,
+        "//p[text()=' Cadastro de Produto - Curto Prazo ']",
+    )
     BOTAO_VOLTAR = (By.XPATH, "//button[span[text()='Voltar']]")
     URL_PAGINA_INICIAL = "https://diretrizes.dev.neoenergia.net/"
+
 
 class AplicacaoBasePage:
     def __init__(self, driver):
@@ -59,7 +92,9 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.LISTA_ITENS_CADASTRADOS)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.LISTA_ITENS_CADASTRADOS
+                )
             )
             logging.info("Lista de itens cadastrados está visível.")
         except TimeoutException:
@@ -70,7 +105,9 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             botao = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM)
+                EC.element_to_be_clickable(
+                    AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
+                )
             )
             botao.click()
             logging.info("Botão 'Adicionar Novo Item' clicado com sucesso.")
@@ -82,11 +119,15 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.FORMULARIO_NOVO_ITEM)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.FORMULARIO_NOVO_ITEM
+                )
             )
             logging.info("Formulário para adicionar novo item está visível.")
         except TimeoutException:
-            raise AssertionError("Formulário para adicionar novo item não está visível.")
+            raise AssertionError(
+                "Formulário para adicionar novo item não está visível."
+            )
 
     def verificar_modulo_invisivel(self, modulo_locator):
         """Verifica se um módulo está invisível no menu lateral."""
@@ -105,20 +146,30 @@ class AplicacaoBasePage:
         try:
             if perfil == "Administrador":
                 WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_ADMINISTRADOR)
+                    EC.presence_of_element_located(
+                        AplicacaoBaseLocators.BOTAO_ADMINISTRADOR
+                    )
                 )
                 WebDriverWait(self.driver, 10).until_not(
-                    EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM)
+                    EC.presence_of_element_located(
+                        AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
+                    )
                 )
                 logging.info("Botões corretos visíveis para o perfil Administrador.")
             elif perfil == "Trading/Portifólio":
                 WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO)
+                    EC.presence_of_element_located(
+                        AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO
+                    )
                 )
                 WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM)
+                    EC.presence_of_element_located(
+                        AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
+                    )
                 )
-                logging.info("Botões corretos visíveis para o perfil Trading/Portifólio.")
+                logging.info(
+                    "Botões corretos visíveis para o perfil Trading/Portifólio."
+                )
             else:
                 raise ValueError(f"Perfil desconhecido: {perfil}")
         except TimeoutException:
@@ -129,7 +180,9 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO
+                )
             )
             logging.info("Botão 'Trading/Portifólio' está visível.")
         except TimeoutException:
@@ -140,43 +193,63 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO
+                )
             )
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
+                )
             )
-            logging.info("Botões 'Trading/Portifólio' e 'Adicionar Novo Item' estão visíveis.")
+            logging.info(
+                "Botões 'Trading/Portifólio' e 'Adicionar Novo Item' estão visíveis."
+            )
         except TimeoutException:
-            raise AssertionError("Os botões 'Trading/Portifólio' ou 'Adicionar Novo Item' não estão visíveis.")
+            raise AssertionError(
+                "Os botões 'Trading/Portifólio' ou 'Adicionar Novo Item' não estão visíveis."
+            )
 
     def validar_pagina_principal(self):
         """Valida se o sistema está na página principal."""
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                lambda driver: driver.current_url == AplicacaoBaseLocators.URL_PAGINA_PRINCIPAL
+                lambda driver: driver.current_url
+                == AplicacaoBaseLocators.URL_PAGINA_PRINCIPAL
             )
             logging.info("Usuário está na página principal.")
         except TimeoutException:
-            raise AssertionError(f"Usuário não está na página principal. URL atual: {self.driver.current_url}")
+            raise AssertionError(
+                f"Usuário não está na página principal. URL atual: {self.driver.current_url}"
+            )
 
     def validar_modulo_visivel(self):
         """Valida se o módulo 'Produtos' está visível no menu lateral."""
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.MODULO_REGISTRO_ITENS)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.MODULO_REGISTRO_ITENS
+                )
             )
             logging.info("O módulo 'Produtos' está visível no menu lateral.")
         except TimeoutException:
-            raise AssertionError("O módulo 'Produtos' não está visível no menu lateral.")
+            raise AssertionError(
+                "O módulo 'Produtos' não está visível no menu lateral."
+            )
 
     def clicar_modulo_produtos(self):
         """Clica no módulo 'Produtos' no menu lateral."""
         time.sleep(1)
         try:
             modulo_produtos = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])"))
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",
+                    )
+                )
             )
             modulo_produtos.click()
             logging.info("Clicou no módulo 'Produtos' com sucesso.")
@@ -188,7 +261,12 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             modulo_semanal_diario = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])"))
+                EC.element_to_be_clickable(
+                    (
+                        By.XPATH,
+                        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",
+                    )
+                )
             )
             modulo_semanal_diario.click()
             logging.info("Clicou no módulo 'Semanal Diario' com sucesso.")
@@ -200,11 +278,17 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO
+                )
             )
-            logging.info("Tela de visualização dos dados do módulo 'Produtos Semanal Diario' validada com sucesso.")
+            logging.info(
+                "Tela de visualização dos dados do módulo 'Produtos Semanal Diario' validada com sucesso."
+            )
         except TimeoutException:
-            raise AssertionError("Erro ao validar a tela de visualização dos dados do módulo 'Produtos Semanal Diario'.")
+            raise AssertionError(
+                "Erro ao validar a tela de visualização dos dados do módulo 'Produtos Semanal Diario'."
+            )
 
     def clicar_modulo_irec(self):
         """Clica no módulo 'IREC' no menu lateral."""
@@ -223,11 +307,17 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_IREC)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_IREC
+                )
             )
-            logging.info("Tela de visualização dos dados do módulo 'Produtos IREC' validada com sucesso.")
+            logging.info(
+                "Tela de visualização dos dados do módulo 'Produtos IREC' validada com sucesso."
+            )
         except TimeoutException:
-            raise AssertionError("Erro ao validar a tela de visualização dos dados do módulo 'Produtos IREC'.")
+            raise AssertionError(
+                "Erro ao validar a tela de visualização dos dados do módulo 'Produtos IREC'."
+            )
 
     def clicar_modulo_curto_prazo(self):
         """Clica no módulo 'Curto Prazo' no menu lateral."""
@@ -245,20 +335,30 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO
+                )
             )
-            logging.info("Tela de visualização dos dados do módulo 'Produtos Curto Prazo' validada com sucesso.")
+            logging.info(
+                "Tela de visualização dos dados do módulo 'Produtos Curto Prazo' validada com sucesso."
+            )
         except TimeoutException:
-            raise AssertionError("Erro ao validar a tela de visualização dos dados do módulo 'Produtos Curto Prazo'.")
+            raise AssertionError(
+                "Erro ao validar a tela de visualização dos dados do módulo 'Produtos Curto Prazo'."
+            )
 
     def consultar_lista_produtos(self):
         """Consulta e retorna a lista de produtos cadastrados na tela de produtos."""
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_all_elements_located(AplicacaoBaseLocators.LISTA_PRODUTOS)
+                EC.presence_of_all_elements_located(
+                    AplicacaoBaseLocators.LISTA_PRODUTOS
+                )
             )
-            elementos_produtos = self.driver.find_elements(*AplicacaoBaseLocators.LISTA_PRODUTOS)
+            elementos_produtos = self.driver.find_elements(
+                *AplicacaoBaseLocators.LISTA_PRODUTOS
+            )
             produtos = [elemento.text for elemento in elementos_produtos]
             logging.info(f"Produtos encontrados: {produtos}")
             return produtos
@@ -282,7 +382,9 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(AplicacaoBaseLocators.FORMULARIO_VALIDACAO)
+                EC.presence_of_element_located(
+                    AplicacaoBaseLocators.FORMULARIO_VALIDACAO
+                )
             )
             logging.info("Formulário validado com sucesso.")
             botao_voltar = WebDriverWait(self.driver, 10).until(
@@ -291,7 +393,9 @@ class AplicacaoBasePage:
             botao_voltar.click()
             logging.info("Botão 'Voltar' clicado com sucesso.")
         except TimeoutException:
-            raise AssertionError("Erro ao validar o formulário ou clicar no botão 'Voltar'.")
+            raise AssertionError(
+                "Erro ao validar o formulário ou clicar no botão 'Voltar'."
+            )
 
     def retornar_pagina_inicial(self):
         """Navega de volta para a página inicial."""
@@ -299,7 +403,8 @@ class AplicacaoBasePage:
         try:
             self.driver.get(AplicacaoBaseLocators.URL_PAGINA_INICIAL)
             WebDriverWait(self.driver, 10).until(
-                lambda driver: driver.current_url == AplicacaoBaseLocators.URL_PAGINA_INICIAL
+                lambda driver: driver.current_url
+                == AplicacaoBaseLocators.URL_PAGINA_INICIAL
             )
             logging.info("Retornado para a página inicial com sucesso.")
         except TimeoutException:

@@ -52,7 +52,6 @@ Scenario: Adição de um novo produto para diretrizes de curto prazo
     When Usuário clica em cadastrar produto
     Then eu devo conseguir criar dados
 
-
 Scenario: Edição de um produto já cadastrado
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
@@ -69,7 +68,6 @@ Scenario: Atualização da exibição após edição de um produto
     When o usuário seleciona o módulo "Semanal Diario"
     Then exibe os produtos com perfil, submercado e tipo de diretriz atualizados
 
-
 Scenario: Inativação de um produto
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
@@ -77,13 +75,11 @@ Scenario: Inativação de um produto
     When o usuário marcar o checkbox de inativação de um produto e clica em sim
     Then o sistema exibe uma mensagem de produto inativado com sucesso
 
-
 Scenario: Visualização da lista de produtos após inativação
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
     Then o usuário consegue visualizar os produtos inativos
-
 
 Scenario: Verificação da disponibilidade de produtos inativos
     Given que o usuário está logado no sistema
@@ -91,8 +87,6 @@ Scenario: Verificação da disponibilidade de produtos inativos
     When o usuário seleciona o módulo "Semanal Diario"
     When o usuário tiver um produto inativo
     Then esse produto deve ser exibido na lista de produtos
-    When o produto não deve estar disponível para seleção na criação de uma nova diretriz
-
 
 Scenario: Exclusão de um produto
     Given que o usuário está logado no sistema
@@ -122,10 +116,9 @@ Scenario: Visualização correta do submercado
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
-    Then exibe os produtos com submercado
-    When o usuário visualizar um produto com diretrizes diárias ou semanais
+    When consultar os produtos cadastrados
+    When o usuário visualizar um produto com diretriz diária e semanal
     Then o submercado associado ao produto deve ser exibido corretamente na lista
-    When a informação do submercado deve ser correspondente àquela cadastrada
 
 
 Scenario: Adição de produto com dados válidos
@@ -162,7 +155,8 @@ Scenario: Verificação da navegação entre telas
     When o usuário seleciona o módulo "Semanal Diario"
     When Usuário clica em novo produto
     When o usuário é direcionado para a tela de cadastros
-    When o usuário retorna a tela anterior
+    When o usuário clica em voltar
+    Then o usuário deve ser redirecionado para a tela de produtos
     When Usuário clica no botão editar
     Then o sistema exibe a pagina de edição do produto
 
@@ -171,7 +165,7 @@ Scenario: Exibição de detalhes de produtos inativos
     Given que o usuário está logado no sistema
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
-    When o usuário selecionar um produto inativo
+    When o usuário consulta um produto inativo
     Then todos os detalhes do produto inativo devem ser exibidos na tela
 
 
@@ -199,9 +193,8 @@ Scenario: Visualização de mensagens de erro em campos obrigatórios
     When o usuário seleciona o módulo "Semanal Diario"
     When Usuário clica em novo produto
     When o usuário é direcionado para a tela de cadastros
-    When Usuário não preenche os campos obrigatórios
-    When Usuário clica em cadastrar produto
-    Then uma mensagem de erro deve ser exibida, informando que todos os campos obrigatórios devem ser preenchidos
+    When Usuário preenche os campos obrigatórios com dados inválidos
+    Then uma mensagem de erro deve ser exibida
 
 
 Scenario: Confirmação visual ao excluir um produto
@@ -221,4 +214,4 @@ Scenario: Efeito de filtro na tela de produtos
     When o usuário seleciona o módulo "Produtos"
     When o usuário seleciona o módulo "Semanal Diario"
     When Usuário pesquisa pelo ano
-    Then a lista de produtos deve ser atualizada para exibir apenas os produtos que atendem ao critério de filtro
+    Then o sistema exibe apenas os produtos correspondentes ao filtro aplicado

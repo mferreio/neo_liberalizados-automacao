@@ -1,18 +1,30 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 import logging
 from time import sleep
+
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
 
 class PerfilDeAcessoPortfolioTradingLocators:
     """Locators para a página de Perfil de Acesso - Trading/Portfólio."""
+
     VALIDAR_MODULOS_PRODUTOS = (By.XPATH, "//a[span[text()='Produtos']]")
-    CLICAR_MODULOS_PRODUTOS = (By.XPATH, "//a[@class='p-ripple p-element ng-tns-c183498709-14 ng-star-inserted' and span[text()='Produtos']]")
-    BOTAO_PRODUTOS = (By.XPATH, "//li[@class='ng-tns-c183498709-19 ng-tns-c183498709-10 ng-star-inserted']")
+    CLICAR_MODULOS_PRODUTOS = (
+        By.XPATH,
+        "//a[@class='p-ripple p-element ng-tns-c183498709-14 ng-star-inserted' and span[text()='Produtos']]",
+    )
+    BOTAO_PRODUTOS = (
+        By.XPATH,
+        "//li[@class='ng-tns-c183498709-19 ng-tns-c183498709-10 ng-star-inserted']",
+    )
     MODULO_DIRETRIZES = (By.XPATH, "//div[text()='Diretrizes']")
-    MODULO_PROPOSTA_DIRETRIZES = (By.XPATH, "//div[text()='Prêmio de Proposta de Diretrizes']")
+    MODULO_PROPOSTA_DIRETRIZES = (
+        By.XPATH,
+        "//div[text()='Prêmio de Proposta de Diretrizes']",
+    )
     MODULO_PREMIOS_PADRAO = (By.XPATH, "//div[text()='Prêmios Padrão']")
     MODULO_PREMIOS = (By.XPATH, "//div[text()='Prêmios']")
     BOTAO_VISUALIZAR = (By.XPATH, "//button[text()='Visualizar']")
@@ -20,28 +32,57 @@ class PerfilDeAcessoPortfolioTradingLocators:
     BOTAO_EXCLUIR = (By.XPATH, "//button[text()='Excluir']")
     BOTAO_CRIAR = (By.XPATH, "//button[text()='Criar']")
     MENU_OPCOES = (By.XPATH, "//div[@class='menu-opcoes']")
-    IDENTIFICADOR_DE_PERFIL = (By.CSS_SELECTOR, "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary")
+    IDENTIFICADOR_DE_PERFIL = (
+        By.CSS_SELECTOR,
+        "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",
+    )
     PRODUTO_DIARIO_SEMANAL = (By.XPATH, "//a[@href='/pages/default-products']")
     PRODUTO_I_REC = (By.XPATH, "//a[@href='/pages/irec-products']/span[text()='I-REC']")
     PRODUTO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
-    VALIDAR_PAGINA_PRODUTOS_DIARIOS = (By.XPATH, "//h5[text()='Gerenciar Produtos Diário/Semanal']")
+    VALIDAR_PAGINA_PRODUTOS_DIARIOS = (
+        By.XPATH,
+        "//h5[text()='Gerenciar Produtos Diário/Semanal']",
+    )
     PESQUISAR_PROD_POR_ANO = (By.XPATH, "//input[@placeholder='Procurar por ano']")
-    BTN_EDITAR_PROD = (By.CSS_SELECTOR, "div.flex > button.p-element.p-ripple.p-button-rounded.p-button-success.mr-2.p-button.p-component.p-button-icon-only.ng-star-inserted > span.p-button-icon.pi.pi-pencil")
-    ABRIR_MODULO_PRODUTOS = (By.XPATH, "//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]")
-    TITULO_PAGINA_EDICAO_PRODUTO = (By.CSS_SELECTOR, "div.card.px-6.py-6 > div.p-fluid > p.text-3xl.font-bold.text-green-500")
+    BTN_EDITAR_PROD = (
+        By.CSS_SELECTOR,
+        "div.flex > button.p-element.p-ripple.p-button-rounded.p-button-success.mr-2.p-button.p-component.p-button-icon-only.ng-star-inserted > span.p-button-icon.pi.pi-pencil",
+    )
+    ABRIR_MODULO_PRODUTOS = (
+        By.XPATH,
+        "//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]",
+    )
+    TITULO_PAGINA_EDICAO_PRODUTO = (
+        By.CSS_SELECTOR,
+        "div.card.px-6.py-6 > div.p-fluid > p.text-3xl.font-bold.text-green-500",
+    )
     EXCLUIR_PRODUTO = (By.XPATH, "//button[contains(@class, 'p-button-warning')]")
-    VALIDAR_TELA_EXCLUSAO_PRODUTOS = (By.XPATH, "//span[contains(text(), 'Você tem certeza de que quer deletar')]")
-    DROPDOWN_MES = (By.XPATH, "//span[@id='mes' and @role='combobox' and @class='p-element p-dropdown-label p-inputtext p-placeholder ng-star-inserted']")
-    MES_NOVO_PRODUTO = lambda mes: (By.XPATH, f"//span[text()='{mes.upper()}']/parent::li")
+    VALIDAR_TELA_EXCLUSAO_PRODUTOS = (
+        By.XPATH,
+        "//span[contains(text(), 'Você tem certeza de que quer deletar')]",
+    )
+    DROPDOWN_MES = (
+        By.XPATH,
+        "//span[@id='mes' and @role='combobox' and @class='p-element p-dropdown-label p-inputtext p-placeholder ng-star-inserted']",
+    )
+    MES_NOVO_PRODUTO = lambda mes: (
+        By.XPATH,
+        f"//span[text()='{mes.upper()}']/parent::li",
+    )
     ANO_NOVO_PRODUTO = (By.XPATH, "//span[@data-pc-name='inputnumber']")
     DROPDOWN_PERFIL = (By.XPATH, "//span[@aria-label='Selecione o perfil']")
     PERFIL_NOVO_PRODUTO = lambda perfil: (By.XPATH, f"//li[@aria-label='{perfil}']")
     DROPDOWN_SUBMERCADO = (By.XPATH, "//span[@aria-label='Selecione o submercado']")
-    SUBMERCADO_NOVO_PRODUTO = lambda submercado: (By.XPATH, f"//li[@aria-label='{submercado}']")
+    SUBMERCADO_NOVO_PRODUTO = lambda submercado: (
+        By.XPATH,
+        f"//li[@aria-label='{submercado}']",
+    )
     DROPDOWN_TIPOPRODUTO = (By.XPATH, "//span[@aria-label='Selecione o tipoProduto']")
-    TIPOPRODUTO_NOVO_PRODUTO = lambda tipo: (By.XPATH, f"//li[@aria-label='{tipo.upper()}']")
+    TIPOPRODUTO_NOVO_PRODUTO = lambda tipo: (
+        By.XPATH,
+        f"//li[@aria-label='{tipo.upper()}']",
+    )
     BTN_CADASTRAR_PRODUTO = (By.XPATH, "//button[@label='Cadastrar']")
-
 
 
 class PerfilDeAcessoPage:
@@ -58,7 +99,9 @@ class PerfilDeAcessoPage:
         """Valida se o elemento MODULOS_PRODUTOS está visível na tela."""
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
+                )
             )
             logging.info("Usuário com acesso ao Modulo produtos.")
             return True
@@ -71,7 +114,9 @@ class PerfilDeAcessoPage:
         """Valida se o elemento VALIDAR_MODULOS_PRODUTOS está visível na tela."""
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
+                )
             )
             logging.info("O elemento 'VALIDAR_MODULOS_PRODUTOS' está disponivel.")
             return True
@@ -85,7 +130,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando no elemento Produtos.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.CLICAR_MODULOS_PRODUTOS)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.CLICAR_MODULOS_PRODUTOS
+                )
             ).click()
             logging.info("Clique no elemento Produtos realizado com sucesso.")
         except TimeoutException:
@@ -97,7 +144,9 @@ class PerfilDeAcessoPage:
         """Visualiza o módulo de produtos."""
         try:
             botao_visualizar = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_VISUALIZAR)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_VISUALIZAR
+                )
             )
             botao_visualizar.click()
             logging.info("Módulo de produtos visualizado com sucesso.")
@@ -109,7 +158,9 @@ class PerfilDeAcessoPage:
         """Edita o módulo de produtos."""
         try:
             botao_editar = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_EDITAR)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_EDITAR
+                )
             )
             botao_editar.click()
             logging.info("Módulo de produtos editado com sucesso.")
@@ -121,7 +172,9 @@ class PerfilDeAcessoPage:
         """Exclui um produto."""
         try:
             botao_excluir = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_EXCLUIR)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_EXCLUIR
+                )
             )
             botao_excluir.click()
             logging.info("Produto excluído com sucesso.")
@@ -133,7 +186,9 @@ class PerfilDeAcessoPage:
         """Cria novos dados."""
         try:
             botao_criar = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BOTAO_CRIAR)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_CRIAR
+                )
             )
             botao_criar.click()
             logging.info("Dados criados com sucesso.")
@@ -145,7 +200,9 @@ class PerfilDeAcessoPage:
         """Verifica se o menu apresenta as opções corretas."""
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.MENU_OPCOES)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.MENU_OPCOES
+                )
             )
             logging.info("Opções do menu verificadas com sucesso.")
         except TimeoutException:
@@ -156,7 +213,9 @@ class PerfilDeAcessoPage:
         """Valida se o texto do elemento IDENTIFICADOR_DE_PERFIL corresponde ao texto esperado."""
         try:
             elemento = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.IDENTIFICADOR_DE_PERFIL)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.IDENTIFICADOR_DE_PERFIL
+                )
             )
             texto_elemento = elemento.text.strip()
             logging.info(f"Texto encontrado no perfil: {texto_elemento}")
@@ -170,7 +229,9 @@ class PerfilDeAcessoPage:
         """Valida se os módulos especificados estão visíveis na tela."""
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL
+                )
             )
             logging.info("Usuário com acesso ao produto Semanal/Diário.")
         except TimeoutException:
@@ -179,7 +240,9 @@ class PerfilDeAcessoPage:
 
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.PRODUTO_I_REC)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.PRODUTO_I_REC
+                )
             )
             logging.info("Usuário com acesso ao produto I-Rec.")
         except TimeoutException:
@@ -188,7 +251,9 @@ class PerfilDeAcessoPage:
 
         try:
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.PRODUTO_CURTO_PRAZO)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.PRODUTO_CURTO_PRAZO
+                )
             )
             logging.info("Usuário com acesso ao produto Curto Prazo.")
         except TimeoutException:
@@ -203,23 +268,39 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando no elemento VALIDAR_MODULOS_PRODUTOS.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
+                )
             ).click()
-            logging.info("Clique no elemento VALIDAR_MODULOS_PRODUTOS realizado com sucesso.")
+            logging.info(
+                "Clique no elemento VALIDAR_MODULOS_PRODUTOS realizado com sucesso."
+            )
 
-            logging.info("Clicando no link de produtos '//a[@href='/pages/default-products']'.")
+            logging.info(
+                "Clicando no link de produtos '//a[@href='/pages/default-products']'."
+            )
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//a[@href='/pages/default-products']"))
+                EC.element_to_be_clickable(
+                    (By.XPATH, "//a[@href='/pages/default-products']")
+                )
             ).click()
             logging.info("Clique no link de produtos realizado com sucesso.")
 
-            logging.info("Validando a existência do título 'Gerenciar Produtos Diário/Semanal'.")
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_PAGINA_PRODUTOS_DIARIOS)
+            logging.info(
+                "Validando a existência do título 'Gerenciar Produtos Diário/Semanal'."
             )
-            logging.info("Título 'Gerenciar Produtos Diário/Semanal' validado com sucesso.")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_PAGINA_PRODUTOS_DIARIOS
+                )
+            )
+            logging.info(
+                "Título 'Gerenciar Produtos Diário/Semanal' validado com sucesso."
+            )
         except TimeoutException:
-            logging.error("Erro ao acessar ou validar o título do produto Diário/Semanal.")
+            logging.error(
+                "Erro ao acessar ou validar o título do produto Diário/Semanal."
+            )
             raise
         sleep(2)
 
@@ -228,7 +309,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando na aba produtos.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.ABRIR_MODULO_PRODUTOS)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.ABRIR_MODULO_PRODUTOS
+                )
             ).click()
         except TimeoutException:
             logging.error("Erro ao clicar na aba produtos.")
@@ -240,7 +323,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Selecionando o produto Diário Semanal.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL
+                )
             ).click()
         except TimeoutException:
             logging.error("Erro ao selecionar o produto Diário Semanal.")
@@ -250,10 +335,13 @@ class PerfilDeAcessoPage:
     def pesquisar_por_ano(self):
         """Pesquisa pelo ano utilizando o valor de CONS_PROD_ANO."""
         from credentials import CONS_PROD_ANO
+
         try:
             logging.info(f"Pesquisando pelo ano: {CONS_PROD_ANO}.")
             campo_ano = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.PESQUISAR_PROD_POR_ANO)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.PESQUISAR_PROD_POR_ANO
+                )
             )
             campo_ano.clear()
             campo_ano.send_keys(CONS_PROD_ANO)
@@ -266,7 +354,9 @@ class PerfilDeAcessoPage:
 
     def selecionar_produto_estipulado(self):
         """Seleciona o produto de acordo com os valores estipulados no arquivo credentials."""
-        from credentials import CONS_PROD_MES, CONS_PROD_PERFIL, CONS_PROD_SUBMERCADO, CONS_PROD_TIPO_DE_PROD
+        from credentials import (CONS_PROD_MES, CONS_PROD_PERFIL,
+                                 CONS_PROD_SUBMERCADO, CONS_PROD_TIPO_DE_PROD)
+
         try:
             logging.info("Selecionando o produto de acordo com as especificações.")
             # Implementar lógica para selecionar o produto com base nos valores de CONS_PROD_MES, CONS_PROD_PERFIL, CONS_PROD_SUBMERCADO e CONS_PROD_TIPO_DE_PROD
@@ -280,7 +370,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando no botão editar.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BTN_EDITAR_PROD)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BTN_EDITAR_PROD
+                )
             ).click()
         except TimeoutException:
             logging.error("Erro ao clicar no botão editar.")
@@ -290,11 +382,17 @@ class PerfilDeAcessoPage:
     def validar_pagina_edicao_produto(self):
         """Valida se o título da página de edição do produto está visível."""
         try:
-            logging.info("Validando a existência do título da página de edição do produto.")
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.TITULO_PAGINA_EDICAO_PRODUTO)
+            logging.info(
+                "Validando a existência do título da página de edição do produto."
             )
-            logging.info("Título da página de edição do produto encontrado com sucesso.")
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.TITULO_PAGINA_EDICAO_PRODUTO
+                )
+            )
+            logging.info(
+                "Título da página de edição do produto encontrado com sucesso."
+            )
             return True
         except TimeoutException:
             logging.error("Título da página de edição do produto não encontrado.")
@@ -306,7 +404,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando no botão excluir.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.EXCLUIR_PRODUTO)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.EXCLUIR_PRODUTO
+                )
             ).click()
             logging.info("Botão excluir clicado com sucesso.")
         except TimeoutException:
@@ -318,7 +418,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Validando a existência da tela de exclusão do produto.")
             WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.VALIDAR_TELA_EXCLUSAO_PRODUTOS)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_TELA_EXCLUSAO_PRODUTOS
+                )
             )
             logging.info("Tela de exclusão do produto validada com sucesso.")
             return True
@@ -332,7 +434,9 @@ class PerfilDeAcessoPage:
         try:
             logging.info("Clicando no botão 'Cadastrar Produto'.")
             WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(PerfilDeAcessoPortfolioTradingLocators.BTN_CADASTRAR_PRODUTO)
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BTN_CADASTRAR_PRODUTO
+                )
             ).click()
             logging.info("Botão 'Cadastrar Produto' clicado com sucesso.")
         except TimeoutException:
@@ -341,40 +445,68 @@ class PerfilDeAcessoPage:
 
     def preencher_campos_obrigatorios(self):
         """Preenche os campos obrigatórios para criar um novo produto."""
-        from credentials import MES_NOVO_PRODUTO, ANO_NOVO_PRODUTO, PERFIL_NOVO_PRODUTO, SUBMERCADO_NOVO_PRODUTO, TIPOPRODUTO_NOVO_PRODUTO
+        from credentials import (ANO_NOVO_PRODUTO, MES_NOVO_PRODUTO,
+                                 PERFIL_NOVO_PRODUTO, SUBMERCADO_NOVO_PRODUTO,
+                                 TIPOPRODUTO_NOVO_PRODUTO)
 
         try:
             # Selecionar o mês
             logging.info("Abrindo o dropdown de mês.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_MES)
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_MES
+            )
             logging.info(f"Selecionando o mês: {MES_NOVO_PRODUTO}.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.MES_NOVO_PRODUTO(MES_NOVO_PRODUTO))
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.MES_NOVO_PRODUTO(
+                    MES_NOVO_PRODUTO
+                )
+            )
 
             # Informar o ano
             logging.info(f"Informando o ano: {ANO_NOVO_PRODUTO}.")
             ano_input = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.ANO_NOVO_PRODUTO)
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.ANO_NOVO_PRODUTO
+                )
             )
             ano_input.clear()
             ano_input.send_keys(ANO_NOVO_PRODUTO)
 
             # Selecionar o perfil
             logging.info("Abrindo o dropdown de perfil.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_PERFIL)
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_PERFIL
+            )
             logging.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.PERFIL_NOVO_PRODUTO(PERFIL_NOVO_PRODUTO))
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.PERFIL_NOVO_PRODUTO(
+                    PERFIL_NOVO_PRODUTO
+                )
+            )
 
             # Selecionar o submercado
             logging.info("Abrindo o dropdown de submercado.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_SUBMERCADO)
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_SUBMERCADO
+            )
             logging.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.SUBMERCADO_NOVO_PRODUTO(SUBMERCADO_NOVO_PRODUTO))
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.SUBMERCADO_NOVO_PRODUTO(
+                    SUBMERCADO_NOVO_PRODUTO
+                )
+            )
 
             # Selecionar o tipo de produto
             logging.info("Abrindo o dropdown de tipo de produto.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_TIPOPRODUTO)
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_TIPOPRODUTO
+            )
             logging.info(f"Selecionando o tipo de produto: {TIPOPRODUTO_NOVO_PRODUTO}.")
-            self._interagir_com_elemento(PerfilDeAcessoPortfolioTradingLocators.TIPOPRODUTO_NOVO_PRODUTO(TIPOPRODUTO_NOVO_PRODUTO))
+            self._interagir_com_elemento(
+                PerfilDeAcessoPortfolioTradingLocators.TIPOPRODUTO_NOVO_PRODUTO(
+                    TIPOPRODUTO_NOVO_PRODUTO
+                )
+            )
 
         except TimeoutException as e:
             logging.error(f"Erro ao preencher os campos obrigatórios: {e}")
@@ -383,7 +515,9 @@ class PerfilDeAcessoPage:
     def _interagir_com_elemento(self, locator):
         """Interage com um elemento, utilizando JavaScript caso necessário."""
         try:
-            elemento = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(locator))
+            elemento = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(locator)
+            )
             elemento.click()
         except Exception:
             logging.warning("Interagindo com o elemento via JavaScript.")

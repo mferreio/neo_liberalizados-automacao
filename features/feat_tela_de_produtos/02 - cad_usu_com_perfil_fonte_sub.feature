@@ -5,7 +5,7 @@ Feature: Cadastro de Usuários com Perfil, Fonte e Submercado
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário clica em cadastrar produto
-	    When eu escolho o perfil "I50"
+	    When eu escolho o perfil
 	    And as opções disponíveis de perfil devem incluir: CONV, I50, I0, I100 e CQI5
 
 
@@ -24,7 +24,7 @@ Feature: Cadastro de Usuários com Perfil, Fonte e Submercado
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário clica em cadastrar produto
-	    When eu escolho o submercado "NE"
+	    When eu escolho o submercado
 	    Then as opções disponíveis de submercado devem incluir: SE, NE, S e N
 
 
@@ -52,5 +52,5 @@ Feature: Cadastro de Usuários com Perfil, Fonte e Submercado
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário clica em cadastrar produto
-	    When eu escolho o submercado "XXX"
+	    When eu escolho o submercado inválido
 	    Then as opções disponíveis de submercado devem incluir: SE, NE, S e N

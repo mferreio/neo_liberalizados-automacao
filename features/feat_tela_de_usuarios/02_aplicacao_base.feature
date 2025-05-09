@@ -53,7 +53,7 @@ Scenario: O usuário acessa o botão para adicionar um novo item
 #     When o usuário acessa a tela principal da aplicação
 #     Then ele não deve visualizar o módulo "Relatório de Vendas" no menu lateral
 
-# Scenario: O usuário Não pode ver botões  se tiver permissão Administrador
+# Scenario: O usuário Não pode ver botões se tiver permissão Administrador
 #     Given que o usuário tem perfil de "Administrador"
 #     When o usuário acessa a tela de visualização do módulo "Produtos"
 #     Then ele deve ver apenas o botão "Administrador" e não deve ver o botão "Adicionar Novo Item"

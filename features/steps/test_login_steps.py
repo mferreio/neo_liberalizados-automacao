@@ -1,34 +1,46 @@
-from behave import given, when, then
-from selenium.common.exceptions import StaleElementReferenceException
-from features.environment import esperar_e_executar, executar_com_erro_controlado
-from pages.login_page import LoginPageLocators, LoginPage
-from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
 import logging
 from time import sleep
-import pyautogui
-from features.environment import gerar_documento_evidencia
+
 import allure
+import pyautogui
+from behave import given, then, when
+from pages.login_page import LoginPage, LoginPageLocators
+from selenium.common.exceptions import (StaleElementReferenceException,
+                                        TimeoutException)
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+
+from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
+from features.environment import (esperar_e_executar,
+                                  executar_com_erro_controlado,
+                                  gerar_documento_evidencia)
 
 logging.basicConfig(level=logging.INFO)
 
-@given('que eu acesso a página de login')
+
+@given("que eu acesso a página de login")
 def step_impl(context):
     executar_com_erro_controlado(context.login_page.navegar_para_pagina_de_login)
 
-@when('eu clico no botão Entrar')
+
+@when("eu clico no botão Entrar")
 def step_click_next_button(context):
     executar_com_erro_controlado(context.login_page.clicar_botao_entrar)
 
-@when('eu insiro o email de usuario')
+
+@when("eu insiro o email de usuario")
 @allure.step("Inserindo o email do usuário")
 def step_insert_email(context):
-    esperar_e_executar(context, LoginPageLocators.EMAIL_FIELD, context.login_page.enter_email, LOGIN_EMAIL)
+    esperar_e_executar(
+        context,
+        LoginPageLocators.EMAIL_FIELD,
+        context.login_page.enter_email,
+        LOGIN_EMAIL,
+    )
 
-@when('eu clico no botão Seguinte')
+
+@when("eu clico no botão Seguinte")
 @allure.step("Clicando no botão Seguinte")
 def step_click_next_button(context):
     try:
@@ -42,7 +54,9 @@ def step_click_next_button(context):
         context.failed_steps.append(f"Erro no passo 'eu clico no botão Seguinte': {e}")
     except Exception as e:
         logging.error(f"Erro inesperado ao clicar no botão 'Seguinte': {e}")
-        context.failed_steps.append(f"Erro inesperado no passo 'eu clico no botão Seguinte': {e}")
+        context.failed_steps.append(
+            f"Erro inesperado no passo 'eu clico no botão Seguinte': {e}"
+        )
         WebDriverWait(context.driver, 15).until(
             EC.presence_of_element_located(LoginPageLocators.ADFS_USERNAME_FIELD)
         )
@@ -51,30 +65,36 @@ def step_click_next_button(context):
         logging.error("ADFS não carregou corretamente.")
     sleep(7)
 
-@when('eu preencho o ADFS com usuário e senha')
+
+@when("eu preencho o ADFS com usuário e senha")
 @allure.step("Preenchendo o ADFS com usuário e senha")
 def step_fill_adfs(context):
     sleep(3)  # Aguarda a interface estar pronta para interação
     pyautogui.write(LOGIN_USUARIO.upper())
-    pyautogui.press('tab')  # Navega até o campo de senha
+    pyautogui.press("tab")  # Navega até o campo de senha
     sleep(1)
-    pyautogui.write(LOGIN_PASSWORD)# Digita a senha respeitando o caso das letras
-    pyautogui.press('tab')  # Navega até o botão submit
+    pyautogui.write(LOGIN_PASSWORD)  # Digita a senha respeitando o caso das letras
+    pyautogui.press("tab")  # Navega até o botão submit
     sleep(1)
-    pyautogui.press('enter')  # Submete o login
+    pyautogui.press("enter")  # Submete o login
     sleep(3)
 
-@then('eu verifico que o usuário acessou o sistema')
+
+@then("eu verifico que o usuário acessou o sistema")
 def step_verify_user_logged_in(context):
     executar_com_erro_controlado(_verificar_usuario_logado, context)
+
 
 def _verificar_usuario_logado(context):
     expected_url = "https://diretrizes.dev.neoenergia.net/"
     current_url = context.driver.current_url
-    assert current_url.startswith(expected_url), f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}."
+    assert current_url.startswith(
+        expected_url
+    ), f"O login não foi bem-sucedido; URL atual é {current_url}, mas deveria iniciar com {expected_url}."
     logging.info("Usuário acessou o sistema com sucesso.")
 
-@then('o sistema gera evidências do login')
+
+@then("o sistema gera evidências do login")
 @allure.step("Gerando evidências do login")
 def step_gera_evidencias_login(context):
     try:
@@ -82,6 +102,7 @@ def step_gera_evidencias_login(context):
         gerar_documento_evidencia(nome_teste="Teste de Login", sucesso=True)
     except Exception as e:
         print(f"Erro ao gerar evidências do login: {e}")
+
 
 @given('que o usuário está logado como "Administrador"')
 @allure.step("Validando que o usuário está logado como Administrador")
@@ -92,6 +113,7 @@ def validar_usuario_administrador(context):
     except Exception as e:
         logging.error(f"Erro ao validar o usuário como Administrador: {e}")
         raise
+
 
 @given("que o usuário está logado como 'Trading Portifólio'")
 @allure.step("Validando que o usuário está logado como Trading/Portifólio")

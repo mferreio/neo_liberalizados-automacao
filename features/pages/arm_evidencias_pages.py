@@ -1,14 +1,16 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-import logging, ipdb
+import logging
 import os
+
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class ArmEvidenciasSelectors:
     """Classe para armazenar os seletores da página de evidências."""
+
     DIRETRIZ_CURTO_PRAZO = "//a[span[text()='Diretriz Curto Prazo']]"
     BOTAO_NOVO = "//button[span[text()='Novo']]"
     CAMPO_DATA_FIM = "//input[@aria-controls='pn_id_21_panel']"
@@ -22,8 +24,13 @@ class ArmEvidenciasSelectors:
     CAMPO_DESCRICAO = "//textarea[@id='descricao']"
     CAMPO_PREMIO = "//input[@role='spinbutton']"
     MENSAGEM_ERRO_FIM_VIGENCIA_OBRIGATORIO = "//div[@data-pc-section='text']//div[@data-pc-section='detail' and text()='Fim da vigência é obrigatório.']"
-    MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA = "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[2]"
-    MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]"
+    MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA = (
+        "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[2]"
+    )
+    MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = (
+        "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]"
+    )
+
 
 class ArmEvidenciasPage:
     def __init__(self, driver):
@@ -33,7 +40,9 @@ class ArmEvidenciasPage:
         try:
             logging.info("Clicando no botão 'Diretriz Curto Prazo'.")
             WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, ArmEvidenciasSelectors.DIRETRIZ_CURTO_PRAZO))
+                EC.element_to_be_clickable(
+                    (By.XPATH, ArmEvidenciasSelectors.DIRETRIZ_CURTO_PRAZO)
+                )
             ).click()
         except Exception as e:
             logging.error(f"Erro ao clicar no botão 'Diretriz Curto Prazo': {e}")
@@ -43,7 +52,9 @@ class ArmEvidenciasPage:
         try:
             logging.info("Clicando no botão 'Novo'.")
             WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, ArmEvidenciasSelectors.BOTAO_NOVO))
+                EC.element_to_be_clickable(
+                    (By.XPATH, ArmEvidenciasSelectors.BOTAO_NOVO)
+                )
             ).click()
         except Exception as e:
             logging.error(f"Erro ao clicar no botão 'Novo': {e}")
@@ -53,7 +64,9 @@ class ArmEvidenciasPage:
         try:
             logging.info(f"Preenchendo o campo 'Data Fim' com a data: {data_fim}.")
             campo_data_fim = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, ArmEvidenciasSelectors.CAMPO_DATA_FIM))
+                EC.presence_of_element_located(
+                    (By.XPATH, ArmEvidenciasSelectors.CAMPO_DATA_FIM)
+                )
             )
             campo_data_fim.click()
             campo_data_fim.clear()
@@ -69,13 +82,17 @@ class ArmEvidenciasPage:
         caminho_arquivo = os.path.join(os.getcwd(), arquivo)
 
         if not os.path.exists(caminho_arquivo):
-            raise FileNotFoundError(f"O arquivo '{caminho_arquivo}' não foi encontrado.")
+            raise FileNotFoundError(
+                f"O arquivo '{caminho_arquivo}' não foi encontrado."
+            )
 
         try:
             logging.info(f"Fazendo upload do arquivo: {arquivo}.")
             # Envia o caminho do arquivo diretamente para o seletor de arquivo
             input_arquivo = WebDriverWait(self.driver, 20).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, ArmEvidenciasSelectors.INPUT_ARQUIVO))
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, ArmEvidenciasSelectors.INPUT_ARQUIVO)
+                )
             )
             input_arquivo.send_keys(caminho_arquivo)
         except Exception as e:
@@ -86,7 +103,9 @@ class ArmEvidenciasPage:
         try:
             logging.info("Validando se o arquivo foi anexado.")
             elemento = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, ArmEvidenciasSelectors.ARQUIVO_JPG_ANEXADO_ELEMENTO))
+                EC.presence_of_element_located(
+                    (By.XPATH, ArmEvidenciasSelectors.ARQUIVO_JPG_ANEXADO_ELEMENTO)
+                )
             )
             logging.info("Arquivo anexo encontrado.")
             return elemento.is_displayed()
@@ -98,7 +117,9 @@ class ArmEvidenciasPage:
         try:
             logging.info("Clicando no botão 'Salvar'.")
             WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, ArmEvidenciasSelectors.BOTAO_SALVAR_DIRETRIZ))
+                EC.element_to_be_clickable(
+                    (By.XPATH, ArmEvidenciasSelectors.BOTAO_SALVAR_DIRETRIZ)
+                )
             ).click()
         except Exception as e:
             logging.error(f"Erro ao clicar no botão 'Salvar': {e}")
@@ -107,11 +128,17 @@ class ArmEvidenciasPage:
     def verificar_mensagem_sistema(self):
         try:
             logging.info("Verificando mensagem exibida pelo sistema.")
-            if self._elemento_existe(ArmEvidenciasSelectors.MENSAGEM_ERRO_FIM_VIGENCIA_OBRIGATORIO):
+            if self._elemento_existe(
+                ArmEvidenciasSelectors.MENSAGEM_ERRO_FIM_VIGENCIA_OBRIGATORIO
+            ):
                 mensagem = "Fim da vigência é obrigatório"
-            elif self._elemento_existe(ArmEvidenciasSelectors.MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA):
+            elif self._elemento_existe(
+                ArmEvidenciasSelectors.MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA
+            ):
                 mensagem = "Não é possível cadastrar a diretriz com o fim da vigência no mesmo dia após as 14:00"
-            elif self._elemento_existe(ArmEvidenciasSelectors.MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA):
+            elif self._elemento_existe(
+                ArmEvidenciasSelectors.MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA
+            ):
                 mensagem = "Diretriz cadastrada com sucesso"
             else:
                 mensagem = "Nenhuma mensagem identificada"
@@ -134,7 +161,9 @@ class ArmEvidenciasPage:
         try:
             logging.info(f"Preenchendo o campo 'Descrição' com: {descricao}.")
             campo_descricao = WebDriverWait(self.driver, 20).until(
-                EC.presence_of_element_located((By.XPATH, ArmEvidenciasSelectors.CAMPO_DESCRICAO))
+                EC.presence_of_element_located(
+                    (By.XPATH, ArmEvidenciasSelectors.CAMPO_DESCRICAO)
+                )
             )
             campo_descricao.click()
             campo_descricao.clear()
@@ -147,7 +176,9 @@ class ArmEvidenciasPage:
         try:
             logging.info(f"Preenchendo todos os campos 'Prêmio' com: {premio}.")
             campos_premio = WebDriverWait(self.driver, 20).until(
-                EC.presence_of_all_elements_located((By.XPATH, ArmEvidenciasSelectors.CAMPO_PREMIO))
+                EC.presence_of_all_elements_located(
+                    (By.XPATH, ArmEvidenciasSelectors.CAMPO_PREMIO)
+                )
             )
             for campo in campos_premio:
                 campo.click()

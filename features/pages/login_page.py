@@ -1,21 +1,31 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.common.exceptions import TimeoutException
 from time import sleep
 
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+
 class LoginPageLocators:
-    BOTAO_ENTRAR = (By.XPATH, "/html/body/app-root/app-login/div/div/div/div/div[2]/button")
+    BOTAO_ENTRAR = (
+        By.XPATH,
+        "/html/body/app-root/app-login/div/div/div/div/div[2]/button",
+    )
     EMAIL_FIELD = (By.XPATH, "//*[@id='i0116']")
     NEXT_BUTTON = (By.XPATH, "//*[@id='idSIButton9']")
     AVANCED_OPTIONS_BUTTON = (By.XPATH, "//*[@id='details-button']")
     GO_TO_NEOENERGIA_BUTTON = (By.XPATH, "//*[@id='proceed-link']")
-    ADFS_USERNAME_FIELD = (By.XPATH, "//input[@type='text' and @placeholder='Nome de usuário']")
+    ADFS_USERNAME_FIELD = (
+        By.XPATH,
+        "//input[@type='text' and @placeholder='Nome de usuário']",
+    )
     ADFS_PASSWORD_FIELD = (By.XPATH, "//*[@id='passwordInput']")
     ADFS_LOGIN_BUTTON = (By.XPATH, "//*[@id='submitButton']")
     VALIDAR_ADMINISTRADOR = (By.XPATH, "//span[text()='Administrador']")
-    VALIDAR_TRADING_E_PORTIFOLIO = (By.CSS_SELECTOR, "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary")  # Exemplo de locator para validar portfólio
+    VALIDAR_TRADING_E_PORTIFOLIO = (
+        By.CSS_SELECTOR,
+        "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",
+    )  # Exemplo de locator para validar portfólio
 
 
 class LoginPage:
@@ -23,7 +33,9 @@ class LoginPage:
         self.driver = driver
 
     def navegar_para_pagina_de_login(self):
-        self.driver.get("https://{USUARIO}:{SENHA}@diretrizes.dev.neoenergia.net/auth/login")
+        self.driver.get(
+            "https://{USUARIO}:{SENHA}@diretrizes.dev.neoenergia.net/auth/login"
+        )
 
     def acessar_pagina_login(self):
         try:
@@ -32,7 +44,7 @@ class LoginPage:
             ).click()
         except TimeoutException as e:
             print(f"TimeoutException: {e}")
-            self.driver.save_screenshot('reports/screenshots/timeout_exception.png')
+            self.driver.save_screenshot("reports/screenshots/timeout_exception.png")
             raise
 
     def clicar_botao_entrar(self):
@@ -49,33 +61,51 @@ class LoginPage:
         next_button.click()
 
     def click_opcoes_avancadas_button(self):
-        avanced_options_button = self.driver.find_element(*LoginPageLocators.AVANCED_OPTIONS_BUTTON)
+        avanced_options_button = self.driver.find_element(
+            *LoginPageLocators.AVANCED_OPTIONS_BUTTON
+        )
         avanced_options_button.click()
 
     def click_ir_para_neoenergia_button(self):
-        ir_neoenergia_button = self.driver.find_element(*LoginPageLocators.GO_TO_NEOENERGIA_BUTTON)
+        ir_neoenergia_button = self.driver.find_element(
+            *LoginPageLocators.GO_TO_NEOENERGIA_BUTTON
+        )
         ir_neoenergia_button.click()
 
     def enter_adfs_username(self, username):
-        username_field = self.driver.find_element(*LoginPageLocators.ADFS_USERNAME_FIELD)
+        username_field = self.driver.find_element(
+            *LoginPageLocators.ADFS_USERNAME_FIELD
+        )
         username_field.send_keys(username)
 
     def enter_adfs_password(self, password):
-        password_field = self.driver.find_element(*LoginPageLocators.ADFS_PASSWORD_FIELD)
+        password_field = self.driver.find_element(
+            *LoginPageLocators.ADFS_PASSWORD_FIELD
+        )
         password_field.send_keys(password)
 
     def validar_usuario_administrador(self):
         try:
-            elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_ADMINISTRADOR)
+            elemento = self.driver.find_element(
+                *LoginPageLocators.VALIDAR_ADMINISTRADOR
+            )
             assert elemento is not None, "Usuário não está logado como Administrador."
             print("Usuário logado como administrador.")
         except NoSuchElementException:
-            raise AssertionError("Elemento de validação de Administrador não encontrado.")
+            raise AssertionError(
+                "Elemento de validação de Administrador não encontrado."
+            )
 
     def validar_usuario_portifolio_e_trading(self):
         try:
-            elemento = self.driver.find_element(*LoginPageLocators.VALIDAR_TRADING_E_PORTIFOLIO)
-            assert elemento is not None, "Usuário não está logado como Portfólio e Trading."
+            elemento = self.driver.find_element(
+                *LoginPageLocators.VALIDAR_TRADING_E_PORTIFOLIO
+            )
+            assert (
+                elemento is not None
+            ), "Usuário não está logado como Portfólio e Trading."
             print("Usuário validado como Portfólio e Trading.")
         except NoSuchElementException:
-            raise AssertionError("Elemento de validação de Portfólio e Trading não encontrado.")
+            raise AssertionError(
+                "Elemento de validação de Portfólio e Trading não encontrado."
+            )
