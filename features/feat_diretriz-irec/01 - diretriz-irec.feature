@@ -1,11 +1,12 @@
-# Feature: Diretrizes I-REC
+Feature: Diretrizes I-REC
 
-# Scenario: Cadastro de uma nova diretriz I-REC	Given que o usuário está na tela de cadastro de nova diretriz I-REC
-# 	When o usuário informa os dados da nova diretriz, incluindo preço e anexa arquivos
-# 	And clica no botão "Cadastrar"
-# 	Then a nova diretriz deve ser cadastrada
-# 	And a diretriz anterior deve ser invalidada
-# 	And as datas de início e fim da vigência devem ser geradas e registradas
+Scenario: Cadastro de uma nova diretriz I-REC
+    Given que o usuário está na tela de cadastro de nova <entidade>
+    When o usuário informa os dados da nova <entidade>, incluindo <campos_opcionais>
+    When clica no botão "<botao>"
+    Then a nova <entidade> deve ser cadastrada
+    When a <entidade> anterior deve ser invalidada
+    When as datas de início e fim da vigência devem ser geradas e registradas
 
 # Scenario: Tentativa de cadastrar múltiplas diretrizes vigentes	Given que existe uma diretriz I-REC vigente no sistema
 # 	When o usuário tenta cadastrar uma nova diretriz I-REC

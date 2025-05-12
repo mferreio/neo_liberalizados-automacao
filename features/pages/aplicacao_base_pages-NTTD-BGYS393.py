@@ -10,14 +10,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 class AplicacaoBaseLocators:
     """Locators para a página base da aplicação."""
 
-    MENU_LATERAL = (
-        By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[1]/div[1])",
-    )
-    MODULO_REGISTRO_ITENS = (
-        By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",
-    )
+    MENU_LATERAL = (By.XPATH,"(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[1]/div[1])",)
+    MODULO_REGISTRO_ITENS = (By.XPATH,"(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",)
     LISTA_ITENS_CADASTRADOS = (By.XPATH, "//div[@class='lista-itens']")
     BOTAO_ADICIONAR_NOVO_ITEM = (By.XPATH, "//button[text()='Adicionar Novo Item']")
     FORMULARIO_NOVO_ITEM = (By.XPATH, "//form[@id='form-novo-item']")
@@ -25,36 +19,15 @@ class AplicacaoBaseLocators:
     BOTAO_ADMINISTRADOR = (By.XPATH, "//button[text()='Administrador']")
     BOTAO_TRADING_PORTFOLIO = (By.XPATH, "//button[text()='Trading/Portifólio']")
     URL_PAGINA_PRINCIPAL = "https://diretrizes.dev.neoenergia.net/"
-    MODULO_SEMANAL_DIARIO = (
-        By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",
-    )
-    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (
-        By.XPATH,
-        "//h5[text()='Gerenciar Produtos (Diário/Semanal)']",
-    )
-    MODULO_IREC = (
-        By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])",
-    )
+    MODULO_SEMANAL_DIARIO = (By.XPATH,"(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",)
+    ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (By.XPATH,"//h5[text()='Gerenciar Produtos (Diário/Semanal)']",)
+    MODULO_IREC = (By.XPATH,"(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])",)
     MODULO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
-    ELEMENTO_TELA_PRODUTOS_IREC = (
-        By.XPATH,
-        "//h5[text()='Gerenciar Produtos (I-REC)']",
-    )
-    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (
-        By.XPATH,
-        "//h5[text()='Gerenciar Produtos (Curto Prazo)']",
-    )
-    LISTA_PRODUTOS = (
-        By.XPATH,
-        "//tr[@class='ng-star-inserted']/td[position()=1][span[text()='Mês']]",
-    )
+    ELEMENTO_TELA_PRODUTOS_IREC = (By.XPATH,"//h5[text()='Gerenciar Produtos (I-REC)']",)
+    ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (By.XPATH,"//h5[text()='Gerenciar Produtos (Curto Prazo)']",)
+    LISTA_PRODUTOS = (By.XPATH,"//tr[@class='ng-star-inserted']/td[position()=1][span[text()='Mês']]",)
     BOTAO_NOVO_ITEM = (By.XPATH, "//button[span[text()='Novo']]")
-    FORMULARIO_VALIDACAO = (
-        By.XPATH,
-        "//p[text()=' Cadastro de Produto - Curto Prazo ']",
-    )
+    FORMULARIO_VALIDACAO = (By.XPATH,"//p[text()=' Cadastro de Produto - Curto Prazo ']",)
     BOTAO_VOLTAR = (By.XPATH, "//button[span[text()='Voltar']]")
     URL_PAGINA_INICIAL = "https://diretrizes.dev.neoenergia.net/"
 
