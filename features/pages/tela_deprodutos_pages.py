@@ -4,10 +4,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-from credentials import (ESCOLHER_PERFIL_DE_ENERGIA, ESCOLHER_SUBMERCADO,
-                         PERFIL_NOVO_PRODUTO, PERFIL_NOVO_PRODUTO_INVALIDO,
-                         SUBMERCADO_NOVO_PROD_INVALIDO)
+from credentials import (ESCOLHER_PERFIL_DE_ENERGIA, ESCOLHER_SUBMERCADO, PERFIL_NOVO_PRODUTO_INVALIDO, SUBMERCADO_NOVO_PROD_INVALIDO)
 
 
 class TelaDeProdutosPageLocators:

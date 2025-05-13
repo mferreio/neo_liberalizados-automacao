@@ -4,8 +4,8 @@ import time
 from behave import given, then, when
 from pages.aplicacao_base_pages import AplicacaoBaseLocators, AplicacaoBasePage
 
-
 @given("que o usuário está logado no sistema")
+@when("que o usuário está logado no sistema")
 def step_usuario_logado(context):
     context.aplicacao_base_page = AplicacaoBasePage(context.driver)
     context.aplicacao_base_page.validar_pagina_principal()
