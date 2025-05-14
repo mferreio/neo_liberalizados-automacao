@@ -19,6 +19,7 @@ def step_clicar_nova_diretriz(context):
     context.diretriz_irec_page.clicar_nova_diretriz()
 
 @when("que o usuário está na tela de cadastro de nova diretriz I-REC")
+@then("o usuário deve ser direcionado para a tela de cadastro de diretriz I-REC")
 def step_validar_tela_cadastro_nova_diretriz(context):
     context.diretriz_irec_page.validar_tela_cadastro_nova_diretriz()
 
@@ -35,6 +36,7 @@ def step_preencher_dados_nova_diretriz(context):
 def step_clicar_botao_salvar(context):
     context.diretriz_irec_page.clicar_botao_salvar()
 
+@when("o sistema exibe uma mensagem de sucesso")
 @then("o sistema exibe uma mensagem de sucesso")
 def step_validar_mensagem_cadastro(context):
     context.diretriz_irec_page.validar_mensagem_cadastro()
@@ -114,6 +116,7 @@ def step_garantir_uma_vigente(context):
     context.diretriz_irec_page.garantir_apenas_uma_vigente()
 
 @given("que uma diretriz I-REC foi invalidada")
+@given("que uma diretriz Curto Prazo foi invalidada")
 @when("o usuário consulta as diretrizes cadastradas")
 def step_consulta_diretrizes(context):
     context.diretriz_irec_page = DiretrizIrecPage(context.driver)
@@ -150,3 +153,28 @@ def step_validar_formato_datas_vigencia(context):
 @then('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
 def step_validar_upload_imagem(context):
     context.diretriz_irec_page.validar_arquivos_anexados()
+
+@then("todos os produtos cadastrados devem estar visíveis")
+def step_todos_produtos_visiveis(context):
+    context.diretriz_irec_page.exibir_produtos_visiveis()
+
+@then("valida se a data de inicio da vigência é igual a data atual")
+def step_validar_data_inicio_vigencia_atual(context):
+    context.diretriz_irec_page.validar_data_inicio_vigencia_atual()
+
+@when('o usuário faz o upload de um arquivo de evidência "evidencia_texto.txt"')
+def step_upload_evidencia_texto(context):
+    context.diretriz_irec_page.fazer_upload_evidencia_texto()
+
+@then('deve exibir a mensagem "Arquivo enviado com sucesso"')
+@when('deve exibir a mensagem "Arquivo enviado com sucesso"')
+def step_validar_mensagem_sucesso_upload(context):
+    context.diretriz_irec_page.validar_mensagem_sucesso_upload()
+
+@given('que o usuário cadastrou uma nova diretriz I-Rec')
+def step_validar_cadastro_nova_diretriz(context):
+    context.diretriz_irec_page.validar_cadastro_nova_diretriz()
+
+@then('todos os campos da tela de cadastro de diretriz I-REC estar vazios')
+def step_validar_campos_cadastro_vazios(context):
+    context.diretriz_irec_page.validar_campos_cadastro_vazios()

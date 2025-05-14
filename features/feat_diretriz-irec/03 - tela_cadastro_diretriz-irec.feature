@@ -19,7 +19,7 @@ Scenario: Data de início da vigência válida
  	Then valida se a data de inicio da vigência é igual a data atual
     When retorna para a tela de diretriz I-REC
 
-# Scenario: Anexação de arquivos durante o cadastro
+Scenario: Anexação de arquivos durante o cadastro
     Given que o usuário está na tela de diretriz I-REC
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
@@ -27,7 +27,7 @@ Scenario: Data de início da vigência válida
     When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
     Then o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
 
-# Scenario: Salvar nova diretriz com sucesso
+Scenario: Salvar nova diretriz com sucesso
     Given que o usuário está logado no sistema
     When o usuário acessa ao módulo de diretrizes I-REC
     When o usuário clica no botão "Nova Diretriz"
@@ -72,13 +72,17 @@ Scenario: Limite de anexos
 # 	Then uma mensagem de erro deve ser exibida informando que o formato do arquivo não é suportado
 # 	When o arquivo não deve ser anexado
 
-# Scenario: Cancelamento do cadastro de nova diretriz
+# Scenario: Cancelamento do cadastro de nova diretriz // não é exibido um modal para confirmar o cancelamento
     Given que o usuário está logado no sistema
     When o usuário acessa ao módulo de diretrizes I-REC
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário preenche os campos obrigatórios
     When clica no botão Salvar
+    When deve exibir um modal para confirmar ou cancelar o cadastro
+    When o usuário clica em "Cancelar"
+    Then o sistema deve retornar para a tela de diretriz Curto Prazo
+    When nenhuma diretriz é cadastrada
 
 # Não é possivel executar este cenário, documentação foi alterada.
 # Scenario: Data de fim da vigência opcional
@@ -87,7 +91,7 @@ Scenario: Limite de anexos
 # 	Then a diretriz deve ser salva com a data de fim como indefinida
 # 	And o sistema deve permitir que essa informação seja atualizada posteriormente
 
-# Scenario: Visualização de mensagem de sucesso ao anexar arquivos
+Scenario: Visualização de mensagem de sucesso ao anexar arquivos
     Given que o usuário está logado no sistema
     When o usuário acessa ao módulo de diretrizes I-REC
     When o usuário clica no botão "Nova Diretriz"

@@ -9,6 +9,7 @@ from credentials import DATA_FIM_DIRETRIZ
 
 
 @when('o usuário acessa a aba "diretriz Curto Prazo"')
+@then('usuário é encaminhado para a tela de diretriz curto prazo')
 def step_acessar_diretriz_curto_prazo(context):
     try:
         logging.info('Acessando a aba "diretriz Curto Prazo".')
@@ -55,7 +56,7 @@ def step_fazer_upload_evidencia(context):
         logging.error(f"Erro ao fazer upload do arquivo 'evidencia_imagem.jpg': {e}")
         raise
 
-
+@when('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
 @then('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
 def step_validar_arquivo_anexado(context):
     try:
@@ -72,6 +73,7 @@ def step_validar_arquivo_anexado(context):
         raise
 
 
+@when("usuário clica em salvar")
 @then("usuário clica em salvar")
 def step_clicar_em_cadastrar(context):
     try:

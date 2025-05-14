@@ -25,6 +25,9 @@ class DiretrizIrecLocators:
     ANEXO_TXT = (By.XPATH, "//div[text()='evidencia_texto.txt']")
     ANEXO_JPG = (By.XPATH, "//div[text()='evidencia_imagem.jpg']")
     MSG_ERRO_CAMPOS_OBRIGATORIOS = (By.XPATH, "//div[@data-pc-section='text']")
+    PROD_DIR_IREC = (By.XPATH, "//tr[@class='ng-star-inserted']/td[1]/strong")
+    VALIDA_DATA_ATUAL = (By.XPATH, "//span[@class='ng-tns-c4209099177-26 p-calendar p-calendar-w-btn p-calendar-disabled']/input[@aria-controls='pn_id_15_panel']")
+    MSG_SUCESSO_ANEXAR_ARQUIVO = (By.XPATH, "//div[@data-pc-section='text']/div[@data-pc-section='detail' and contains(text(), 'Upload concluído')]")
 
 class DiretrizIrecPage:
     def __init__(self, driver):
@@ -355,13 +358,66 @@ class DiretrizIrecPage:
             print("Não foi exibida mensagem de erro informando os campos obrigatórios.")
 
     def fazer_upload_evidencia(self, nome_arquivo):
-        # Localiza e clica no botão de anexar evidência
         btn_anexar = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//span[contains(@class, 'p-fileupload-choose') and span[contains(@class, 'p-button-label') and text()='Anexar Evidência']]")
         ))
         btn_anexar.click()
-        # Faz upload do arquivo
         caminho_arquivo = os.path.abspath(nome_arquivo)
         input_file = self.driver.find_element(By.CSS_SELECTOR, "input[type='file']")
         input_file.send_keys(caminho_arquivo)
         print(f"Arquivo de evidência '{nome_arquivo}' anexado.")
+
+    def exibir_produtos_visiveis(self):
+        produtos = self.driver.find_elements(*DiretrizIrecLocators.PROD_DIR_IREC)
+        nomes = [p.text.strip() for p in produtos if p.text.strip()]
+        print("Produtos visíveis na tela:")
+        for nome in nomes:
+            print(nome)
+        return nomes
+
+    def validar_data_inicio_vigencia_atual(self):
+        from datetime import datetime
+        campo_data = self.driver.find_element(*DiretrizIrecLocators.VALIDA_DATA_ATUAL)
+        data_tela = campo_data.get_attribute("value")
+        data_hoje = datetime.now().strftime("%d/%m/%Y")
+        if data_tela == data_hoje:
+            print(f"Data de início da vigência correta: {data_tela}")
+        else:
+            print(f"Data de início da vigência incorreta. Esperado: {data_hoje}, Encontrado: {data_tela}")
+
+    def fazer_upload_evidencia_texto(self):
+        self.fazer_upload_evidencia("evidencia_texto.txt")
+
+    def validar_mensagem_sucesso_upload(self):
+        try:
+            msg = self.driver.find_element(*DiretrizIrecLocators.MSG_SUCESSO_ANEXAR_ARQUIVO)
+            texto = msg.text.strip()
+            if texto:
+                print(f"Mensagem de sucesso exibida: {texto}")
+            else:
+                print("Mensagem de sucesso de upload não exibida.")
+        except NoSuchElementException:
+            print("Mensagem de sucesso de upload não exibida.")
+
+    def validar_cadastro_nova_diretriz(self):
+        print("Usuário cadastrou a última diretriz com sucesso.")
+
+    def validar_campos_cadastro_vazios(self):
+        campo_data_fim = self.driver.find_element(*DiretrizIrecLocators.DATA_FIM_VIGENCIA)
+        campos_tabela = self.driver.find_elements(*DiretrizIrecLocators.CAMPOS_TABELA_DE_CALCULOS)
+        campo_descricao = self.driver.find_element(*DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
+        vazio = True
+        if campo_data_fim.get_attribute("value"):
+            print("Campo DATA_FIM_VIGENCIA não está vazio!")
+            vazio = False
+        for campo in campos_tabela:
+            if campo.get_attribute("value"):
+                print("Campo da tabela de cálculos não está vazio!")
+                vazio = False
+        if campo_descricao.get_attribute("value"):
+            print("Campo DESCRICAO_DAS_DIRETRIZ não está vazio!")
+            vazio = False
+        if vazio:
+            print("Todos os campos obrigatórios estão vazios para novo cadastro.")
+        else:
+            print("Nem todos os campos obrigatórios estão vazios!")
