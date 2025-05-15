@@ -30,6 +30,7 @@ class ArmEvidenciasSelectors:
     MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = (
         "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]"
     )
+    MSG_LIMITE_TAMANHO_ARQUIVO = "//span[@class='p-message-summary ng-tns-c3633978228-28 ng-star-inserted']"
 
 
 class ArmEvidenciasPage:
@@ -99,6 +100,12 @@ class ArmEvidenciasPage:
             logging.error(f"Erro ao fazer upload do arquivo '{arquivo}': {e}")
             raise
 
+    def fazer_upload_limitedetamanho(self):
+        """
+        Faz o upload do arquivo 'limitedetamanho.pdf' que está na raiz do repositório.
+        """
+        self.fazer_upload_evidencia("limitedetamanho.pdf")
+
     def validar_arquivo_anexado_no_elemento(self):
         try:
             logging.info("Validando se o arquivo foi anexado.")
@@ -112,6 +119,21 @@ class ArmEvidenciasPage:
         except Exception as e:
             logging.error("Não foi encontrado nenhum arquivo anexo")
             raise
+
+    def validar_mensagem_limite_tamanho_arquivo(self):
+        """
+        Valida se a mensagem de limite de tamanho do arquivo foi exibida e imprime o texto.
+        """
+        xpath = ArmEvidenciasSelectors.MSG_LIMITE_TAMANHO_ARQUIVO
+        try:
+            elemento = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, xpath))
+            )
+            print(f"Mensagem exibida: {elemento.text}")
+            return elemento.text
+        except Exception:
+            print("Mensagem de limite de tamanho de arquivo não foi exibida!")
+            return None
 
     def clicar_em_salvar(self):
         try:

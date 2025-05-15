@@ -63,8 +63,8 @@ Scenario: Limite de anexos
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário preenche os campos obrigatórios
-    When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
-    When o usuário faz o upload de um arquivo de evidência "evidencia_texto.txt"
+    When o usuário faz upload acima de 10 arquivos de evidência
+    Then o sistema deve validar que o limite de anexos foi atingido
 
 # Scenario: Validação de formato de arquivos anexados
 #   Given que o usuário está na tela de cadastro de diretriz I-REC

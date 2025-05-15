@@ -56,6 +56,19 @@ def step_fazer_upload_evidencia(context):
         logging.error(f"Erro ao fazer upload do arquivo 'evidencia_imagem.jpg': {e}")
         raise
 
+
+@when('o usuário faz o upload de um arquivo de evidência "limitedetamanho.pdf"')
+def step_fazer_upload_limitedetamanho(context):
+    try:
+        logging.info('Fazendo upload do arquivo "limitedetamanho.pdf".')
+        evidencias_page = ArmEvidenciasPage(context.driver)
+        evidencias_page.fazer_upload_limitedetamanho()
+        sleep(4)
+    except Exception as e:
+        logging.error(f"Erro ao fazer upload do arquivo 'limitedetamanho.pdf': {e}")
+        raise
+
+
 @when('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
 @then('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
 def step_validar_arquivo_anexado(context):
@@ -71,6 +84,13 @@ def step_validar_arquivo_anexado(context):
             f"Erro ao validar o armazenamento do arquivo 'evidencia_imagem.jpg': {e}"
         )
         raise
+
+
+@then('o sistema deve exibir uma mensagem de limite de tamanho')
+def step_validar_mensagem_limite_tamanho(context):
+    evidencias_page = ArmEvidenciasPage(context.driver)
+    mensagem = evidencias_page.validar_mensagem_limite_tamanho_arquivo()
+    assert mensagem is not None and "Tamanho de arquivo inválido" in mensagem, "Mensagem de limite de tamanho não foi exibida corretamente."
 
 
 @when("usuário clica em salvar")

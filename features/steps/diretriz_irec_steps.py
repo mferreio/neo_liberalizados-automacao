@@ -171,6 +171,15 @@ def step_upload_evidencia_texto(context):
 def step_validar_mensagem_sucesso_upload(context):
     context.diretriz_irec_page.validar_mensagem_sucesso_upload()
 
+@when("o usuário faz upload acima de 10 arquivos de evidência")
+def step_upload_mais_de_10_evidencias(context):
+    context.diretriz_irec_page.fazer_upload_mais_de_10_evidencias()
+
+@then("o sistema deve validar que o limite de anexos foi atingido")
+def step_validar_limite_de_evidencia(context):
+    mensagem = context.diretriz_irec_page.validar_mensagem_limite_de_evidencia()
+    assert mensagem is not None, "Mensagem de limite de anexos não foi exibida."
+
 @given('que o usuário cadastrou uma nova diretriz I-Rec')
 def step_validar_cadastro_nova_diretriz(context):
     context.diretriz_irec_page.validar_cadastro_nova_diretriz()

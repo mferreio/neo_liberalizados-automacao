@@ -26,17 +26,16 @@ Scenario: Paginação das diretrizes
 
 
 Scenario: Busca por intervalo de data
-    Given Que  o usuário está na tela de diretriz curto prazo
-	When  o o usuário insere um intervalo de data para busca
-	And clica no botão de busca
-	Then apenas as diretrizes Que  estão dentro do intervalo de data devem ser exibidas
+    Given que o usuário está na tela de diretriz Curto Prazo
+	When o usuário insere um intervalo de data para busca
+	Then apenas as diretrizes que estão dentro do intervalo de data devem ser exibidas
 
 
 Scenario: Exibição dos detalhes da diretriz
-    Given Que  o usuário está na tela de diretriz curto prazo
-	When  o o usuário clica no botão para ver mais detalhes de uma diretriz
+    Given que o usuário está na tela de diretriz Curto Prazo
+	When o usuário clica no botão para ver mais detalhes de uma diretriz
 	Then todos os dados da diretriz escolhida devem ser exibidos
-	And os arquivos anexados também devem ser acessíveis
+	When os arquivos anexados também devem ser acessíveis
 
 
 Scenario: Adicionar nova diretriz

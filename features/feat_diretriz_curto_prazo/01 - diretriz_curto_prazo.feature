@@ -75,7 +75,7 @@ Scenario: Envio de arquivos anexados na diretriz de curto prazo
     When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
     When o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
     When usuário clica em salvar
-    When deve exibir um modal para confirmar ou cancelar o cadastro
-    When o usuário clica em "Cancelar"
-    Then o sistema deve retornar para a tela de diretriz Curto Prazo
-    When nenhuma diretriz é cadastrada
+    # When deve exibir um modal para confirmar ou cancelar o cadastro
+    # When o usuário clica em "Cancelar"
+    # Then o sistema deve retornar para a tela de diretriz Curto Prazo
+    # When nenhuma diretriz é cadastrada

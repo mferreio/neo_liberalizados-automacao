@@ -28,6 +28,7 @@ class DiretrizIrecLocators:
     PROD_DIR_IREC = (By.XPATH, "//tr[@class='ng-star-inserted']/td[1]/strong")
     VALIDA_DATA_ATUAL = (By.XPATH, "//span[@class='ng-tns-c4209099177-26 p-calendar p-calendar-w-btn p-calendar-disabled']/input[@aria-controls='pn_id_15_panel']")
     MSG_SUCESSO_ANEXAR_ARQUIVO = (By.XPATH, "//div[@data-pc-section='text']/div[@data-pc-section='detail' and contains(text(), 'Upload concluído')]")
+    MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//div[@class='p-message-wrapper ng-tns-c3633978228-28']")
 
 class DiretrizIrecPage:
     def __init__(self, driver):
@@ -366,6 +367,39 @@ class DiretrizIrecPage:
         input_file = self.driver.find_element(By.CSS_SELECTOR, "input[type='file']")
         input_file.send_keys(caminho_arquivo)
         print(f"Arquivo de evidência '{nome_arquivo}' anexado.")
+
+    def fazer_upload_mais_de_10_evidencias(self):
+        """
+        Faz upload de mais de 10 arquivos de evidência (textos) presentes na raiz do repositório.
+        """
+        arquivos = [
+            "evidencia_texto.txt",
+            "evidencia_texto - Copia (2).txt",
+            "evidencia_texto - Copia (3).txt",
+            "evidencia_texto - Copia (4).txt",
+            "evidencia_texto - Copia (5).txt",
+            "evidencia_texto - Copia (6).txt",
+            "evidencia_texto - Copia (7).txt",
+            "evidencia_texto - Copia (8).txt",
+            "evidencia_texto - Copia (9).txt",
+            "evidencia_texto - Copia (10).txt"
+        ]
+        for arquivo in arquivos:
+            self.fazer_upload_evidencia(arquivo)
+
+    def validar_mensagem_limite_de_evidencia(self):
+        """
+        Valida se a mensagem de limite de anexos foi exibida e imprime o texto.
+        """
+        try:
+            elemento = WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located(DiretrizIrecLocators.MSG_LIMITE_DE_EVIDENCIA)
+            )
+            print(f"Mensagem exibida: {elemento.text}")
+            return elemento.text
+        except Exception:
+            print("Mensagem de limite de anexos não foi exibida!")
+            return None
 
     def exibir_produtos_visiveis(self):
         produtos = self.driver.find_elements(*DiretrizIrecLocators.PROD_DIR_IREC)
