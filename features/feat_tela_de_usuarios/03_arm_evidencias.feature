@@ -3,6 +3,7 @@ Feature: Armazenamento de evidências
   Quero gerenciar arquivos de evidências
   Para garantir o armazenamento e consulta de forma segura
 
+@testaragora
 Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo
   Given que o usuário está logado no sistema
   When o usuário acessa a aba "diretriz Curto Prazo"
@@ -10,10 +11,9 @@ Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz C
   When o usuário preenche o campo Data Fim
   When o usuário preenche os campos obrigatórios
   When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
-  Then o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
-  # When deve exibir a mensagem "Arquivo enviado com sucesso" // "Sistema deve exibir um popup de sucesso ao armazenar, verificar se existe um bug para essa correção".
-  Then usuário clica em salvar
-  # When sistema exibe mensagem de sucesso ou erro // "Verificar com o desenvolvedor como faço para pegar o xpath deste elemento"
+  When o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
+  When usuário clica em salvar
+  When o sistema exibe uma mensagem de sucesso
   When retorna a pagina inicial
 
 # Scenario: Tentativa de envio de um arquivo por um usuário sem permissão // "Não existe usuário que não tenha permissão de adicionar arquivos"

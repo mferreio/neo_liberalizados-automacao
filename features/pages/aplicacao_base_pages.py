@@ -15,9 +15,9 @@ class AplicacaoBaseLocators:
         By.XPATH,
         "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[1]/div[1])",
     )
-    MODULO_REGISTRO_ITENS = (
+    MODULO_PRODUTOS = (
         By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",
+        "//li[@app-menuitem]//a[span[text()='Produtos']]",
     )
     LISTA_ITENS_CADASTRADOS = (By.XPATH, "//div[@class='lista-itens']")
     BOTAO_ADICIONAR_NOVO_ITEM = (By.XPATH, "//button[text()='Adicionar Novo Item']")
@@ -28,7 +28,7 @@ class AplicacaoBaseLocators:
     URL_PAGINA_PRINCIPAL = "https://diretrizes.dev.neoenergia.net/"
     MODULO_SEMANAL_DIARIO = (
         By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",
+        "//li[@app-menuitem]//a[span[text()='Diário/Semanal']]",
     )
     ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO = (
         By.XPATH,
@@ -36,12 +36,12 @@ class AplicacaoBaseLocators:
     )
     MODULO_IREC = (
         By.XPATH,
-        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[2]/a[1]/span[1])",
+        "//li[@app-menuitem]//a[span[text()='I-REC']]",
     )
     MODULO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
     ELEMENTO_TELA_PRODUTOS_IREC = (
         By.XPATH,
-        "//h5[text()='Gerenciar Produtos (I-REC)']",
+        "//span[text()='Curto Prazo']",
     )
     ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO = (
         By.XPATH,
@@ -71,7 +71,7 @@ class AplicacaoBasePage:
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(AplicacaoBaseLocators.MENU_LATERAL)
             )
-            logging.info("Menu lateral está presente na página.")
+
         except TimeoutException:
             raise AssertionError("Menu lateral não está presente na página.")
 
@@ -83,7 +83,7 @@ class AplicacaoBasePage:
                 EC.element_to_be_clickable(modulo_locator)
             )
             modulo.click()
-            logging.info(f"Módulo selecionado com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao selecionar o módulo no menu lateral.")
 
@@ -96,7 +96,6 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.LISTA_ITENS_CADASTRADOS
                 )
             )
-            logging.info("Lista de itens cadastrados está visível.")
         except TimeoutException:
             raise AssertionError("Lista de itens cadastrados não está visível.")
 
@@ -109,8 +108,9 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
                 )
             )
+
             botao.click()
-            logging.info("Botão 'Adicionar Novo Item' clicado com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao clicar no botão 'Adicionar Novo Item'.")
 
@@ -123,11 +123,9 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.FORMULARIO_NOVO_ITEM
                 )
             )
-            logging.info("Formulário para adicionar novo item está visível.")
         except TimeoutException:
-            raise AssertionError(
-                "Formulário para adicionar novo item não está visível."
-            )
+            raise AssertionError("Formulário para adicionar novo item não está visível.")
+
 
     def verificar_modulo_invisivel(self, modulo_locator):
         """Verifica se um módulo está invisível no menu lateral."""
@@ -136,7 +134,7 @@ class AplicacaoBasePage:
             WebDriverWait(self.driver, 10).until_not(
                 EC.presence_of_element_located(modulo_locator)
             )
-            logging.info("Módulo não está visível no menu lateral.")
+
         except TimeoutException:
             raise AssertionError("Módulo está visível no menu lateral.")
 
@@ -155,7 +153,7 @@ class AplicacaoBasePage:
                         AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
                     )
                 )
-                logging.info("Botões corretos visíveis para o perfil Administrador.")
+
             elif perfil == "Trading/Portifólio":
                 WebDriverWait(self.driver, 10).until(
                     EC.presence_of_element_located(
@@ -166,9 +164,6 @@ class AplicacaoBasePage:
                     EC.presence_of_element_located(
                         AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
                     )
-                )
-                logging.info(
-                    "Botões corretos visíveis para o perfil Trading/Portifólio."
                 )
             else:
                 raise ValueError(f"Perfil desconhecido: {perfil}")
@@ -184,7 +179,7 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.BOTAO_TRADING_PORTFOLIO
                 )
             )
-            logging.info("Botão 'Trading/Portifólio' está visível.")
+
         except TimeoutException:
             raise AssertionError("Botão 'Trading/Portifólio' não está visível.")
 
@@ -202,9 +197,6 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.BOTAO_ADICIONAR_NOVO_ITEM
                 )
             )
-            logging.info(
-                "Botões 'Trading/Portifólio' e 'Adicionar Novo Item' estão visíveis."
-            )
         except TimeoutException:
             raise AssertionError(
                 "Os botões 'Trading/Portifólio' ou 'Adicionar Novo Item' não estão visíveis."
@@ -218,7 +210,7 @@ class AplicacaoBasePage:
                 lambda driver: driver.current_url
                 == AplicacaoBaseLocators.URL_PAGINA_PRINCIPAL
             )
-            logging.info("Usuário está na página principal.")
+
         except TimeoutException:
             raise AssertionError(
                 f"Usuário não está na página principal. URL atual: {self.driver.current_url}"
@@ -230,10 +222,10 @@ class AplicacaoBasePage:
         try:
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
-                    AplicacaoBaseLocators.MODULO_REGISTRO_ITENS
+                    AplicacaoBaseLocators.MODULO_PRODUTOS
                 )
             )
-            logging.info("O módulo 'Produtos' está visível no menu lateral.")
+
         except TimeoutException:
             raise AssertionError(
                 "O módulo 'Produtos' não está visível no menu lateral."
@@ -244,15 +236,10 @@ class AplicacaoBasePage:
         time.sleep(1)
         try:
             modulo_produtos = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
-                    (
-                        By.XPATH,
-                        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/a[1]/span[1])",
-                    )
-                )
+                EC.element_to_be_clickable((By.XPATH,"//li[@app-menuitem]//a[span[text()='Produtos']]"))
             )
             modulo_produtos.click()
-            logging.info("Clicou no módulo 'Produtos' com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao clicar no módulo 'Produtos'.")
 
@@ -264,12 +251,12 @@ class AplicacaoBasePage:
                 EC.element_to_be_clickable(
                     (
                         By.XPATH,
-                        "(/html/body/app-root[1]/app-layout[1]/div[1]/div[1]/app-sidebar[1]/app-menu[1]/ul[1]/li[2]/ul[1]/li[10]/ul[1]/li[1]/a[1]/span[1])",
+                        "//li[@app-menuitem]//a[span[text()='Diário/Semanal']]",
                     )
                 )
             )
             modulo_semanal_diario.click()
-            logging.info("Clicou no módulo 'Semanal Diario' com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao clicar no módulo 'Semanal Diario'.")
 
@@ -281,9 +268,6 @@ class AplicacaoBasePage:
                 EC.presence_of_element_located(
                     AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_SEMANAL_DIARIO
                 )
-            )
-            logging.info(
-                "Tela de visualização dos dados do módulo 'Produtos Semanal Diario' validada com sucesso."
             )
         except TimeoutException:
             raise AssertionError(
@@ -298,7 +282,7 @@ class AplicacaoBasePage:
                 EC.element_to_be_clickable(AplicacaoBaseLocators.MODULO_IREC)
             )
             modulo_irec.click()
-            logging.info("Clicou no módulo 'IREC' com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao clicar no módulo 'IREC'.")
 
@@ -310,9 +294,6 @@ class AplicacaoBasePage:
                 EC.presence_of_element_located(
                     AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_IREC
                 )
-            )
-            logging.info(
-                "Tela de visualização dos dados do módulo 'Produtos IREC' validada com sucesso."
             )
         except TimeoutException:
             raise AssertionError(
@@ -326,7 +307,7 @@ class AplicacaoBasePage:
                 EC.element_to_be_clickable(AplicacaoBaseLocators.MODULO_CURTO_PRAZO)
             )
             modulo_curto_prazo.click()
-            logging.info("Clicou no módulo 'Curto Prazo' com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao clicar no módulo 'Curto Prazo'.")
 
@@ -338,9 +319,6 @@ class AplicacaoBasePage:
                 EC.presence_of_element_located(
                     AplicacaoBaseLocators.ELEMENTO_TELA_PRODUTOS_CURTO_PRAZO
                 )
-            )
-            logging.info(
-                "Tela de visualização dos dados do módulo 'Produtos Curto Prazo' validada com sucesso."
             )
         except TimeoutException:
             raise AssertionError(
@@ -360,7 +338,7 @@ class AplicacaoBasePage:
                 *AplicacaoBaseLocators.LISTA_PRODUTOS
             )
             produtos = [elemento.text for elemento in elementos_produtos]
-            logging.info(f"Produtos encontrados: {produtos}")
+
             return produtos
         except TimeoutException:
             raise AssertionError("Erro ao consultar a lista de produtos cadastrados.")
@@ -373,7 +351,7 @@ class AplicacaoBasePage:
                 EC.element_to_be_clickable(AplicacaoBaseLocators.BOTAO_NOVO_ITEM)
             )
             botao_novo_item.click()
-            logging.info('Botão "Adicionar Novo Item" clicado com sucesso.')
+
         except TimeoutException:
             raise AssertionError('Erro ao clicar no botão "Adicionar Novo Item".')
 
@@ -386,12 +364,12 @@ class AplicacaoBasePage:
                     AplicacaoBaseLocators.FORMULARIO_VALIDACAO
                 )
             )
-            logging.info("Formulário validado com sucesso.")
+
             botao_voltar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(AplicacaoBaseLocators.BOTAO_VOLTAR)
             )
             botao_voltar.click()
-            logging.info("Botão 'Voltar' clicado com sucesso.")
+
         except TimeoutException:
             raise AssertionError(
                 "Erro ao validar o formulário ou clicar no botão 'Voltar'."
@@ -406,6 +384,6 @@ class AplicacaoBasePage:
                 lambda driver: driver.current_url
                 == AplicacaoBaseLocators.URL_PAGINA_INICIAL
             )
-            logging.info("Retornado para a página inicial com sucesso.")
+
         except TimeoutException:
             raise AssertionError("Erro ao retornar para a página inicial.")

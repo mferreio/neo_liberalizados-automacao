@@ -4,7 +4,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from credentials import (ESCOLHER_PERFIL_DE_ENERGIA, ESCOLHER_SUBMERCADO, PERFIL_NOVO_PRODUTO_INVALIDO, SUBMERCADO_NOVO_PROD_INVALIDO)
+from credentials import (SUBMERCADO_NOVO_PRODUTO, PERFIL_NOVO_PRODUTO, ESCOLHER_PERFIL_DE_ENERGIA, ESCOLHER_SUBMERCADO, PERFIL_NOVO_PRODUTO_INVALIDO, SUBMERCADO_NOVO_PROD_INVALIDO)
 
 
 class TelaDeProdutosPageLocators:
@@ -478,22 +478,22 @@ class TelaDeProdutosPage:
             logging.error(f"Erro ao validar a tela de produtos: {e}")
             return False
 
-    def escolher_perfil_de_energia(self):
-        try:
-            # Abre o dropdown de perfil de energia
-            dropdown = self.driver.find_element(
-                *TelaDeProdutosPageLocators.DROPDOWN_PERFIL_DE_ENERGIA
-            )
-            dropdown.click()
-            # Seleciona o perfil de energia conforme o valor do .env
-            perfil = ESCOLHER_PERFIL_DE_ENERGIA.upper()
-            xpath_opcao = f"//li[@aria-label='{perfil}']"
-            opcao = self.driver.find_element(By.XPATH, xpath_opcao)
-            opcao.click()
-            logging.info(f"Perfil de energia '{perfil}' selecionado com sucesso.")
-        except Exception as e:
-            logging.error(f"Erro ao selecionar perfil de energia: {e}")
-            raise AssertionError(f"Erro ao selecionar perfil de energia: {e}")
+    # def escolher_perfil_de_energia(self):
+    #     try:
+    #         # Abre o dropdown de perfil de energia
+    #         dropdown = self.driver.find_element(
+    #             *TelaDeProdutosPageLocators.DROPDOWN_PERFIL_DE_ENERGIA
+    #         )
+    #         dropdown.click()
+    #         # Seleciona o perfil de energia conforme o valor do .env
+    #         perfil = ESCOLHER_PERFIL_DE_ENERGIA.upper()
+    #         xpath_opcao = f"//li[@aria-label='{perfil}']"
+    #         opcao = self.driver.find_element(By.XPATH, xpath_opcao)
+    #         opcao.click()
+    #         logging.info(f"Perfil de energia '{perfil}' selecionado com sucesso.")
+    #     except Exception as e:
+    #         logging.error(f"Erro ao selecionar perfil de energia: {e}")
+    #         raise AssertionError(f"Erro ao selecionar perfil de energia: {e}")
 
     def escolher_submercado_dropdown(self):
         try:

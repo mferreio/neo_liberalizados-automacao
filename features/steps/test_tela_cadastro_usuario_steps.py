@@ -34,7 +34,7 @@ def step_validar_mensagens_campos_obrigatorios(context):
 @given("que o usuário foi cadastrado no sistema")
 def step_usuario_foi_cadastrado(context):
     page = TelaCadastroUsuarioPage(context.driver)
-    page.validar_usuario_cadastrado(context)
+    page.validar_usuario_cadastrado()
 
 @given("que eu estou na Página Inicial")
 def step_estar_na_pagina_inicial(context):

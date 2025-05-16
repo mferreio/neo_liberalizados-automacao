@@ -1,4 +1,3 @@
-import logging
 from time import sleep
 
 import allure
@@ -8,9 +7,10 @@ from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
 from credentials import (EDITAR_EMAIL, EDITAR_NOME, EXCLUIR_NOME, LOGIN_EMAIL,
                          LOGIN_PASSWORD, LOGIN_USUARIO,
                          PESQUISAR_NOME_CADASTRADO, TIPO_DE_PERFIL)
-from features.environment import (executar_com_erro_controlado,
-                                  gerar_documento_evidencia,
-                                  gerar_resumo_testes)
+from features.environment import (
+    gerar_documento_evidencia,
+    gerar_resumo_testes
+)
 
 
 @then("navega até a tela de usuários - Perfil")
@@ -21,7 +21,7 @@ def navegar_tela_usuarios(context):
         context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
         context.tela_de_usuarios_page.clicar_botao_perfil()
     except Exception as e:
-        logging.error(f"Erro ao navegar até a tela de usuários: {e}")
+        print(f"Erro ao navegar até a tela de usuários: {e}")
         raise
     sleep(2)
 
@@ -51,10 +51,7 @@ def step_valida_novos_usuarios(context):
         for usuario in usuarios_atualizados
         if usuario not in context.usuarios_iniciais
     ]
-    if novos_usuarios:
-        logging.info(f"Novos usuários identificados: {novos_usuarios}")
-    else:
-        logging.info("Nenhum novo usuário foi adicionado.")
+    # Apenas armazena os novos usuários, não faz log
     context.novos_usuarios = novos_usuarios
 
 
@@ -72,7 +69,7 @@ def step_valida_tela_cadastro_usuario(context):
         context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
         context.tela_de_usuarios_page.validar_tela_cadastro_usuario()
     except AssertionError as e:
-        logging.error(f"Falha ao validar a tela de cadastro de usuário: {e}")
+        print(f"Falha ao validar a tela de cadastro de usuário: {e}")
         # Continua o teste mesmo após a falha
 
 
@@ -118,10 +115,8 @@ def validar_mensagem_sucesso(context):
         context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
         context.tela_de_usuarios_page.validar_mensagem_sucesso()
     except AssertionError as e:
-        logging.error(
-            "Não foi possível cadastrar o usuário. Verifique os dados ou se já existe um usuário com os mesmos dados cadastrados."
-        )
-        logging.debug(f"Detalhes do erro: {e}")
+        print("Não foi possível cadastrar o usuário. Verifique os dados ou se já existe um usuário com os mesmos dados cadastrados.")
+        print(f"Detalhes do erro: {e}")
         # Continua o teste mesmo após a falha
 
 
@@ -185,7 +180,7 @@ def step_valida_usuario_nao_excluido(context):
     assert context.tela_de_usuarios_page.validar_usuario_presente(
         EXCLUIR_NOME
     ), "O usuário foi excluído, mas não deveria."
-    logging.info("Usuário não foi excluido.")
+    # Usuário não foi excluído
 
 
 @then("valida que o usuário foi excluído com sucesso")
@@ -195,7 +190,7 @@ def step_valida_usuario_excluido(context):
     assert not context.tela_de_usuarios_page.validar_usuario_presente(
         EXCLUIR_NOME
     ), "O usuário ainda está presente, mas deveria ter sido excluído."
-    logging.info("Usuário exclido com sucesso.")
+    # Usuário excluído com sucesso
 
 
 @then("o sistema gera evidências do teste")

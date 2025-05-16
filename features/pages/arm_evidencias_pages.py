@@ -13,7 +13,7 @@ class ArmEvidenciasSelectors:
 
     DIRETRIZ_CURTO_PRAZO = "//a[span[text()='Diretriz Curto Prazo']]"
     BOTAO_NOVO = "//button[span[text()='Novo']]"
-    CAMPO_DATA_FIM = "//input[@aria-controls='pn_id_21_panel']"
+    CAMPO_DATA_FIM = "//p-calendar[@id='fimVigencia']//input[@type='text' and @role='combobox']"
     BOTAO_ANEXAR = "//span[contains(@class, 'p-fileupload-choose') and span[contains(@class, 'p-button-label') and text()='Anexar Evidência']]"
     INPUT_ARQUIVO = "input[type='file']"
     BOTAO_ANEXAR_XPATH = "/html/body/app-root[1]/app-layout[1]/div[1]/div[2]/div[1]/ng-component[1]/div[1]/div[1]/div[1]/div[3]/div[1]/p-fileupload[1]/div[1]/div[1]/span[1]/span[1]"

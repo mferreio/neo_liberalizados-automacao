@@ -1,4 +1,4 @@
-#!C:\Users\mferreio\OneDrive - NTT DATA EMEAL\Documents\__Github_Projetos__\AutomacaoDeTeste\venv\Scripts\python.exe
+#!C:\Automação de Testes\neo_liberalizados-automacao\venv\Scripts\python.exe
 
 ##############################################################################
 #

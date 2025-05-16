@@ -5,7 +5,7 @@ Feature: Cadastro de Usuários com Perfil, Fonte e Submercado
         When eu devo ter acesso aos módulos de produtos
         When Usuário acessa o produto Diario Semanal na aba produtos
         When Usuário clica em cadastrar produto
-	    When eu escolho o perfil
+	    When eu escolho o perfil convencional
 	    And as opções disponíveis de perfil devem incluir: CONV, I50, I0, I100 e CQI5
 
 

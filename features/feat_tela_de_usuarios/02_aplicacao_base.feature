@@ -3,6 +3,7 @@ Feature: Aplicação Base - Tela de usuários
   Quero acessar a aplicação com permissões específicas
   Para realizar operações de acordo com meu perfil
 
+
 Scenario: O menu lateral deve estar presente na página
     Given que o usuário está logado no sistema
     When o usuário acessa a tela principal da aplicação

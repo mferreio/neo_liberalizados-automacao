@@ -1,6 +1,3 @@
-import logging
-import time
-
 from behave import given, then, when
 from pages.aplicacao_base_pages import AplicacaoBaseLocators, AplicacaoBasePage
 
@@ -14,7 +11,7 @@ def step_usuario_logado(context):
 @when("o usuário acessa a tela principal da aplicação")
 def step_acessa_tela_principal(context):
     context.aplicacao_base_page = AplicacaoBasePage(context.driver)
-    logging.info("usuário acessa a tela principal da aplicação.")
+
 
 
 @then("ele deve visualizar o menu lateral na posição esquerda da tela")
@@ -41,11 +38,12 @@ def step_verificar_tela_visualizacao_produtos_semanal_diario(context):
 
 @then("ele deve ver uma lista de todos os itens cadastrados")
 def step_verificar_lista_itens(context):
+
     produtos = context.aplicacao_base_page.consultar_lista_produtos()
-    logging.info("Lista de produtos cadastrados:")
-    for produto in produtos:
-        logging.info(f"- {produto}")
-    logging.info("Consulta de produtos cadastrados realizada com sucesso.")
+    # Aqui pode-se adicionar asserts ou validações específicas se necessário
+    assert produtos is not None
+
+
 
 
 @when('o usuário clica em "Adicionar Novo Item"')

@@ -16,7 +16,7 @@ def step_validar_tela_cadastro(context):
         print("Não foi possivel validar tela de cadastro de produtos")
 
 
-@when('eu escolho o perfil "{perfil}"')
+@when('eu escolho o perfil convencional')
 def step_escolher_perfil(context, perfil):
     """Abre o dropdown de perfil e seleciona o perfil especificado."""
     context.tela_de_produtos_page = TelaDeProdutosPage(context.driver)
@@ -24,10 +24,10 @@ def step_escolher_perfil(context, perfil):
     logging.info(f"Perfil '{perfil}' selecionado com sucesso.")
 
 
-@when("eu escolho o perfil")
-def step_escolher_perfil_de_energia(context):
-    context.tela_de_produtos_page = TelaDeProdutosPage(context.driver)
-    context.tela_de_produtos_page.escolher_perfil_de_energia()
+# @when("eu escolho o perfil")
+# def step_escolher_perfil_de_energia(context):
+#     context.tela_de_produtos_page = TelaDeProdutosPage(context.driver)
+#     context.tela_de_produtos_page.escolher_perfil_de_energia()
 
 
 @when('eu escolho o perfil "XXX"')

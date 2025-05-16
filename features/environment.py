@@ -1,6 +1,6 @@
+from pages.diretriz_irec_pages import DiretrizIrecPage
 import base64
 import io
-import logging
 import os
 import shutil
 import stat
@@ -43,16 +43,16 @@ def login(context):
         WebDriverWait(context.driver, 15).until(
             EC.url_contains("https://diretrizes.dev.neoenergia.net/")
         )
-        logging.info("Login realizado com sucesso.")
+        # logging removido
     except TimeoutException as e:
-        logging.error(f"Erro durante o login: {e}")
+        # logging removido
         context.driver.save_screenshot("reports/screenshots/timeout_exception.png")
         raise
 
 
 def before_all(context):
     """Configura o ambiente antes de todos os testes."""
-    logging.basicConfig(level=logging.INFO)
+    # logging removido
     fixed_port = 8080  # Porta fixa para o Selenium
 
     chrome_options = Options()
@@ -95,40 +95,37 @@ def before_all(context):
     try:
         login(context)
     except Exception as e:
-        logging.error(f"Erro ao realizar login antes de todos os testes: {e}")
+        # logging removido
         raise
 
 
 def before_feature(context, feature):
     """Executa ações antes de cada feature."""
-    logging.info(f"INICIANDO A FEATURE: {feature.name}")
+    # logging removido
 
     # Verifica se a feature é '07_perfil_de_acesso_nao_logado.feature'
     if "07_perfil_de_acesso_nao_logado.feature" in feature.filename:
         try:
-            logging.info(
-                "Limpando o cache do navegador e acessando a URL inicial para garantir que o usuário não está logado."
-            )
+            # logging removido
             context.driver.delete_all_cookies()  # Limpa o cache do navegador
             context.driver.get(
                 "https://diretrizes.dev.neoenergia.net/"
             )  # Acessa a URL inicial
-            logging.info("Cache limpo e URL inicial acessada com sucesso.")
+            # logging removido
         except Exception as e:
-            logging.error(
-                f"Erro ao preparar o ambiente para a feature '07_perfil_de_acesso_nao_logado.feature': {e}"
-            )
+            # logging removido
             raise
     else:
         context.driver.get("https://diretrizes.dev.neoenergia.net/")
-        logging.info(
-            "Nenhuma ação adicional necessária para esta feature, pois o login já foi realizado no before_all."
-        )
+        # logging removido
 
 
 def before_scenario(context, scenario):
+    # Inicializa o page object DiretrizIrecPage para todos os cenários que envolvem diretriz I-REC
+    if hasattr(context, "driver"):
+        context.diretriz_irec_page = DiretrizIrecPage(context.driver)
     """Executa ações antes de cada cenário."""
-    logging.info(f"INICIANDO O CENÁRIO: {scenario.name}")
+    # logging removido
     context.start_time_scenario = datetime.now()  # Registra o início do cenário
 
 
@@ -136,11 +133,9 @@ def after_scenario(context, scenario):
     """Executa ações após cada cenário."""
     end_time_scenario = datetime.now()
     execution_time = end_time_scenario - context.start_time_scenario
-    logging.info(f"FINALIZANDO O CENÁRIO: {scenario.name}")
-    logging.info(f"Tempo de execução do cenário: {execution_time}")
-
+    # logging removido
     if scenario.status == "failed":
-        logging.error(f"O cenário '{scenario.name}' falhou.")
+        # logging removido
         context.failed_scenarios.append(scenario.name)
     else:
         context.passed_scenarios.append(scenario.name)
@@ -157,7 +152,7 @@ def esperar_e_executar(context, locator, metodo, *args):
         WebDriverWait(context.driver, 20).until(EC.element_to_be_clickable(locator))
         metodo(*args)
     except Exception as e:
-        logging.error(f"Erro durante a execução: {e}")
+        # logging removido
         raise
     finally:
         sleep(1)
@@ -192,7 +187,7 @@ def gerar_documento_evidencia(nome_teste, sucesso=True, erros=None):
     os.makedirs(os.path.dirname(nome_arquivo), exist_ok=True)
 
     doc.save(nome_arquivo)
-    logging.info(f"Documento gerado: {nome_arquivo}")
+    # logging removido
     return nome_arquivo
 
 
@@ -218,7 +213,7 @@ def gerar_resumo_testes(total_testes, testes_sucesso, testes_falha):
     os.makedirs(os.path.dirname(nome_arquivo), exist_ok=True)
 
     doc.save(nome_arquivo)
-    logging.info(f"Resumo gerado: {nome_arquivo}")
+    # logging removido
     return nome_arquivo
 
 
@@ -304,62 +299,16 @@ def gerar_grafico_percentual_completo(sucesso, falhas, ignorados, titulo):
     plt.close(fig)
     return img_base64
 
-
-def get_allure_metrics():
-    """Obtém métricas do Allure Report a partir do arquivo summary.json."""
-    summary_path = os.path.join("reports", "allure-report", "widgets", "summary.json")
-    passed = failed = ignored = broken = 0
-
-    try:
-        with open(summary_path, "r") as summary_file:
-            import json
-
-            summary = json.load(summary_file)
-            passed = summary.get("statistic", {}).get("passed", 0)
-            failed = summary.get("statistic", {}).get("failed", 0)
-            broken = summary.get("statistic", {}).get("broken", 0)
-            ignored = summary.get("statistic", {}).get("skipped", 0)
-    except Exception as e:
-        logging.error(f"Erro ao obter métricas do Allure Report: {e}")
-
-    # Inclui cenários "broken" no total de falhas
-    failed += broken
-    return passed, failed, ignored
-
-
 def after_all(context):
     """Finaliza o ambiente após todos os testes."""
     try:
         if hasattr(context, "driver"):
             context.driver.quit()
-            logging.info("Navegador fechado com sucesso.")
+            # logging removido
 
         # Calcula o tempo de execução
         end_time = datetime.now()
         execution_time = end_time - context.start_time
-
-        # Obtém métricas do Allure Report
-        passed_scenarios, failed_scenarios, ignored_scenarios = get_allure_metrics()
-        total_cenarios = passed_scenarios + failed_scenarios + ignored_scenarios
-
-        # Calcula o percentual de falhas
-        percentual_falhas = (
-            (failed_scenarios / total_cenarios * 100) if total_cenarios > 0 else 0
-        )
-
-        logging.info(
-            f"Resumo dos testes: Total: {total_cenarios}, Sucesso: {passed_scenarios}, Falhas: {failed_scenarios}, Ignorados: {ignored_scenarios}"
-        )
-        logging.info(f"Tempo de execução: {execution_time}")
-        logging.info(f"Percentual de falhas: {percentual_falhas:.2f}%")
     except Exception as e:
-        logging.error(f"Erro ao finalizar o ambiente: {e}")
-
-
-def executar_com_erro_controlado(funcao, *args, **kwargs):
-    """Executa uma função, captura erros e continua a execução."""
-    try:
-        funcao(*args, **kwargs)
-    except Exception as e:
-        logging.error(f"Erro ao executar {funcao.__name__}: {e}")
-        logging.debug(traceback.format_exc())  # Log detalhado do erro
+        # logging removido
+        pass

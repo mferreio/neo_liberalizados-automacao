@@ -1,4 +1,3 @@
-import logging
 from behave import given, when, then
 from pages.diretriz_irec_pages import DiretrizIrecPage
 from credentials import DATA_FIM_DIRETRIZ_IREC, VALOR_CAMPO_TABELA, DESCRICAO_DIRETRIZ_IREC
@@ -98,9 +97,9 @@ def step_nao_preenche_campos_preco_obrigatorio(context):
     from credentials import DATA_FIM_DIRETRIZ_IREC, DESCRICAO_DIRETRIZ_IREC
     context.diretriz_irec_page.preencher_apenas_campos_obrigatorios_sem_preco(DATA_FIM_DIRETRIZ_IREC, DESCRICAO_DIRETRIZ_IREC)
 
-@when('o usuário faz o upload de um arquivo de evidência "{nome_arquivo}"')
-def step_upload_evidencia(context, nome_arquivo):
-    context.diretriz_irec_page.fazer_upload_evidencia(nome_arquivo)
+# @when('o usuário faz o upload de um arquivo de evidência "{nome_arquivo}"')
+# def step_upload_evidencia(context, nome_arquivo):
+#     context.diretriz_irec_page.fazer_upload_evidencia(nome_arquivo)
 
 @when("existe uma diretriz I-REC vigente no sistema")
 def step_existe_diretriz_vigente(context):
@@ -150,9 +149,9 @@ def step_validar_formato_datas_vigencia(context):
     context.diretriz_irec_page = DiretrizIrecPage(context.driver)
     context.diretriz_irec_page.validar_formato_datas_vigencia()
 
-@then('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
-def step_validar_upload_imagem(context):
-    context.diretriz_irec_page.validar_arquivos_anexados()
+# @then('o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado')
+# def step_validar_upload_imagem(context):
+#     context.diretriz_irec_page.validar_arquivos_anexados()
 
 @then("todos os produtos cadastrados devem estar visíveis")
 def step_todos_produtos_visiveis(context):
@@ -161,10 +160,6 @@ def step_todos_produtos_visiveis(context):
 @then("valida se a data de inicio da vigência é igual a data atual")
 def step_validar_data_inicio_vigencia_atual(context):
     context.diretriz_irec_page.validar_data_inicio_vigencia_atual()
-
-@when('o usuário faz o upload de um arquivo de evidência "evidencia_texto.txt"')
-def step_upload_evidencia_texto(context):
-    context.diretriz_irec_page.fazer_upload_evidencia_texto()
 
 @then('deve exibir a mensagem "Arquivo enviado com sucesso"')
 @when('deve exibir a mensagem "Arquivo enviado com sucesso"')

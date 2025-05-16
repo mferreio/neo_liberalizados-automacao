@@ -12,21 +12,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 from credentials import LOGIN_EMAIL, LOGIN_PASSWORD, LOGIN_USUARIO
-from features.environment import (esperar_e_executar,
-                                  executar_com_erro_controlado,
-                                  gerar_documento_evidencia)
+from features.environment import (esperar_e_executar, gerar_documento_evidencia)
 
 logging.basicConfig(level=logging.INFO)
 
 
 @given("que eu acesso a página de login")
 def step_impl(context):
-    executar_com_erro_controlado(context.login_page.navegar_para_pagina_de_login)
+    esperar_e_executar(context.login_page.navegar_para_pagina_de_login)
 
 
 @when("eu clico no botão Entrar")
 def step_click_next_button(context):
-    executar_com_erro_controlado(context.login_page.clicar_botao_entrar)
+    esperar_e_executar(context.login_page.clicar_botao_entrar)
 
 
 @when("eu insiro o email de usuario")
@@ -82,7 +80,7 @@ def step_fill_adfs(context):
 
 @then("eu verifico que o usuário acessou o sistema")
 def step_verify_user_logged_in(context):
-    executar_com_erro_controlado(_verificar_usuario_logado, context)
+    esperar_e_executar(_verificar_usuario_logado, context)
 
 
 def _verificar_usuario_logado(context):

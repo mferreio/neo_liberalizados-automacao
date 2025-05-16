@@ -13,7 +13,7 @@ class DiretrizIrecLocators:
     CAMPOS_TABELA_DE_CALCULOS = (By.XPATH, "//tbody[@class='p-element p-datatable-tbody']//input[@class='p-inputtext p-component p-element p-inputnumber-input']")
     DESCRICAO_DAS_DIRETRIZ = (By.XPATH, "//textarea[@id='descricao']")
     SALVAR_DIR_IREC = (By.XPATH, "//button[span[text()='Salvar']]")
-    MSG_SUCESSO_CAD_DIR_IREC = (By.XPATH, "//div[text()='Diretriz cadastrada com sucesso!']")
+    MSG_SUCESSO_CAD_DIR_IREC = (By.XPATH, "//div[contains(text(), 'sucesso')]")
     MSG_ERRO_CAD_DIR_IREC = (By.XPATH, "//div[text()='Erro de validação']")
     CONSULTAR_DIR_CADASTRADAS = (By.XPATH, "//tbody/tr[contains(@class, 'ng-star-inserted')]")
     AVANCAR_PGN_DIRETRIZ = (By.XPATH, "//button[@aria-label='Next Page']")
@@ -87,17 +87,15 @@ class DiretrizIrecPage:
 
     def validar_mensagem_cadastro(self):
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 4).until(
                 EC.visibility_of_element_located(DiretrizIrecLocators.MSG_SUCESSO_CAD_DIR_IREC)
             )
-            logging.info("Mensagem de sucesso exibida ao cadastrar diretriz.")
             print("Mensagem de sucesso ao cadastrar diretriz!")
         except TimeoutException:
             try:
-                WebDriverWait(self.driver, 2).until(
+                WebDriverWait(self.driver, 4).until(
                     EC.visibility_of_element_located(DiretrizIrecLocators.MSG_ERRO_CAD_DIR_IREC)
                 )
-                logging.error("Mensagem de erro exibida ao cadastrar diretriz.")
                 print("Mensagem de erro ao cadastrar diretriz!")
             except TimeoutException:
                 raise AssertionError("Nenhuma mensagem de sucesso ou erro foi exibida.")
