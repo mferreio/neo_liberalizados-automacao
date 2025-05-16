@@ -3,7 +3,7 @@ Feature: Tela de cadastro de usuário
   Quero cadastrar usuários com perfis específicos
   Para gerenciar o acesso à aplicação
 
-# @admin
+@admin
 
 Scenario: Cadastro de usuário com sucesso
     Given que o usuário está logado como "Administrador"

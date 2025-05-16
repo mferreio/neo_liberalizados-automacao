@@ -25,7 +25,7 @@ def navegar_tela_usuarios(context):
         raise
     sleep(2)
 
-
+@then("o usuário deve ser exibido na tela de usuários")
 @then("valida os usuarios cadastrados exibindo nome, email e perfil")
 def step_valida_usuarios_cadastrados(context):
     """Valida e exibe os usuários cadastrados com nome, email e perfil."""
@@ -82,7 +82,7 @@ def step_clica_botao_novo(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_fechar_tela_cadastro()
 
-
+@when("navega até a tela inicial")
 @then("navega até a tela inicial")
 def step_impl(context):
     # Garante que o botão de perfil seja clicado para navegar até a tela de usuários

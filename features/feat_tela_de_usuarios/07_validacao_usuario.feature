@@ -1,42 +1,45 @@
-# Feature: Validação de Usuário
-#   Como um administrador do sistema
-#   Eu quero validar o cadastro de usuários no Active Directory
-#   Para garantir que apenas usuários válidos possam acessar o sistema
+Feature: Validação de Usuário
+  Como um administrador do sistema
+  Eu quero validar o cadastro de usuários no Active Directory
+  Para garantir que apenas usuários válidos possam acessar o sistema
 
-#   Background:
-#     Given que o usuário está logado no sistema
+  Background:
+    Given que o usuário está logado no sistema
 
-#   @diretriz_curto_prazo
+@diretriz_curto_prazo
 
+# Scenario: Usuário autenticado sem perfil cadastrado
+#     Given que o usuário "usuario@exemplo.com" está registrado no Active Directory
+#  	And o usuário não possui um perfil cadastrado no sistema
+#  	When o usuário faz login no sistema usando suas credenciais
+#  	Then o sistema deve exibir uma mensagem para contato com o administrador
+#  	And a mensagem deve ser "Perfil não encontrado. Por favor, entre em contato com o administrador."
 
-# Scenario: Usuário autenticado e associado ao perfil	  Given que o usuário "usuario@exemplo.com" está registrado no Active Directory
-# 	  And o usuário tem um perfil previamente cadastrado no sistema
-# 	  When o usuário faz login no sistema usando suas credenciais
-# 	  Then o sistema deve exibir o perfil registrado do usuário
-# 	  And o sistema deve mostrar "Bem-vindo, [nome do usuário]"
+Scenario: Administrador cadastra um novo usuário
+    Given que o usuário está logado como "Administrador"
+    When navega até a tela de usuários - Perfil
+    When o usuário clica no botão "Novo" para adicionar usuario
+    When clica no dropdown de perfil
+    When o usuário seleciona o perfil de administrador, escreve o nome e email
+    When o usuário clica em "Salvar" para salvar o novo usuário
+    Then navega até a tela de usuários - Perfil
 
-# Scenario: Usuário autenticado sem perfil cadastrado	Given que o usuário "usuario@exemplo.com" está registrado no Active Directory
-# 	And o usuário não possui um perfil cadastrado no sistema
-# 	When o usuário faz login no sistema usando suas credenciais
-# 	Then o sistema deve exibir uma mensagem para contato com o administrador
-# 	And a mensagem deve ser "Perfil não encontrado. Por favor, entre em contato com o administrador."
+Scenario: Usuário autenticado e associado ao perfil
+    Given que o usuário foi cadastrado no sistema
+    Then o usuário deve ser exibido na tela de usuários
 
-# Scenario: Administrador cadastra um novo usuário	  Given que o administrador está logado no sistema
-# 	  When o administrador acessa a seção de gerenciamento de usuários
-# 	  And ele insere o e-mail "novousuario@exemplo.com" e o perfil "Usuario Padrão"
-# 	  And o administrador clica no botão "Cadastrar"
-# 	  Then o sistema deve confirmar que o usuário foi cadastrado com sucesso
-# 	  And deve exibir a mensagem "Usuário cadastrado com sucesso!"
+Scenario: Administrador tenta cadastrar um usuário já existente
+    Given que o usuário está logado como "Administrador"
+    When navega até a tela de usuários - Perfil
+    When clica no botão "Editar"
+    When edita o tipo de perfil do usuário
+    When edita o nome e email do usuário
+    When clica em Salvar para salvar as alterações
+    Then a notificação "Usuário já existe" deve ser exibida
+    Then navega até a tela de usuários - Perfil
 
-# Scenario: Administrador tenta cadastrar um usuário já existente	Given que o administrador está logado no sistema
-# 	And o usuário "usuario@exemplo.com" já está cadastrado
-# 	When o administrador acessa a seção de gerenciamento de usuários
-# 	And ele insere o e-mail "usuario@exemplo.com" e o perfil "Usuario Padrão"
-# 	And o administrador clica no botão "Cadastrar"
-# 	Then o sistema deve exibir uma mensagem de erro
-# 	And deve exibir a mensagem "O usuário já está cadastrado."
-
-# Scenario: Falha na autenticação do Active Directory	Given que o serviço do Active Directory está indisponível
+# Scenario: Falha na autenticação do Active Directory
+#    Given que o serviço do Active Directory está indisponível
 # 	When o usuário tenta fazer login no sistema
 # 	Then o sistema deve exibir uma mensagem de erro
 # 	And deve mostrar "Não foi possível autenticar, por favor, tente novamente mais tarde."
