@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","17083","Tentativa de acesso não logado","","Tue May 20 14:27:20 BRT 2025","failed","Tue May 20 14:27:37 BRT 2025","","","",""
+"","3283","Acesso não logado","","Tue May 20 14:27:17 BRT 2025","broken","Tue May 20 14:27:20 BRT 2025","","","",""
