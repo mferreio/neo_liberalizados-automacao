@@ -460,6 +460,35 @@ def after_all(context):
         except Exception as e:
             print(f"Erro ao gerar o relatório Allure: {e}")
 
+        # Copia o relatório Allure para docs/allure-history/allure-report-<timestamp>/ e publica na gh-pages sem intervenção humana
+        try:
+            from datetime import datetime
+            import shutil
+            timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+            pasta_destino = os.path.join('docs', 'allure-history', f'allure-report-{timestamp}')
+            os.makedirs(os.path.dirname(pasta_destino), exist_ok=True)
+            shutil.copytree('reports/allure-report', pasta_destino)
+            print(f'Relatório histórico copiado para: {pasta_destino}')
+
+            # Commit automático de tudo antes de trocar de branch
+            subprocess.run(["git", "add", "-A"], check=True, shell=True)
+            subprocess.run(["git", "commit", "-am", f"WIP auto: preparando para publicar Allure histórico {timestamp}"], check=False, shell=True)
+
+            # Garante que a branch gh-pages está atualizada localmente
+            subprocess.run(["git", "fetch", "origin", "gh-pages:gh-pages"], check=True, shell=True)
+            # Troca para gh-pages
+            subprocess.run(["git", "checkout", "gh-pages"], check=True, shell=True)
+            # Copia o relatório histórico da main para gh-pages
+            subprocess.run(["git", "checkout", "main", "--", pasta_destino], check=True, shell=True)
+            # Adiciona, commita e faz push do novo relatório
+            subprocess.run(["git", "add", pasta_destino], check=True, shell=True)
+            subprocess.run(["git", "commit", "-am", f"Allure histórico {timestamp}"], check=False, shell=True)
+            subprocess.run(["git", "push"], check=True, shell=True)
+            # Volta para a main
+            subprocess.run(["git", "checkout", "main"], check=True, shell=True)
+        except Exception as e:
+            print(f"Erro ao copiar/commit/push do relatório histórico: {e}")
+
         # Calcula o tempo de execução
         end_time = datetime.now()
         execution_time = end_time - context.start_time
