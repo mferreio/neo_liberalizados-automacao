@@ -1,0 +1,1 @@
+{"29a751730873ee8fd1a2d7393123acab":{"statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"ed662adc5c60a2ad","status":"failed","statusDetails":"AssertionError: Mensagem de usuário já existe não foi exibida.\n","time":{"start":1747768459010,"stop":1747768478196,"duration":19186}}]}}
