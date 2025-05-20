@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","18185","Administrador tenta cadastrar um usuário já existente","","Tue May 20 16:32:17 BRT 2025","failed","Tue May 20 16:32:35 BRT 2025","","","",""
+"","280","Usuário autenticado e associado ao perfil","","Tue May 20 16:32:17 BRT 2025","broken","Tue May 20 16:32:17 BRT 2025","","","",""
+"","7356","Administrador cadastra um novo usuário","","Tue May 20 16:32:10 BRT 2025","passed","Tue May 20 16:32:17 BRT 2025","","","",""
