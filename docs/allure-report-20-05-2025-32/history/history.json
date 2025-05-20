@@ -1,0 +1,1 @@
+{"29a751730873ee8fd1a2d7393123acab":{"statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"c959a9c9f955cb1d","status":"failed","statusDetails":"AssertionError: Usuário 'Teste da Silva' não encontrado ou botão 'Editar' não clicável.\n","time":{"start":1747768334921,"stop":1747768351424,"duration":16503}}]}}
