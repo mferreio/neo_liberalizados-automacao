@@ -1,0 +1,8 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2870","Visualizar usuários cadastrados","","Tue May 20 13:45:01 BRT 2025","passed","Tue May 20 13:45:04 BRT 2025","","","",""
+"","2663","Administrador acessa a tela de usuários","","Tue May 20 13:44:58 BRT 2025","passed","Tue May 20 13:45:01 BRT 2025","","","",""
+"","7517","Excluir um usuário existente","","Tue May 20 13:45:32 BRT 2025","passed","Tue May 20 13:45:39 BRT 2025","","","",""
+"","6060","Adicionar um novo usuário administrador","","Tue May 20 13:45:09 BRT 2025","passed","Tue May 20 13:45:15 BRT 2025","","","",""
+"","7520","Cancelar exclusão de um usuário","","Tue May 20 13:45:24 BRT 2025","passed","Tue May 20 13:45:32 BRT 2025","","","",""
+"","5271","Cancelar processo para adicionar um novo usuário","","Tue May 20 13:45:04 BRT 2025","passed","Tue May 20 13:45:09 BRT 2025","","","",""
+"","8952","Editar um usuário existente","","Tue May 20 13:45:15 BRT 2025","passed","Tue May 20 13:45:24 BRT 2025","","","",""
