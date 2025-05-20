@@ -1,6 +1,5 @@
-import logging
+import logging, ipdb
 from time import sleep
-
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -9,6 +8,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class PerfilDeAcessoPortfolioTradingLocators:
+    # Locators para validação do menu restrito
+    ABA_PREMIO_SAZO = (By.XPATH, "//li/a[span[contains(text(),'Prêmio Sazonal')]]")
+    ABA_PREMIO_FLEX = (By.XPATH, "//li/a[span[contains(text(),'Prêmio Flexível')]]")
+    DIRETRIZ_CURTO_PRAZO = (By.XPATH, "//li/a[span[contains(text(),'Curto Prazo')]]")
+    DIRETRIZ_I_REC = (By.XPATH, "//li/a[span[contains(text(),'I-REC')]]")
+    DIRETRIZ_SEMANAL = (By.XPATH, "//li/a[span[contains(text(),'Diretriz Semanal')]]")
+    BTN_NOVO_PRODUTO = (By.XPATH, "//div[@role='toolbar']//button[@label='Novo']")
+    # Novo locator para o menu Diario Semanal com o XPath solicitado
+    PRODUTO_DIARIO_SEMANAL_MENU = (By.XPATH, "//li/a[@href='/pages/produto-diario-semanal/listar']")
     """Locators para a página de Perfil de Acesso - Trading/Portfólio."""
 
     VALIDAR_MODULOS_PRODUTOS = (By.XPATH, "//a[span[text()='Produtos']]")
@@ -16,10 +24,7 @@ class PerfilDeAcessoPortfolioTradingLocators:
         By.XPATH,
         "//a[@class='p-ripple p-element ng-tns-c183498709-14 ng-star-inserted' and span[text()='Produtos']]",
     )
-    BOTAO_PRODUTOS = (
-        By.XPATH,
-        "//li[@class='ng-tns-c183498709-19 ng-tns-c183498709-10 ng-star-inserted']",
-    )
+    BOTAO_PRODUTOS = (By.XPATH,"//li/a[span[text()='Produtos']]",)
     MODULO_DIRETRIZES = (By.XPATH, "//div[text()='Diretrizes']")
     MODULO_PROPOSTA_DIRETRIZES = (
         By.XPATH,
@@ -32,60 +37,105 @@ class PerfilDeAcessoPortfolioTradingLocators:
     BOTAO_EXCLUIR = (By.XPATH, "//button[text()='Excluir']")
     BOTAO_CRIAR = (By.XPATH, "//button[text()='Criar']")
     MENU_OPCOES = (By.XPATH, "//div[@class='menu-opcoes']")
-    IDENTIFICADOR_DE_PERFIL = (
-        By.CSS_SELECTOR,
-        "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",
-    )
-    PRODUTO_DIARIO_SEMANAL = (By.XPATH, "//a[@href='/pages/default-products']")
-    PRODUTO_I_REC = (By.XPATH, "//a[@href='/pages/irec-products']/span[text()='I-REC']")
+    IDENTIFICADOR_DE_PERFIL = (By.CSS_SELECTOR,"div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",)
+    PRODUTO_DIARIO_SEMANAL = (By.XPATH, "//li/a[span[text()='Diretriz Semanal']]")
+    PRODUTO_I_REC = (By.XPATH, "//li/a[span[text()='I-REC']]")
     PRODUTO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
-    VALIDAR_PAGINA_PRODUTOS_DIARIOS = (
-        By.XPATH,
-        "//h5[text()='Gerenciar Produtos Diário/Semanal']",
-    )
-    PESQUISAR_PROD_POR_ANO = (By.XPATH, "//input[@placeholder='Procurar por ano']")
-    BTN_EDITAR_PROD = (
-        By.CSS_SELECTOR,
-        "div.flex > button.p-element.p-ripple.p-button-rounded.p-button-success.mr-2.p-button.p-component.p-button-icon-only.ng-star-inserted > span.p-button-icon.pi.pi-pencil",
-    )
-    ABRIR_MODULO_PRODUTOS = (
-        By.XPATH,
-        "//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]",
-    )
-    TITULO_PAGINA_EDICAO_PRODUTO = (
-        By.CSS_SELECTOR,
-        "div.card.px-6.py-6 > div.p-fluid > p.text-3xl.font-bold.text-green-500",
-    )
+    VALIDAR_PAGINA_PRODUTOS_DIARIOS = (By.XPATH,"//h5[text()='Gerenciar Produtos Diário/Semanal']",)
+    PESQUISAR_PROD_POR_ANO = (By.XPATH, "//span/input[@placeholder='Procurar por Ano']")
+    BTN_EDITAR_PROD = (By.XPATH,"//td/div/button[@icon='pi pi-pencil']",)
+    ABRIR_MODULO_PRODUTOS = (By.XPATH,"//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]",)
+    TITULO_PAGINA_EDICAO_PRODUTO = (By.XPATH,"//form/*[self::p and contains(text(), 'Editar Produto')]",)
     EXCLUIR_PRODUTO = (By.XPATH, "//button[contains(@class, 'p-button-warning')]")
-    VALIDAR_TELA_EXCLUSAO_PRODUTOS = (
-        By.XPATH,
-        "//span[contains(text(), 'Você tem certeza de que quer deletar')]",
-    )
-    DROPDOWN_MES = (
-        By.XPATH,
-        "//span[@id='mes' and @role='combobox' and @class='p-element p-dropdown-label p-inputtext p-placeholder ng-star-inserted']",
-    )
-    MES_NOVO_PRODUTO = lambda mes: (
-        By.XPATH,
-        f"//span[text()='{mes.upper()}']/parent::li",
-    )
+    VALIDAR_TELA_EXCLUSAO_PRODUTOS = (By.XPATH,"//span[contains(text(), 'Você tem certeza de que quer deletar')]",)
+    DROPDOWN_MES = (By.XPATH,"//span[@id='mes' and @role='combobox' and @class='p-element p-dropdown-label p-inputtext p-placeholder ng-star-inserted']",)
+    MES_NOVO_PRODUTO = lambda mes: (By.XPATH,f"//span[text()='{mes.upper()}']/parent::li",)
     ANO_NOVO_PRODUTO = (By.XPATH, "//span[@data-pc-name='inputnumber']")
     DROPDOWN_PERFIL = (By.XPATH, "//span[@aria-label='Selecione o perfil']")
     PERFIL_NOVO_PRODUTO = lambda perfil: (By.XPATH, f"//li[@aria-label='{perfil}']")
     DROPDOWN_SUBMERCADO = (By.XPATH, "//span[@aria-label='Selecione o submercado']")
-    SUBMERCADO_NOVO_PRODUTO = lambda submercado: (
-        By.XPATH,
-        f"//li[@aria-label='{submercado}']",
-    )
+    SUBMERCADO_NOVO_PRODUTO = lambda submercado: (By.XPATH,f"//li[@aria-label='{submercado}']",)
     DROPDOWN_TIPOPRODUTO = (By.XPATH, "//span[@aria-label='Selecione o tipoProduto']")
-    TIPOPRODUTO_NOVO_PRODUTO = lambda tipo: (
-        By.XPATH,
-        f"//li[@aria-label='{tipo.upper()}']",
-    )
+    TIPOPRODUTO_NOVO_PRODUTO = lambda tipo: (By.XPATH,f"//li[@aria-label='{tipo.upper()}']",)
     BTN_CADASTRAR_PRODUTO = (By.XPATH, "//button[@label='Cadastrar']")
 
 
 class PerfilDeAcessoPage:
+    def validar_menu_produtos_premios_diretrizes(self):
+        """Valida se o menu apresenta apenas as opções de Produtos, Prêmios (Sazonal e Flexível) e Diretrizes (Curto Prazo, I-REC, Semanal)."""
+        try:
+            # Produtos
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_PRODUTOS
+                )
+            )
+            # Prêmios
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.ABA_PREMIO_SAZO
+                )
+            )
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.ABA_PREMIO_FLEX
+                )
+            )
+            # Diretrizes
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.DIRETRIZ_CURTO_PRAZO
+                )
+            )
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.DIRETRIZ_I_REC
+                )
+            )
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located(
+                    PerfilDeAcessoPortfolioTradingLocators.DIRETRIZ_SEMANAL
+                )
+            )
+        except TimeoutException as e:
+            raise AssertionError(f"Uma ou mais opções do menu não estão visíveis: {e}")
+        return True
+
+    def clicar_em_novo_produto(self):
+        """Clica no botão 'Novo Produto'."""
+        try:
+            logging.info("Clicando no botão 'Novo Produto'.")
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BTN_NOVO_PRODUTO
+                )
+            ).click()
+            logging.info("Botão 'Novo Produto' clicado com sucesso.")
+        except TimeoutException:
+            logging.error("Erro ao clicar no botão 'Novo Produto'.")
+            raise
+        sleep(2)
+
+    def acessar_produto_diario_semanal(self):
+        """Clica no botão Produtos e depois no menu Diario Semanal pelo XPath correto."""
+        try:
+            logging.info("Clicando no botão Produtos (menu lateral).")
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.BOTAO_PRODUTOS
+                )
+            ).click()
+            logging.info("Clicando no menu Diario Semanal pelo XPath correto.")
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(
+                    PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL_MENU
+                )
+            ).click()
+        except TimeoutException:
+            logging.error("Erro ao acessar o produto Diario Semanal na aba produtos.")
+            raise
+        sleep(2)
+
     def __init__(self, driver):
         self.driver = driver
 
@@ -197,17 +247,8 @@ class PerfilDeAcessoPage:
         sleep(2)
 
     def verificar_opcoes_menu(self):
-        """Verifica se o menu apresenta as opções corretas."""
-        try:
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(
-                    PerfilDeAcessoPortfolioTradingLocators.MENU_OPCOES
-                )
-            )
-            logging.info("Opções do menu verificadas com sucesso.")
-        except TimeoutException:
-            raise AssertionError("Erro ao verificar as opções do menu.")
-        sleep(2)
+        """Verifica se o menu apresenta apenas as opções de produtos, prêmios e diretrizes."""
+        return self.validar_menu_produtos_premios_diretrizes()
 
     def validar_texto_perfil(self, texto_esperado):
         """Valida se o texto do elemento IDENTIFICADOR_DE_PERFIL corresponde ao texto esperado."""
@@ -263,46 +304,6 @@ class PerfilDeAcessoPage:
         sleep(2)
         return True
 
-    def acessar_premio_proposta_diretrizes(self):
-        """Clica no elemento VALIDAR_MODULOS_PRODUTOS, depois no link de produtos e valida o título."""
-        try:
-            logging.info("Clicando no elemento VALIDAR_MODULOS_PRODUTOS.")
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
-                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
-                )
-            ).click()
-            logging.info(
-                "Clique no elemento VALIDAR_MODULOS_PRODUTOS realizado com sucesso."
-            )
-
-            logging.info(
-                "Clicando no link de produtos '//a[@href='/pages/default-products']'."
-            )
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH, "//a[@href='/pages/default-products']")
-                )
-            ).click()
-            logging.info("Clique no link de produtos realizado com sucesso.")
-
-            logging.info(
-                "Validando a existência do título 'Gerenciar Produtos Diário/Semanal'."
-            )
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located(
-                    PerfilDeAcessoPortfolioTradingLocators.VALIDAR_PAGINA_PRODUTOS_DIARIOS
-                )
-            )
-            logging.info(
-                "Título 'Gerenciar Produtos Diário/Semanal' validado com sucesso."
-            )
-        except TimeoutException:
-            logging.error(
-                "Erro ao acessar ou validar o título do produto Diário/Semanal."
-            )
-            raise
-        sleep(2)
 
     def clicar_aba_produtos(self):
         """Clica no elemento VALIDAR_MODULOS_PRODUTOS."""

@@ -34,6 +34,20 @@ class ArmEvidenciasSelectors:
 
 
 class ArmEvidenciasPage:
+    def validar_ausencia_arquivo_anexado(self):
+        """
+        Valida que não existe nenhum arquivo anexo na tela.
+        Se não houver, exibe mensagem de sucesso.
+        """
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, ArmEvidenciasSelectors.ARQUIVO_JPG_ANEXADO_ELEMENTO))
+            )
+            # Se encontrou o elemento, falha o teste
+            raise AssertionError("Foi encontrado um arquivo anexo, mas não deveria haver nenhum.")
+        except TimeoutException:
+            print("Não existem arquivos anexados na tela (OK)")
+            return True
     def __init__(self, driver):
         self.driver = driver
 

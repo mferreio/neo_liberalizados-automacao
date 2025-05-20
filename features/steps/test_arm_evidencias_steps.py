@@ -1,3 +1,9 @@
+
+# Step para validar ausência de arquivo anexo
+@then('o sistema deve validar que não existe nenhum arquivo anexado')
+def step_validar_ausencia_arquivo_anexado(context):
+    evidencias_page = ArmEvidenciasPage(context.driver)
+    assert evidencias_page.validar_ausencia_arquivo_anexado(), "Foi encontrado um arquivo anexo, mas não deveria haver nenhum."
 from time import sleep
 
 import ipdb

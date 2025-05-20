@@ -1,3 +1,9 @@
+@when("Usuário acessa o produto Diario Semanal na aba produtos")
+def step_acessar_produto_diario_semanal(context):
+    """Acessa o produto Diario Semanal na aba produtos (menu lateral)."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
+    context.perfil_de_acesso_page.acessar_produto_diario_semanal()
+    logging.info("Usuário acessou o produto Diario Semanal na aba produtos.")
 import logging
 from time import sleep
 
@@ -48,15 +54,6 @@ def step_editar_modulo_produtos(context):
     context.perfil_de_acesso_page.editar_modulo_produtos()
 
 
-@when("Usuário acessa o produto Diario Semanal na aba produtos")
-@then("eu devo ter acesso aos prêmio de proposta de diretrizes")
-def step_verificar_acesso_proposta_diretrizes(context):
-    """Clica nos elementos necessários e valida a existência do título 'Gerenciar Produtos Diário/Semanal'."""
-    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
-    context.perfil_de_acesso_page.acessar_premio_proposta_diretrizes()
-    logging.info("Acesso ao prêmio de proposta de diretrizes validado com sucesso.")
-
-
 @when("eu devo conseguir excluir um produto")
 def step_excluir_produto(context):
     context.perfil_de_acesso_page.excluir_produto()
@@ -69,7 +66,7 @@ def step_criar_dados(context):
 
 @then("o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes")
 def step_verificar_opcoes_menu(context):
-    context.perfil_de_acesso_page.verificar_opcoes_menu()
+    assert context.perfil_de_acesso_page.verificar_opcoes_menu(), "O menu não apresenta as opções corretas de produtos, prêmios e diretrizes."
 
 
 @then(

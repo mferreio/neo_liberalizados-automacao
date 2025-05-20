@@ -15,23 +15,11 @@ from credentials import (EDITAR_EMAIL, EDITAR_NOME, EDITAR_PERFIL, EMAIL,
 
 
 class TeladeUsuariosPageLocators:
-    VALIDAR_ADMINISTRADOR = (
-        By.XPATH,
-        "//div[@class='flex align-items-center justify-content-between']//span[text()='Administrador']",
-    )
+    VALIDAR_ADMINISTRADOR = (By.XPATH,"//div[@class='flex align-items-center justify-content-between']//span[text()='Administrador']",)
     VALIDAR_TELA_CADASTRO_USUARIO = (By.XPATH, "//*[@id='pn_id_70_header']")
-    BOTAO_PERFIL = (
-        By.XPATH,
-        "/html/body/app-root/app-layout/div/div[1]/app-sidebar/app-menu/ul/li[2]/ul/li[1]",
-    )
-    BOTAO_NOVO = (
-        By.XPATH,
-        "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/div/p-toolbar/div/div/div/button",
-    )
-    BTN_FECHAR_TELA_CADASTRO = (
-        By.XPATH,
-        "//button[contains(@class, 'p-dialog-header-close')]",
-    )
+    BOTAO_PERFIL = (By.XPATH,"/html/body/app-root/app-layout/div/div[1]/app-sidebar/app-menu/ul/li[2]/ul/li[1]",)
+    BOTAO_NOVO = (By.XPATH,"//div[@role='toolbar']//button[@label='Novo']",)
+    BTN_FECHAR_TELA_CADASTRO = (By.XPATH,"//button[contains(@class, 'p-dialog-header-close')]",)
     BTN_SALVAR_NOVO_CADASTRO = (
         By.XPATH,
         "/html/body/app-root/app-layout/div/div[2]/div/ng-component/div/div/p-dialog[1]/div/div/div[4]/button[2]",
@@ -107,10 +95,10 @@ class TelaDeUsuariosPage:
                 "O botão de perfil não foi encontrado ou não está clicável."
             )
 
-    def clicar_botao_dashboardl(self):
+    def clicar_botao_dashboard(self):
         try:
             botao_dashboard = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(TeladeUsuariosPageLocators.BTN_DASHBOARD)
+                EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_PERFIL)
             )
             botao_dashboard.click()
         except TimeoutException:

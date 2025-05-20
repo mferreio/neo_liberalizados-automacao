@@ -2,13 +2,18 @@ from pages.diretriz_irec_pages import DiretrizIrecPage
 import base64
 import io
 import os
+import traceback
 import shutil
 import stat
 import subprocess
 import traceback
+from docx import Document
+import os
+from datetime import datetime
+import docx.shared
 from datetime import datetime
 from time import sleep
-
+from docx.shared import Inches
 import matplotlib.pyplot as plt
 import pyautogui
 from pages.login_page import LoginPage, LoginPageLocators
@@ -52,7 +57,15 @@ def login(context):
 
 def before_all(context):
     """Configura o ambiente antes de todos os testes."""
-    # logging removido
+
+    # Limpa e garante que as pastas necessárias existam (ANTES de iniciar o Selenium e contexto)
+    import shutil
+    shutil.rmtree("reports/allure-results", ignore_errors=True)
+    shutil.rmtree("reports/allure-report", ignore_errors=True)
+    os.makedirs("reports/screenshots", exist_ok=True)
+    os.makedirs("reports/evidencias", exist_ok=True)
+    os.makedirs("reports/allure-results", exist_ok=True)
+
     fixed_port = 8080  # Porta fixa para o Selenium
 
     chrome_options = Options()
@@ -71,11 +84,6 @@ def before_all(context):
     context.passed_scenarios = []
     context.failed_scenarios = []
     context.start_time = datetime.now()
-
-    # Garante que as pastas necessárias existam
-    os.makedirs("reports/screenshots", exist_ok=True)
-    os.makedirs("reports/evidencias", exist_ok=True)
-    os.makedirs("reports/allure-results", exist_ok=True)
 
     context.report_output_path = os.path.join(
         os.getcwd(), "docs"
@@ -121,6 +129,34 @@ def before_feature(context, feature):
 
 
 def before_scenario(context, scenario):
+    # Inicializa lista de evidências dos passos para o cenário
+    context.evidencias_passos = []
+    # Agrupamento por feature
+    if not hasattr(context, 'evidencias_features'):
+        context.evidencias_features = {}
+    feature_path = scenario.feature.filename
+    if feature_path not in context.evidencias_features:
+        context.evidencias_features[feature_path] = []
+
+def after_step(context, step):
+    """Captura evidência (screenshot) e status de todos os passos, independente de sucesso ou falha."""
+    import os
+    from datetime import datetime
+    screenshot_path = os.path.join('reports', 'screenshots', f"step_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.png")
+    try:
+        if hasattr(context, 'driver'):
+            context.driver.save_screenshot(screenshot_path)
+    except Exception:
+        screenshot_path = None
+    status = 'Sucesso' if step.status == 'passed' else 'Falha'
+    error = str(step.exception) if step.status == 'failed' and step.exception else None
+    if hasattr(context, 'evidencias_passos'):
+        context.evidencias_passos.append({
+            'step': step.name,
+            'status': status,
+            'screenshot': screenshot_path,
+            'error': error
+        })
     # Inicializa o page object DiretrizIrecPage para todos os cenários que envolvem diretriz I-REC
     if hasattr(context, "driver"):
         context.diretriz_irec_page = DiretrizIrecPage(context.driver)
@@ -130,6 +166,14 @@ def before_scenario(context, scenario):
 
 
 def after_scenario(context, scenario):
+    # Ao final de cada cenário, armazena as evidências dos passos no agrupamento da feature
+    feature_path = scenario.feature.filename
+    if hasattr(context, 'evidencias_features'):
+        context.evidencias_features[feature_path].append({
+            'cenario': scenario.name,
+            'status': scenario.status,
+            'passos': list(context.evidencias_passos)
+        })
     """Executa ações após cada cenário."""
     end_time_scenario = datetime.now()
     execution_time = end_time_scenario - context.start_time_scenario
@@ -142,36 +186,56 @@ def after_scenario(context, scenario):
 
 
 def esperar_e_executar(context, locator, metodo, *args):
-    """Espera por um elemento clicável e executa uma ação."""
+    """Espera por um elemento clicável, executa uma ação e registra evidência do passo."""
     from time import sleep
-
     from selenium.webdriver.support import expected_conditions as EC
     from selenium.webdriver.support.ui import WebDriverWait
-
+    import os
+    import traceback
     try:
         WebDriverWait(context.driver, 20).until(EC.element_to_be_clickable(locator))
         metodo(*args)
+        status = 'Sucesso'
+        error = None
     except Exception as e:
-        # logging removido
+        status = 'Falha'
+        error = str(e) + '\n' + traceback.format_exc()
         raise
     finally:
         sleep(1)
+        # Captura screenshot e registra passo
+        screenshot_path = os.path.join('reports', 'screenshots', f"step_{datetime.now().strftime('%Y%m%d_%H%M%S_%f')}.png")
+        try:
+            context.driver.save_screenshot(screenshot_path)
+        except Exception:
+            screenshot_path = None
+        # Descobre nome do passo
+        import inspect
+        frame = inspect.currentframe().f_back
+        step_name = frame.f_code.co_name if frame else 'passo_desconhecido'
+        if hasattr(context, 'evidencias_passos'):
+            context.evidencias_passos.append({
+                'step': step_name,
+                'status': status,
+                'screenshot': screenshot_path,
+                'error': error
+            })
 
 
 def gerar_documento_evidencia(nome_teste, sucesso=True, erros=None):
     """
     Gera um documento de evidência ou bug com base no modelo fornecido.
+    Sempre utiliza o template 1.evidencia.docx.
     """
     import os
-
     from docx import Document
 
     data_teste = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # Sempre usa o template 1.evidencia.docx
+    modelo = os.path.abspath(os.path.join(os.getcwd(), "modelos de evidencias", "1.evidencia.docx"))
     if sucesso:
-        modelo = "modelos de evidencias/1.evidencia.docx"
         nome_arquivo = f"reports/evidencias/Evidência_{data_teste}.docx"
     else:
-        modelo = "modelos de evidencias/2.bug.docx"
         nome_arquivo = f"reports/evidencias/Bug_{data_teste}.docx"
 
     doc = Document(modelo)
@@ -304,11 +368,101 @@ def after_all(context):
     try:
         if hasattr(context, "driver"):
             context.driver.quit()
-            # logging removido
+
+        # Geração de evidências por feature (mantido)
+        print('DEBUG: after_all chamado')
+        print('DEBUG: evidencias_features:', getattr(context, 'evidencias_features', None))
+        if hasattr(context, 'evidencias_features') and context.evidencias_features:
+            for feature_path, cenarios in context.evidencias_features.items():
+                print(f"DEBUG: Gerando evidência para feature: {feature_path}")
+                feature_nome = os.path.splitext(os.path.basename(feature_path))[0]
+                data_execucao = datetime.now().strftime('%d-%m-%Y')
+                hora_execucao = datetime.now().strftime('%H-%M-%S')
+                responsavel = os.getenv('USUARIO_TESTE', 'Automação')
+                dispositivo = 'Chrome'
+                versao = ''
+                info = {
+                    'projeto': 'Liberalizados',
+                    'frente': 'Web',
+                    'responsavel': responsavel,
+                    'distribuidora': 'NE e SE',
+                    'data': data_execucao,
+                    'produto': 'Aplicação Base',
+                    'resultado_esperado': 'Execução dos passos dos cenários',
+                    'versao': versao,
+                    'dispositivo': dispositivo
+                }
+
+                # Sempre usa o template 1.evidencia.docx
+                modelo = os.path.abspath(os.path.join(os.getcwd(), "modelos de evidencias", "1.evidencia.docx"))
+                print(f"DEBUG: Procurando template em: {modelo}")
+                if not os.path.exists(modelo):
+                    print(f"ERRO: Template não encontrado em: {modelo}")
+                    continue
+                doc = Document(modelo)
+                doc.add_paragraph(f"Projeto: {info['projeto']}")
+                doc.add_paragraph(f"Frente: {info['frente']}")
+                doc.add_paragraph(f"Responsável: {info['responsavel']}")
+                doc.add_paragraph(f"Distribuidora: {info['distribuidora']}")
+                doc.add_paragraph(f"Data Execução: {data_execucao}")
+                doc.add_paragraph(f"Hora Execução: {hora_execucao}")
+                doc.add_paragraph(f"Produto: {info['produto']}")
+                doc.add_paragraph(f"Resultado Esperado: {info['resultado_esperado']}")
+                doc.add_paragraph(f"Versão: {info['versao']}")
+                doc.add_paragraph(f"Dispositivo: {info['dispositivo']}")
+                doc.add_paragraph(f"Feature: {feature_nome}")
+
+                for cenario in cenarios:
+                    doc.add_paragraph(f"\nCenário: {cenario['cenario']}")
+                    doc.add_paragraph(f"Status: {'Sucesso' if cenario['status']=='passed' else 'Falha'}")
+                    for idx, passo in enumerate(cenario['passos'], 1):
+                        doc.add_paragraph(f"{idx} - {passo['step']}")
+                        if passo.get('screenshot') and os.path.exists(passo['screenshot']):
+                            try:
+                                doc.add_picture(passo['screenshot'], width=docx.shared.Inches(4))
+                            except Exception as e:
+                                doc.add_paragraph(f"[Erro ao inserir imagem: {e}]")
+                        doc.add_paragraph(f"Status: {passo['status']}")
+                        if passo.get('error'):
+                            doc.add_paragraph(f"Erro: {passo['error']}")
+
+                # Caminho absoluto para a pasta evidencias na raiz do repositório
+                pasta = os.path.abspath(os.path.join(os.getcwd(), "reports", "evidencias"))
+                os.makedirs(pasta, exist_ok=True)
+                nome_arquivo = os.path.join(
+                    pasta,
+                    f"Evidencia_{feature_nome}_{data_execucao}_{hora_execucao}.docx"
+                )
+                print(f"DEBUG: Salvando arquivo de evidência em: {nome_arquivo}")
+                try:
+                    doc.save(nome_arquivo)
+                    print(f"Arquivo de evidência gerado: {nome_arquivo}")
+                except Exception as e:
+                    print(f"Erro ao salvar arquivo de evidência {nome_arquivo}: {e}")
+
+        # Gera o relatório do Allure ao final dos testes
+        try:
+            allure_executable = r"C:\allure\bin\allure.bat"
+            allure_results_dir = "reports/allure-results"
+            allure_report_dir = "reports/allure-report"
+            subprocess.run(
+                [
+                    allure_executable,
+                    "generate",
+                    allure_results_dir,
+                    "-o",
+                    allure_report_dir,
+                    "--clean",
+                ],
+                check=True,
+            )
+            print(f"Relatório Allure gerado em: {allure_report_dir}")
+        except Exception as e:
+            print(f"Erro ao gerar o relatório Allure: {e}")
 
         # Calcula o tempo de execução
         end_time = datetime.now()
         execution_time = end_time - context.start_time
     except Exception as e:
-        # logging removido
-        pass
+        print("Erro ao gerar evidência:", e)
+        traceback.print_exc()

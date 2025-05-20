@@ -41,10 +41,24 @@ class DiretrizIrecPage:
         logging.info("Aba Diretriz I-REC acessada.")
 
     def clicar_nova_diretriz(self):
-        WebDriverWait(self.driver, 10).until(
+        WebDriverWait(self.driver, 15).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.BTN_NOVA_DIR)
         ).click()
         logging.info("Botão Nova Diretriz clicado.")
+        # Screenshot para diagnóstico
+        try:
+            self.driver.save_screenshot("reports/evidencias/apos_clicar_nova_diretriz.png")
+        except Exception as e:
+            logging.warning(f"Não foi possível salvar screenshot: {e}")
+        # Espera por campo exclusivo da tela de cadastro
+        try:
+            WebDriverWait(self.driver, 15).until(
+                EC.visibility_of_element_located(DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
+            )
+            logging.info("Tela de cadastro de nova diretriz carregada.")
+        except TimeoutException:
+            logging.error("Tela de cadastro de nova diretriz NÃO carregou após o clique.")
+            raise
 
     def validar_tela_cadastro_nova_diretriz(self):
         url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-irec/novo"

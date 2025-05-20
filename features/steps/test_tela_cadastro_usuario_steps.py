@@ -182,6 +182,9 @@ def step_visualizar_barra_lateral(context):
     page = TelaCadastroUsuarioPage(context.driver)
     page.acessar_barra_lateral()
 
+@then("eu devo ter acesso aos prêmios padrão")
+@then("eu devo ter acesso aos prêmios")
+@then("eu devo ter acesso aos prêmio de proposta de diretrizes")
 @then('eu devo ver os prêmios para "prêmio Sazo" e "prêmio Flex"')
 def step_validar_abas_premios(context):
     page = TelaCadastroUsuarioPage(context.driver)

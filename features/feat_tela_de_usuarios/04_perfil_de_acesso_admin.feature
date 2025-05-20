@@ -3,14 +3,14 @@ Feature: Perfil de acesso Administrador
   Quero acessar a aplicação com permissões específicas
   Para realizar operações de acordo com meu perfil
 
-  @admin
+
   Scenario: Administrador acessa a aplicação cadastro de usuário com perfis
     Given que o usuário está logado como "Administrador"
     When eu devo ter acesso total ao sistema
     When navega até a tela de usuários - Perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
-    When o usuário seleciona o perfil de usuário, escreve o nome e email
+    When o usuário seleciona o perfil de administrador, escreve o nome e email
     When o usuário clica em "Salvar" para salvar o novo usuário
     #Then o sistema exibe uma mensagem de sucesso
     Then navega até a tela inicial
