@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2471","O menu lateral deve estar presente na página","","Tue May 20 14:05:53 BRT 2025","passed","Tue May 20 14:05:55 BRT 2025","","","",""
+"","7214","O usuário acessa o botão para adicionar um novo item","","Tue May 20 14:06:25 BRT 2025","passed","Tue May 20 14:06:32 BRT 2025","","","",""
+"","7968","O usuário seleciona o modulo Produtos Curto Prazo do menu lateral","","Tue May 20 14:06:10 BRT 2025","passed","Tue May 20 14:06:18 BRT 2025","","","",""
+"","7629","O usuário seleciona o modulo Produtos IREC do menu lateral","","Tue May 20 14:06:03 BRT 2025","passed","Tue May 20 14:06:10 BRT 2025","","","",""
+"","7529","O usuário seleciona o modulo Produtos Semanal Diario do menu lateral","","Tue May 20 14:05:55 BRT 2025","passed","Tue May 20 14:06:03 BRT 2025","","","",""
+"","7072","O usuário visualiza dados já cadastrados no módulo","","Tue May 20 14:06:18 BRT 2025","passed","Tue May 20 14:06:25 BRT 2025","","","",""
