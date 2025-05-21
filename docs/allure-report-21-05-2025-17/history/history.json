@@ -1,0 +1,1 @@
+{"0a5dde2e96d3fe356bca7cdea65a3c6a":{"statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"c8b9055899ce716f","status":"failed","statusDetails":"AssertionError: O botão 'Novo' não foi encontrado ou não está clicável.\n","time":{"start":1747846171864,"stop":1747846182675,"duration":10811}}]}}
