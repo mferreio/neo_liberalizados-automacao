@@ -41,6 +41,12 @@ def step_estar_na_pagina_inicial(context):
     page = TelaCadastroUsuarioPage(context.driver)
     page.validar_pagina_inicial()
 
+@when("o usuário seleciona o perfil de administrador, escreve o nome e email invalido")
+def step_seleciona_perfil_administrador(context):
+    """Seleciona o perfil de administrador e insere o nome e email inválido."""
+    context.tela_de_usuarios_page = TelaCadastroUsuarioPage(context.driver)
+    context.tela_de_usuarios_page.selecionar_perfil_administrador_e_inserir_dados_invalidos()
+
 @when("eu devo ver um campo para diretrizes diárias")
 @then("eu devo ver um campo para diretrizes diárias")
 def step_ver_campo_diretrizes_diarias(context):

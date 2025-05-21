@@ -3,7 +3,7 @@ Feature: Armazenamento de evidências
   Quero gerenciar arquivos de evidências
   Para garantir o armazenamento e consulta de forma segura
 
-@testaragora
+
 Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo
   Given que o usuário está logado no sistema
   When o usuário acessa a aba "diretriz Curto Prazo"
@@ -13,7 +13,7 @@ Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz C
   When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
   When o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
   When usuário clica em salvar
-  When o sistema exibe uma mensagem de sucesso
+  When o sistema exibe uma mensagem de upload concluido com sucesso
   When retorna a pagina inicial
 
 # Scenario: Tentativa de envio de um arquivo por um usuário sem permissão // "Não existe usuário que não tenha permissão de adicionar arquivos"

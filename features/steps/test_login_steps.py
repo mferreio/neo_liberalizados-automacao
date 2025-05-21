@@ -102,7 +102,7 @@ def step_gera_evidencias_login(context):
     except Exception as e:
         print(f"Erro ao gerar evidências do login: {e}")
 
-
+@when('que o usuário está logado como "Administrador"')
 @given('que o usuário está logado como "Administrador"')
 @allure.step("Validando que o usuário está logado como Administrador")
 def validar_usuario_administrador(context):

@@ -1,10 +1,14 @@
 
 import logging
+import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-import ipdb
+from features.pages.tela_de_usuarios_pages import TeladeUsuariosPageLocators
+from selenium.common.exceptions import TimeoutException
+from credentials import (EDITAR_EMAIL, EDITAR_NOME, EDITAR_PERFIL, EMAIL,
+                         EXCLUIR_NOME, NOME, PESQUISAR_NOME_CADASTRADO, EMAIL_INVALIDO)
 
 logger = logging.getLogger(__name__)
 class TelaCadastroUsuarioPage:
@@ -34,31 +38,28 @@ class TelaCadastroUsuarioPage:
     def __init__(self, driver):
         self.driver = driver
 
-    def preencher_nome_email_admin_email_invalido(self, nome="Usuário Teste", email="teste"):
-        logger.info("Preenchendo cadastro de usuário com nome '%s' e email inválido '%s'", nome, email)
+    def selecionar_perfil_administrador_e_inserir_dados_invalidos(self):
         try:
-            perfil_admin = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//select[@id='perfil']"))
+            WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(
+                    TeladeUsuariosPageLocators.PERFIL_ADMINISTRADOR
+                )
+            ).click()
+
+            nome = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(TeladeUsuariosPageLocators.INPUT_NOME)
             )
-            perfil_admin.click()
-            perfil_admin.send_keys("Administrador")
-            logger.info("Perfil de Administrador selecionado.")
-            campo_nome = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@id='nome']"))
+            nome.send_keys(os.getenv("NOME"))
+
+            email = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable(TeladeUsuariosPageLocators.INPUT_EMAIL)
             )
-            campo_nome.clear()
-            campo_nome.send_keys(nome)
-            logger.info("Campo nome preenchido.")
-            campo_email = WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, "//input[@id='email']"))
+            email.send_keys(os.getenv("EMAIL_INVALIDO"))
+        except TimeoutException:
+            raise AssertionError(
+                "Erro ao selecionar o perfil de administrador ou inserir os dados."
             )
-            campo_email.clear()
-            campo_email.send_keys(email)
-            campo_email.send_keys(Keys.TAB)
-            logger.info("Campo email preenchido com valor inválido.")
-        except Exception as e:
-            logger.error("Erro ao preencher cadastro de usuário: %s", e)
-            raise
+
 
     def validar_mensagem_email_invalido(self):
         try:

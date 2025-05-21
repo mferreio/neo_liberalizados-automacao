@@ -3,11 +3,12 @@ Feature: Tela de cadastro de usuário
   Quero cadastrar usuários com perfis específicos
   Para gerenciar o acesso à aplicação
 
-@admin
-
-Scenario: Cadastro de usuário com sucesso
+Background: Given que eu estou na Página Inicial
     Given que o usuário está logado como "Administrador"
     When navega até a tela de usuários - Perfil
+
+
+Scenario: Cadastro de usuário com sucesso
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
     When o usuário seleciona o perfil de administrador, escreve o nome e email
@@ -15,19 +16,14 @@ Scenario: Cadastro de usuário com sucesso
     Then navega até a tela de usuários - Perfil
 
 Scenario: Cadastro de usuário com e-mail inválido
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
-    When o usuário preenche o nome e um e-mail inválido
+    When o usuário seleciona o perfil de administrador, escreve o nome e email invalido
     When o usuário clica em "Salvar" para salvar o novo usuário
     Then a notificação "E-mail inválido" deve ser exibida
     When o usuário clica em "Salvar" para salvar o novo usuário
-    Then navega até a tela de usuários - Perfil
 
  Scenario: Alteração de dados do usuário com sucesso
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
     When clica no botão "Editar"
     When edita o tipo de perfil do usuário
     When edita o nome e email do usuário
@@ -35,8 +31,6 @@ Scenario: Cadastro de usuário com e-mail inválido
     Then navega até a tela de usuários - Perfil
 
 Scenario: Erro ao tentar cadastrar usuário que já existe
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
     When clica no botão "Editar"
     When edita o tipo de perfil do usuário
     When edita o nome e email do usuário
@@ -45,8 +39,6 @@ Scenario: Erro ao tentar cadastrar usuário que já existe
     Then navega até a tela de usuários - Perfil
 
 Scenario: Campos obrigatórios não preenchidos
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
     When o usuário não preenche os campos obrigatórios

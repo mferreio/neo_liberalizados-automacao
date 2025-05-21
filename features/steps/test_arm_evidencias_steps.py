@@ -1,3 +1,7 @@
+@when("o sistema exibe uma mensagem de upload concluido com sucesso")
+def step_verifica_mensagem_upload_sucesso(context):
+    evidencias_page = ArmEvidenciasPage(context.driver)
+    assert evidencias_page.validar_mensagem_upload_sucesso(), "Mensagem de upload concluído com sucesso NÃO foi exibida."
 
 # Step para validar ausência de arquivo anexo
 @then('o sistema deve validar que não existe nenhum arquivo anexado')

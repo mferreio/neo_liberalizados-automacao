@@ -1,5 +1,4 @@
 import logging
-logger = logging.getLogger(__name__)
 import os
 from time import sleep
 
@@ -14,7 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from credentials import (EDITAR_EMAIL, EDITAR_NOME, EDITAR_PERFIL, EMAIL,
                          EXCLUIR_NOME, NOME, PESQUISAR_NOME_CADASTRADO)
 
-
+logger = logging.getLogger(__name__)
 class TeladeUsuariosPageLocators:
     VALIDAR_ADMINISTRADOR = (By.XPATH,"//div[@class='flex align-items-center justify-content-between']//span[text()='Administrador']",)
     VALIDAR_TELA_CADASTRO_USUARIO = (By.XPATH, "//*[@id='pn_id_70_header']")
