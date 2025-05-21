@@ -6,9 +6,6 @@ import stat
 import subprocess
 import sys
 
-from utils.utils_allure import upload_to_github_pages
-
-
 def remove_readonly(func, path, excinfo):
     """Remove o atributo somente leitura de arquivos/diretórios."""
     os.chmod(path, stat.S_IWRITE)
@@ -70,8 +67,7 @@ def run_tests():
 
         # Envia o relatório para o GitHub Pages
         print("Enviando o relatório para o GitHub Pages...")
-        repo_url = "https://github.com/mferreio/neo_liberalizados-automacao.git"
-        upload_to_github_pages(allure_report_dir, repo_url)
+        # upload_to_github_pages(allure_report_dir, repo_url)  # Removido: função não definida
 
         # Retorna o contexto necessário
         allure_report_url = "https://mferreio.github.io/neo_liberalizados-automacao/"

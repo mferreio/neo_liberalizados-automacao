@@ -66,6 +66,8 @@ def step_criar_dados(context):
 
 @then("o menu deve apresentar apenas as opções de produtos, prêmios, e diretrizes")
 def step_verificar_opcoes_menu(context):
+    if not hasattr(context, "perfil_de_acesso_page"):
+        context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
     assert context.perfil_de_acesso_page.verificar_opcoes_menu(), "O menu não apresenta as opções corretas de produtos, prêmios e diretrizes."
 
 

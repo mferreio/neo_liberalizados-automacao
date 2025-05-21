@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import logging
+logger = logging.getLogger(__name__)
 import time
 import os
 
@@ -33,41 +34,47 @@ class DiretrizIrecLocators:
 class DiretrizIrecPage:
     def __init__(self, driver):
         self.driver = driver
+        logger.info("Instanciando page object: DiretrizIrecPage")
 
     def acessar_aba_diretriz_irec(self):
+        logger.info("Acessando aba Diretriz I-REC.")
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.ABA_DIR_IREC)
         ).click()
-        logging.info("Aba Diretriz I-REC acessada.")
+        logger.info("Aba Diretriz I-REC acessada.")
 
     def clicar_nova_diretriz(self):
+        logger.info("Clicando no botão Nova Diretriz.")
         WebDriverWait(self.driver, 15).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.BTN_NOVA_DIR)
         ).click()
-        logging.info("Botão Nova Diretriz clicado.")
+        logger.info("Botão Nova Diretriz clicado.")
         # Screenshot para diagnóstico
         try:
             self.driver.save_screenshot("reports/evidencias/apos_clicar_nova_diretriz.png")
+            logger.info("Screenshot após clicar em Nova Diretriz salvo.")
         except Exception as e:
-            logging.warning(f"Não foi possível salvar screenshot: {e}")
+            logger.warning(f"Não foi possível salvar screenshot: {e}")
         # Espera por campo exclusivo da tela de cadastro
         try:
             WebDriverWait(self.driver, 15).until(
                 EC.visibility_of_element_located(DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
             )
-            logging.info("Tela de cadastro de nova diretriz carregada.")
+            logger.info("Tela de cadastro de nova diretriz carregada.")
         except TimeoutException:
-            logging.error("Tela de cadastro de nova diretriz NÃO carregou após o clique.")
+            logger.error("Tela de cadastro de nova diretriz NÃO carregou após o clique.")
             raise
 
     def validar_tela_cadastro_nova_diretriz(self):
         url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-irec/novo"
         time.sleep(1)
         if self.driver.current_url != url_esperada:
+            logger.error(f"URL incorreta. Esperado: {url_esperada}, Atual: {self.driver.current_url}")
             raise AssertionError(f"URL incorreta. Esperado: {url_esperada}, Atual: {self.driver.current_url}")
-        logging.info("Usuário está na tela de cadastro de nova diretriz I-REC.")
+        logger.info("Usuário está na tela de cadastro de nova diretriz I-REC.")
 
     def preencher_dados_nova_diretriz(self, data_fim, valor_tabela, descricao):
+        logger.info("Preenchendo dados da nova diretriz.")
         campo_data_fim = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.DATA_FIM_VIGENCIA)
         )
@@ -80,9 +87,10 @@ class DiretrizIrecPage:
         campo_descricao = self.driver.find_element(*DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
         campo_descricao.clear()
         campo_descricao.send_keys(descricao)
-        logging.info("Dados da nova diretriz preenchidos.")
+        logger.info("Dados da nova diretriz preenchidos.")
 
     def preencher_apenas_campos_obrigatorios_sem_preco(self, data_fim, descricao):
+        logger.info("Preenchendo apenas os campos obrigatórios (data fim da vigência e descrição), sem preço.")
         campo_data_fim = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.DATA_FIM_VIGENCIA)
         )
@@ -91,27 +99,29 @@ class DiretrizIrecPage:
         campo_descricao = self.driver.find_element(*DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
         campo_descricao.clear()
         campo_descricao.send_keys(descricao)
-        print("Preenchidos apenas os campos data fim da vigência e descrição da diretriz, sem preço.")
+        logger.info("Preenchidos apenas os campos data fim da vigência e descrição da diretriz, sem preço.")
 
     def clicar_botao_salvar(self):
+        logger.info("Clicando no botão Salvar.")
         WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable(DiretrizIrecLocators.SALVAR_DIR_IREC)
         ).click()
-        logging.info("Botão Salvar clicado.")
+        logger.info("Botão Salvar clicado.")
 
     def validar_mensagem_cadastro(self):
         try:
             WebDriverWait(self.driver, 4).until(
                 EC.visibility_of_element_located(DiretrizIrecLocators.MSG_SUCESSO_CAD_DIR_IREC)
             )
-            print("Mensagem de sucesso ao cadastrar diretriz!")
+            logger.info("Mensagem de sucesso ao cadastrar diretriz!")
         except TimeoutException:
             try:
                 WebDriverWait(self.driver, 4).until(
                     EC.visibility_of_element_located(DiretrizIrecLocators.MSG_ERRO_CAD_DIR_IREC)
                 )
-                print("Mensagem de erro ao cadastrar diretriz!")
+                logger.error("Mensagem de erro ao cadastrar diretriz!")
             except TimeoutException:
+                logger.error("Nenhuma mensagem de sucesso ou erro foi exibida.")
                 raise AssertionError("Nenhuma mensagem de sucesso ou erro foi exibida.")
 
     def validar_redirecionamento_listar(self):
@@ -119,9 +129,9 @@ class DiretrizIrecPage:
         time.sleep(1)
         if self.driver.current_url != url_esperada:
             self.driver.get(url_esperada)
-            logging.info("Usuário foi redirecionado manualmente para a tela de listar diretrizes I-REC.")
+            logger.info("Usuário foi redirecionado manualmente para a tela de listar diretrizes I-REC.")
         else:
-            logging.info("Usuário já está na tela de listar diretrizes I-REC.")
+            logger.info("Usuário já está na tela de listar diretrizes I-REC.")
 
     def consultar_diretrizes_vigentes(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
@@ -141,11 +151,11 @@ class DiretrizIrecPage:
     def exibir_info_diretrizes_vigentes(self):
         diretrizes = self.consultar_diretrizes_vigentes()
         if diretrizes:
-            print(f"Foi encontrada {len(diretrizes)} diretriz vigente no sistema:")
+            logger.info(f"Foi encontrada {len(diretrizes)} diretriz vigente no sistema:")
             for d in diretrizes:
-                print(f"Início Vigência: {d['inicio_vig']} | Fim Vigência: {d['fim_vig']}")
+                logger.info(f"Início Vigência: {d['inicio_vig']} | Fim Vigência: {d['fim_vig']}")
         else:
-            print("Não foram encontradas nenhuma diretriz vigente")
+            logger.info("Não foram encontradas nenhuma diretriz vigente")
 
     def validar_invalida_anterior(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
@@ -154,12 +164,12 @@ class DiretrizIrecPage:
             if len(colunas) > 3:
                 fim_prematuro = colunas[3].text
                 if fim_prematuro and fim_prematuro != "Não Definido":
-                    print("Diretriz anterior inválidada com sucesso")
+                    logger.info("Diretriz anterior inválidada com sucesso")
                     return True
                 elif fim_prematuro == "Não Definido":
-                    print("Parece que a Diretriz anterior não foi invalidada corretamente, Verifique!")
+                    logger.warning("Parece que a Diretriz anterior não foi invalidada corretamente, Verifique!")
                     return False
-        print("Não foi possível validar a invalidação da diretriz anterior.")
+        logger.warning("Não foi possível validar a invalidação da diretriz anterior.")
         return False
 
     def garantir_apenas_uma_vigente(self):
@@ -175,13 +185,13 @@ class DiretrizIrecPage:
                     "fim_vig": fim_vig
                 })
         if len(diretrizes_vigentes) == 1:
-            print("Correto, apenas uma Diretriz vigênte")
+            logger.info("Correto, apenas uma Diretriz vigênte")
         elif len(diretrizes_vigentes) > 1:
-            print("Atenção!!! Mais de uma diretriz vigênte identificada")
+            logger.warning("Atenção!!! Mais de uma diretriz vigênte identificada")
             for d in diretrizes_vigentes:
-                print(f"Início Vigência: {d['inicio_vig']} | Fim Vigência: {d['fim_vig']}")
+                logger.warning(f"Início Vigência: {d['inicio_vig']} | Fim Vigência: {d['fim_vig']}")
         else:
-            print("Nenhuma diretriz vigente encontrada")
+            logger.info("Nenhuma diretriz vigente encontrada")
 
     def validar_diretriz_foi_invalidada(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
@@ -190,9 +200,9 @@ class DiretrizIrecPage:
             if len(colunas) > 3:
                 fim_prematuro = colunas[3].text
                 if fim_prematuro and fim_prematuro != "Não Definido":
-                    print("Diretriz anterior inválidada com sucesso")
+                    logger.info("Diretriz anterior inválidada com sucesso")
                     return True
-        print("Parece que a Diretriz anterior não foi invalidada corretamente, Verifique!")
+        logger.warning("Parece que a Diretriz anterior não foi invalidada corretamente, Verifique!")
         return False
 
     def consultar_todas_diretrizes(self):
@@ -210,14 +220,14 @@ class DiretrizIrecPage:
 
     def exibir_todas_diretrizes(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        print("Todas as diretrizes cadastradas:")
+        logger.info("Todas as diretrizes cadastradas:")
         for linha in linhas:
             colunas = linha.find_elements(By.TAG_NAME, "td")
             if len(colunas) > 3:
                 inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
                 fim_vig = colunas[2].text if len(colunas) > 2 else "?"
                 fim_prematuro = colunas[3].text
-                print(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
+                logger.info(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
 
     def identificar_diretriz_vigente_visual(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
@@ -228,21 +238,21 @@ class DiretrizIrecPage:
                 is_verde = "green" in style or "verde" in class_attr or "text-green" in class_attr
                 is_negrito = "bold" in style or "font-weight: bold" in style or "font-bold" in class_attr
                 if is_verde and is_negrito:
-                    print("Diretriz vigente está claramente identificável: verde e negrito.")
+                    logger.info("Diretriz vigente está claramente identificável: verde e negrito.")
                 else:
-                    print("Atenção: Diretriz vigente NÃO está destacada corretamente (verde e negrito).")
+                    logger.warning("Atenção: Diretriz vigente NÃO está destacada corretamente (verde e negrito).")
                 return
-        print("Nenhuma diretriz vigente encontrada para validação visual.")
+        logger.info("Nenhuma diretriz vigente encontrada para validação visual.")
 
     def exibir_datas_inicio_fim_vigencia(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        print("Lista de datas de início e fim de vigência:")
+        logger.info("Lista de datas de início e fim de vigência:")
         for idx, linha in enumerate(linhas, 1):
             colunas = linha.find_elements(By.TAG_NAME, "td")
             if len(colunas) > 2:
                 inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
                 fim_vig = colunas[2].text if len(colunas) > 2 else "?"
-                print(f"Dir{idx} - {inicio_vig} | {fim_vig}")
+                logger.info(f"Dir{idx} - {inicio_vig} | {fim_vig}")
 
     def validar_formato_datas_vigencia(self):
         import re
@@ -254,64 +264,64 @@ class DiretrizIrecPage:
                 inicio_vig = colunas[1].text.strip() if len(colunas) > 1 else ""
                 fim_vig = colunas[2].text.strip() if len(colunas) > 2 else ""
                 if not (formato.match(inicio_vig) and formato.match(fim_vig)):
-                    print(f"Atenção: Data(s) da Dir{idx} não estão no formato correto: {inicio_vig} | {fim_vig}")
+                    logger.warning(f"Atenção: Data(s) da Dir{idx} não estão no formato correto: {inicio_vig} | {fim_vig}")
                 else:
-                    print(f"Datas da Dir{idx} estão no formato correto: {inicio_vig} | {fim_vig}")
+                    logger.info(f"Datas da Dir{idx} estão no formato correto: {inicio_vig} | {fim_vig}")
 
     def validar_ausencia_diretrizes(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        print("Validando se não existem diretrizes cadastradas")
+        logger.info("Validando se não existem diretrizes cadastradas")
         return len(linhas) == 0
 
     def exibir_mensagem_ausencia_diretrizes(self, nenhuma_diretriz):
         if nenhuma_diretriz:
-            print("Não existe nenhuma diretriz cadastrada")
+            logger.info("Não existe nenhuma diretriz cadastrada")
         else:
-            print("Não foi possivel validar este cenário, porque existem diretrizes cadastradas.")
+            logger.info("Não foi possivel validar este cenário, porque existem diretrizes cadastradas.")
 
     def consultar_e_verificar_ausencia_diretrizes(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        print("Validando se não existem diretrizes cadastradas")
+        logger.info("Validando se não existem diretrizes cadastradas")
         return len(linhas) == 0
 
     def validar_mais_de_uma_pagina(self):
         btn_avancar = self.driver.find_element(*DiretrizIrecLocators.AVANCAR_PGN_DIRETRIZ)
         habilitado = btn_avancar.is_enabled()
         if habilitado:
-            print("Mais de uma página de diretrizes identificada")
+            logger.info("Mais de uma página de diretrizes identificada")
         else:
-            print("Há apenas uma página identificada com as diretrizes cadastradas")
+            logger.info("Há apenas uma página identificada com as diretrizes cadastradas")
         return habilitado
 
     def avancar_para_proxima_pagina(self, pode_avancar):
         if pode_avancar:
             btn_avancar = self.driver.find_element(*DiretrizIrecLocators.AVANCAR_PGN_DIRETRIZ)
             btn_avancar.click()
-            print("Avançou para a próxima página de diretrizes.")
+            logger.info("Avançou para a próxima página de diretrizes.")
         else:
-            print("Botão para avançar para a próxima página não está habilitado")
+            logger.info("Botão para avançar para a próxima página não está habilitado")
 
     def exibir_diretrizes_proxima_pagina(self, pode_avancar):
         if pode_avancar:
             linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-            print("Diretrizes da próxima página:")
+            logger.info("Diretrizes da próxima página:")
             for linha in linhas:
                 colunas = linha.find_elements(By.TAG_NAME, "td")
                 if len(colunas) > 3:
                     inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
                     fim_vig = colunas[2].text if len(colunas) > 2 else "?"
                     fim_prematuro = colunas[3].text
-                    print(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
+                    logger.info(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
         else:
-            print("Não é possivel exibir as diretrizes da próxima página, por que existe apenas uma página com diretrizes cadastradas")
+            logger.info("Não é possivel exibir as diretrizes da próxima página, por que existe apenas uma página com diretrizes cadastradas")
 
     def retornar_pagina_anterior(self, pode_avancar):
         if pode_avancar:
             btn_retornar = self.driver.find_element(*DiretrizIrecLocators.RETORNAR_PGN_DIRETRIZ)
             btn_retornar.click()
-            print("Retornou para a página anterior de diretrizes.")
+            logger.info("Retornou para a página anterior de diretrizes.")
         else:
-            print("Não é possivel clicar no botão retornar, ja que existe apenas uma unica página de diretrizes cadastradas")
+            logger.info("Não é possivel clicar no botão retornar, ja que existe apenas uma unica página de diretrizes cadastradas")
 
     def inserir_intervalo_data_invalido(self):
         campo_inicio = self.driver.find_element(*DiretrizIrecLocators.CONSULTAR_DATA_INICIO_VIGENCIA)
@@ -320,23 +330,23 @@ class DiretrizIrecPage:
         campo_inicio.send_keys("24/04/2036")
         campo_fim.clear()
         campo_fim.send_keys("10/09/2025")
-        print("Intervalo de data inválido inserido: 24/04/2036 a 10/09/2025")
+        logger.info("Intervalo de data inválido inserido: 24/04/2036 a 10/09/2025")
 
     def exibir_mensagem_erro_data_invalida(self):
         try:
             msg = self.driver.find_element(*DiretrizIrecLocators.MENSAGEM_ERRO_DATA_INVALIDA)
             texto = msg.text.strip()
             if texto:
-                print(f"Mensagem de erro exibida: {texto}")
+                logger.info(f"Mensagem de erro exibida: {texto}")
             else:
-                print("Não foi identificada nenhuma mensagem de erro ao inserir uma data inválida")
+                logger.info("Não foi identificada nenhuma mensagem de erro ao inserir uma data inválida")
         except NoSuchElementException:
-            print("Não foi identificada nenhuma mensagem de erro ao inserir uma data inválida")
+            logger.info("Não foi identificada nenhuma mensagem de erro ao inserir uma data inválida")
 
     def abrir_detalhamento_diretriz(self):
         btn = self.driver.find_element(*DiretrizIrecLocators.BTN_DETALHE_DIRETRIZ)
         btn.click()
-        print("Detalhamento da diretriz aberto.")
+        logger.info("Detalhamento da diretriz aberto.")
 
     def validar_arquivos_anexados(self):
         arquivos = []
@@ -352,23 +362,23 @@ class DiretrizIrecPage:
             pass
         if arquivos:
             for nome in arquivos:
-                print(f"Arquivo anexo identificado: {nome}")
+                logger.info(f"Arquivo anexo identificado: {nome}")
         else:
-            print("Não foram identificados nenhum arquivo anexo.")
+            logger.info("Não foram identificados nenhum arquivo anexo.")
 
     def exibir_mensagem_campos_obrigatorios_nao_preenchidos(self):
-        print("Usuário não preencheu os campos obrigatórios: data fim da vigência, tabela de cálculo e descrição da diretriz.")
+        logger.info("Usuário não preencheu os campos obrigatórios: data fim da vigência, tabela de cálculo e descrição da diretriz.")
 
     def validar_mensagem_erro_campos_obrigatorios(self):
         try:
             msg = self.driver.find_element(*DiretrizIrecLocators.MSG_ERRO_CAMPOS_OBRIGATORIOS)
             texto = msg.text.strip()
             if texto:
-                print(f"Mensagem de erro exibida: {texto}")
+                logger.info(f"Mensagem de erro exibida: {texto}")
             else:
-                print("Não foi exibida mensagem de erro informando os campos obrigatórios.")
+                logger.info("Não foi exibida mensagem de erro informando os campos obrigatórios.")
         except NoSuchElementException:
-            print("Não foi exibida mensagem de erro informando os campos obrigatórios.")
+            logger.info("Não foi exibida mensagem de erro informando os campos obrigatórios.")
 
     def fazer_upload_evidencia(self, nome_arquivo):
         btn_anexar = WebDriverWait(self.driver, 10).until(
@@ -378,7 +388,7 @@ class DiretrizIrecPage:
         caminho_arquivo = os.path.abspath(nome_arquivo)
         input_file = self.driver.find_element(By.CSS_SELECTOR, "input[type='file']")
         input_file.send_keys(caminho_arquivo)
-        print(f"Arquivo de evidência '{nome_arquivo}' anexado.")
+        logger.info(f"Arquivo de evidência '{nome_arquivo}' anexado.")
 
     def fazer_upload_mais_de_10_evidencias(self):
         """
@@ -407,18 +417,18 @@ class DiretrizIrecPage:
             elemento = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(DiretrizIrecLocators.MSG_LIMITE_DE_EVIDENCIA)
             )
-            print(f"Mensagem exibida: {elemento.text}")
+            logger.info(f"Mensagem exibida: {elemento.text}")
             return elemento.text
         except Exception:
-            print("Mensagem de limite de anexos não foi exibida!")
+            logger.info("Mensagem de limite de anexos não foi exibida!")
             return None
 
     def exibir_produtos_visiveis(self):
         produtos = self.driver.find_elements(*DiretrizIrecLocators.PROD_DIR_IREC)
         nomes = [p.text.strip() for p in produtos if p.text.strip()]
-        print("Produtos visíveis na tela:")
+        logger.info("Produtos visíveis na tela:")
         for nome in nomes:
-            print(nome)
+            logger.info(nome)
         return nomes
 
     def validar_data_inicio_vigencia_atual(self):
@@ -427,9 +437,9 @@ class DiretrizIrecPage:
         data_tela = campo_data.get_attribute("value")
         data_hoje = datetime.now().strftime("%d/%m/%Y")
         if data_tela == data_hoje:
-            print(f"Data de início da vigência correta: {data_tela}")
+            logger.info(f"Data de início da vigência correta: {data_tela}")
         else:
-            print(f"Data de início da vigência incorreta. Esperado: {data_hoje}, Encontrado: {data_tela}")
+            logger.warning(f"Data de início da vigência incorreta. Esperado: {data_hoje}, Encontrado: {data_tela}")
 
     def fazer_upload_evidencia_texto(self):
         self.fazer_upload_evidencia("evidencia_texto.txt")
@@ -439,14 +449,14 @@ class DiretrizIrecPage:
             msg = self.driver.find_element(*DiretrizIrecLocators.MSG_SUCESSO_ANEXAR_ARQUIVO)
             texto = msg.text.strip()
             if texto:
-                print(f"Mensagem de sucesso exibida: {texto}")
+                logger.info(f"Mensagem de sucesso exibida: {texto}")
             else:
-                print("Mensagem de sucesso de upload não exibida.")
+                logger.info("Mensagem de sucesso de upload não exibida.")
         except NoSuchElementException:
-            print("Mensagem de sucesso de upload não exibida.")
+            logger.info("Mensagem de sucesso de upload não exibida.")
 
     def validar_cadastro_nova_diretriz(self):
-        print("Usuário cadastrou a última diretriz com sucesso.")
+        logger.info("Usuário cadastrou a última diretriz com sucesso.")
 
     def validar_campos_cadastro_vazios(self):
         campo_data_fim = self.driver.find_element(*DiretrizIrecLocators.DATA_FIM_VIGENCIA)
@@ -454,16 +464,16 @@ class DiretrizIrecPage:
         campo_descricao = self.driver.find_element(*DiretrizIrecLocators.DESCRICAO_DAS_DIRETRIZ)
         vazio = True
         if campo_data_fim.get_attribute("value"):
-            print("Campo DATA_FIM_VIGENCIA não está vazio!")
+            logger.warning("Campo DATA_FIM_VIGENCIA não está vazio!")
             vazio = False
         for campo in campos_tabela:
             if campo.get_attribute("value"):
-                print("Campo da tabela de cálculos não está vazio!")
+                logger.warning("Campo da tabela de cálculos não está vazio!")
                 vazio = False
         if campo_descricao.get_attribute("value"):
-            print("Campo DESCRICAO_DAS_DIRETRIZ não está vazio!")
+            logger.warning("Campo DESCRICAO_DAS_DIRETRIZ não está vazio!")
             vazio = False
         if vazio:
-            print("Todos os campos obrigatórios estão vazios para novo cadastro.")
+            logger.info("Todos os campos obrigatórios estão vazios para novo cadastro.")
         else:
-            print("Nem todos os campos obrigatórios estão vazios!")
+            logger.warning("Nem todos os campos obrigatórios estão vazios!")

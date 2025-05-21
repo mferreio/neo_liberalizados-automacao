@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger(__name__)
 import os
 from time import sleep
 
@@ -81,33 +82,67 @@ class TeladeUsuariosPageLocators:
 
 
 class TelaDeUsuariosPage:
+    def esperar_overlay_sumir(self, timeout=10):
+        """Espera o overlay/modal sumir antes de interagir com a tela."""
+        try:
+            WebDriverWait(self.driver, timeout).until_not(
+                EC.presence_of_element_located((By.CSS_SELECTOR, ".p-dialog-mask.p-component-overlay.p-component-overlay-enter"))
+            )
+        except Exception:
+            logger.debug("Overlay não encontrado ou já sumiu.")
+            pass  # Se não existir overlay, segue normalmente
+    def validar_e_redirecionar_url_inicial(self):
+        """Valida se está na URL inicial e redireciona se necessário."""
+        url_correta = "https://diretrizes.dev.neoenergia.net/"
+        try:
+            WebDriverWait(self.driver, 5).until(lambda d: d.current_url is not None)
+            url_atual = self.driver.current_url
+            if not url_atual.startswith(url_correta):
+                logger.info(f"Usuário não está no endereço correto. URL atual: {url_atual}. Redirecionando para {url_correta}")
+                self.driver.get(url_correta)
+                WebDriverWait(self.driver, 10).until(lambda d: d.current_url.startswith(url_correta))
+            else:
+                logger.info("Usuário já está na URL inicial correta.")
+        except Exception as e:
+            logger.error(f"Erro ao validar/redirecionar URL inicial: {e}")
+            raise AssertionError(f"Não foi possível garantir a navegação para a URL inicial: {e}")
+
     def __init__(self, driver):
         self.driver = driver
 
     def clicar_botao_perfil(self):
         try:
+            logger.info("Clicando no botão de perfil.")
+            self.esperar_overlay_sumir()
             botao_perfil = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_PERFIL)
             )
             botao_perfil.click()
+            logger.info("Botão de perfil clicado.")
         except TimeoutException:
+            logger.error("O botão de perfil não foi encontrado ou não está clicável.")
             raise AssertionError(
                 "O botão de perfil não foi encontrado ou não está clicável."
             )
 
     def clicar_botao_dashboard(self):
         try:
+            logger.info("Clicando no botão dashboard.")
+            self.esperar_overlay_sumir()
             botao_dashboard = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_PERFIL)
             )
             botao_dashboard.click()
+            logger.info("Botão dashboard clicado.")
         except TimeoutException:
+            logger.error("O botão dashboard não foi encontrado ou não está clicável.")
             raise AssertionError(
                 "O botão dashboard não foi encontrado ou não está clicável."
             )
 
     def obter_nomes_usuarios(self):
         try:
+            logger.info("Obtendo nomes dos usuários na tabela.")
             celulas_nome = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located(
                     (
@@ -120,11 +155,14 @@ class TelaDeUsuariosPage:
                 celula.text.strip() for celula in celulas_nome if celula.text.strip()
             ]
             if not nomes:
+                logger.warning("Nenhum nome foi encontrado na tabela de usuários.")
                 raise AssertionError(
                     "Nenhum nome foi encontrado na tabela de usuários."
                 )
+            logger.info(f"Nomes encontrados: {nomes}")
             return nomes
         except TimeoutException:
+            logger.error("Não foi possível encontrar os nomes cadastrados na tabela.")
             raise AssertionError(
                 "Não foi possível encontrar os nomes cadastrados na tabela."
             )
@@ -152,6 +190,7 @@ class TelaDeUsuariosPage:
 
     def clicar_botao_novo(self):
         try:
+            self.esperar_overlay_sumir()
             botao_novo = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BOTAO_NOVO)
             )
@@ -178,6 +217,7 @@ class TelaDeUsuariosPage:
 
     def clicar_fechar_tela_cadastro(self):
         try:
+            self.esperar_overlay_sumir()
             botao_fechar_tela_cadastro = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.BTN_FECHAR_TELA_CADASTRO
@@ -191,6 +231,7 @@ class TelaDeUsuariosPage:
 
     def clicar_dropdown_perfil(self):
         try:
+            self.esperar_overlay_sumir()
             dropdown_perfil = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(
                     TeladeUsuariosPageLocators.DROPDOWN_PERFIL
@@ -244,6 +285,7 @@ class TelaDeUsuariosPage:
 
     def clicar_botao_salvar(self):
         try:
+            self.esperar_overlay_sumir()
             botao_salvar_cadastro = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.BTN_SALVAR_NOVO_CADASTRO
@@ -280,6 +322,7 @@ class TelaDeUsuariosPage:
 
     def pesquisar_e_clicar_editar(self, pesquisar_nome_Cadastrado):
         try:
+            self.esperar_overlay_sumir()
             filtro_nome = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located(TeladeUsuariosPageLocators.FILTRO_NOME)
             )
@@ -355,6 +398,7 @@ class TelaDeUsuariosPage:
 
     def clicar_botao_salvar_edicao(self):
         try:
+            self.esperar_overlay_sumir()
             botao_salvar_edicao = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(TeladeUsuariosPageLocators.BTN_SALVAR_EDICAO)
             )
@@ -377,6 +421,7 @@ class TelaDeUsuariosPage:
 
     def clicar_botao_excluir_usuario(self):
         try:
+            self.esperar_overlay_sumir()
             botao_excluir_usuario = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.BOTAO_EXCLUIR_USUARIO
@@ -397,6 +442,7 @@ class TelaDeUsuariosPage:
 
     def clicar_cancelar_exclusao_usuario(self):
         try:
+            self.esperar_overlay_sumir()
             botao_nao_confirmar_exclusao = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.BOTAO_NAO_CONFIRMAR_EXCLUSAO
@@ -410,6 +456,7 @@ class TelaDeUsuariosPage:
 
     def clicar_confirmar_exclusao_usuario(self):
         try:
+            self.esperar_overlay_sumir()
             botao_nao_confirmar_exclusao = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.BOTAO_CONFIRMAR_EXCLUSAO

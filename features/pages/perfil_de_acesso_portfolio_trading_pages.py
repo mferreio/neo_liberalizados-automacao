@@ -1,4 +1,9 @@
-import logging, ipdb
+import logging
+import traceback
+import ipdb
+
+# Logger padronizado para o módulo
+logger = logging.getLogger(__name__)
 from time import sleep
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -64,6 +69,7 @@ class PerfilDeAcessoPage:
     def validar_menu_produtos_premios_diretrizes(self):
         """Valida se o menu apresenta apenas as opções de Produtos, Prêmios (Sazonal e Flexível) e Diretrizes (Curto Prazo, I-REC, Semanal)."""
         try:
+            logger.info("Validando se o menu apresenta as opções de Produtos, Prêmios e Diretrizes.")
             # Produtos
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located(
@@ -97,42 +103,47 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.DIRETRIZ_SEMANAL
                 )
             )
+            logger.info("Menu validado com sucesso: Produtos, Prêmios e Diretrizes visíveis.")
         except TimeoutException as e:
+            logger.error(f"Uma ou mais opções do menu não estão visíveis: {e}")
+            logger.debug(traceback.format_exc())
             raise AssertionError(f"Uma ou mais opções do menu não estão visíveis: {e}")
         return True
 
     def clicar_em_novo_produto(self):
         """Clica no botão 'Novo Produto'."""
         try:
-            logging.info("Clicando no botão 'Novo Produto'.")
+            logger.info("Clicando no botão 'Novo Produto'.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.BTN_NOVO_PRODUTO
                 )
             ).click()
-            logging.info("Botão 'Novo Produto' clicado com sucesso.")
+            logger.info("Botão 'Novo Produto' clicado com sucesso.")
         except TimeoutException:
-            logging.error("Erro ao clicar no botão 'Novo Produto'.")
+            logger.error("Erro ao clicar no botão 'Novo Produto'.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
     def acessar_produto_diario_semanal(self):
         """Clica no botão Produtos e depois no menu Diario Semanal pelo XPath correto."""
         try:
-            logging.info("Clicando no botão Produtos (menu lateral).")
+            logger.info("Clicando no botão Produtos (menu lateral).")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.BOTAO_PRODUTOS
                 )
             ).click()
-            logging.info("Clicando no menu Diario Semanal pelo XPath correto.")
+            logger.info("Clicando no menu Diario Semanal pelo XPath correto.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL_MENU
                 )
             ).click()
         except TimeoutException:
-            logging.error("Erro ao acessar o produto Diario Semanal na aba produtos.")
+            logger.error("Erro ao acessar o produto Diario Semanal na aba produtos.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
@@ -141,7 +152,7 @@ class PerfilDeAcessoPage:
 
     def realizar_login_com_perfil(self, perfil):
         """Realiza o login com base no perfil especificado."""
-        logging.info(f"Realizando login com o perfil: {perfil}")
+        logger.info(f"Realizando login com o perfil: {perfil}")
         # Implementação do login com base no perfil
         pass
 
@@ -153,10 +164,11 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
                 )
             )
-            logging.info("Usuário com acesso ao Modulo produtos.")
+            logger.info("Usuário com acesso ao Modulo produtos.")
             return True
         except TimeoutException:
-            logging.error("Usuário não tem acesso ao Módulo Produtos.")
+            logger.error("Usuário não tem acesso ao Módulo Produtos.")
+            logger.debug(traceback.format_exc())
             return False
         sleep(2)
 
@@ -168,25 +180,27 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.VALIDAR_MODULOS_PRODUTOS
                 )
             )
-            logging.info("O elemento 'VALIDAR_MODULOS_PRODUTOS' está disponivel.")
+            logger.info("O elemento 'VALIDAR_MODULOS_PRODUTOS' está disponivel.")
             return True
         except TimeoutException:
-            logging.error("O elemento 'VALIDAR_MODULOS_PRODUTOS' não está disponivel.")
+            logger.error("O elemento 'VALIDAR_MODULOS_PRODUTOS' não está disponivel.")
+            logger.debug(traceback.format_exc())
             return False
         sleep(2)
 
     def clicar_em_produtos(self):
         """Clica no elemento Produtos."""
         try:
-            logging.info("Clicando no elemento Produtos.")
+            logger.info("Clicando no elemento Produtos.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.CLICAR_MODULOS_PRODUTOS
                 )
             ).click()
-            logging.info("Clique no elemento Produtos realizado com sucesso.")
+            logger.info("Clique no elemento Produtos realizado com sucesso.")
         except TimeoutException:
-            logging.error("Erro ao clicar no elemento Produtos.")
+            logger.error("Erro ao clicar no elemento Produtos.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
@@ -199,8 +213,10 @@ class PerfilDeAcessoPage:
                 )
             )
             botao_visualizar.click()
-            logging.info("Módulo de produtos visualizado com sucesso.")
+            logger.info("Módulo de produtos visualizado com sucesso.")
         except TimeoutException:
+            logger.error("Erro ao visualizar o módulo de produtos.")
+            logger.debug(traceback.format_exc())
             raise AssertionError("Erro ao visualizar o módulo de produtos.")
         sleep(2)
 
@@ -213,8 +229,10 @@ class PerfilDeAcessoPage:
                 )
             )
             botao_editar.click()
-            logging.info("Módulo de produtos editado com sucesso.")
+            logger.info("Módulo de produtos editado com sucesso.")
         except TimeoutException:
+            logger.error("Erro ao editar o módulo de produtos.")
+            logger.debug(traceback.format_exc())
             raise AssertionError("Erro ao editar o módulo de produtos.")
         sleep(2)
 
@@ -227,8 +245,10 @@ class PerfilDeAcessoPage:
                 )
             )
             botao_excluir.click()
-            logging.info("Produto excluído com sucesso.")
+            logger.info("Produto excluído com sucesso.")
         except TimeoutException:
+            logger.error("Erro ao excluir o produto.")
+            logger.debug(traceback.format_exc())
             raise AssertionError("Erro ao excluir o produto.")
         sleep(2)
 
@@ -241,8 +261,10 @@ class PerfilDeAcessoPage:
                 )
             )
             botao_criar.click()
-            logging.info("Dados criados com sucesso.")
+            logger.info("Dados criados com sucesso.")
         except TimeoutException:
+            logger.error("Erro ao criar dados.")
+            logger.debug(traceback.format_exc())
             raise AssertionError("Erro ao criar dados.")
         sleep(2)
 
@@ -259,10 +281,11 @@ class PerfilDeAcessoPage:
                 )
             )
             texto_elemento = elemento.text.strip()
-            logging.info(f"Texto encontrado no perfil: {texto_elemento}")
+            logger.info(f"Texto encontrado no perfil: {texto_elemento}")
             return texto_elemento == texto_esperado
         except TimeoutException:
-            logging.error("Elemento IDENTIFICADOR_DE_PERFIL não encontrado.")
+            logger.error("Elemento IDENTIFICADOR_DE_PERFIL não encontrado.")
+            logger.debug(traceback.format_exc())
             return False
         sleep(2)
 
@@ -274,9 +297,10 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL
                 )
             )
-            logging.info("Usuário com acesso ao produto Semanal/Diário.")
+            logger.info("Usuário com acesso ao produto Semanal/Diário.")
         except TimeoutException:
-            logging.error("Erro: Produto Semanal/Diário não está visível na tela.")
+            logger.error("Erro: Produto Semanal/Diário não está visível na tela.")
+            logger.debug(traceback.format_exc())
             return False
 
         try:
@@ -285,9 +309,10 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.PRODUTO_I_REC
                 )
             )
-            logging.info("Usuário com acesso ao produto I-Rec.")
+            logger.info("Usuário com acesso ao produto I-Rec.")
         except TimeoutException:
-            logging.error("Erro: Produto I-Rec não está visível na tela.")
+            logger.error("Erro: Produto I-Rec não está visível na tela.")
+            logger.debug(traceback.format_exc())
             return False
 
         try:
@@ -296,9 +321,10 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.PRODUTO_CURTO_PRAZO
                 )
             )
-            logging.info("Usuário com acesso ao produto Curto Prazo.")
+            logger.info("Usuário com acesso ao produto Curto Prazo.")
         except TimeoutException:
-            logging.error("Erro: Produto Curto Prazo não está visível na tela.")
+            logger.error("Erro: Produto Curto Prazo não está visível na tela.")
+            logger.debug(traceback.format_exc())
             return False
 
         sleep(2)
@@ -308,28 +334,30 @@ class PerfilDeAcessoPage:
     def clicar_aba_produtos(self):
         """Clica no elemento VALIDAR_MODULOS_PRODUTOS."""
         try:
-            logging.info("Clicando na aba produtos.")
+            logger.info("Clicando na aba produtos.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.ABRIR_MODULO_PRODUTOS
                 )
             ).click()
         except TimeoutException:
-            logging.error("Erro ao clicar na aba produtos.")
+            logger.error("Erro ao clicar na aba produtos.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
     def selecionar_produto_diario_semanal(self):
         """Clica no elemento PRODUTO_DIARIO_SEMANAL."""
         try:
-            logging.info("Selecionando o produto Diário Semanal.")
+            logger.info("Selecionando o produto Diário Semanal.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.PRODUTO_DIARIO_SEMANAL
                 )
             ).click()
         except TimeoutException:
-            logging.error("Erro ao selecionar o produto Diário Semanal.")
+            logger.error("Erro ao selecionar o produto Diário Semanal.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
@@ -338,7 +366,7 @@ class PerfilDeAcessoPage:
         from credentials import CONS_PROD_ANO
 
         try:
-            logging.info(f"Pesquisando pelo ano: {CONS_PROD_ANO}.")
+            logger.info(f"Pesquisando pelo ano: {CONS_PROD_ANO}.")
             campo_ano = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     PerfilDeAcessoPortfolioTradingLocators.PESQUISAR_PROD_POR_ANO
@@ -349,7 +377,8 @@ class PerfilDeAcessoPage:
             sleep(1)
             campo_ano.send_keys(Keys.ENTER)
         except TimeoutException:
-            logging.error("Erro ao pesquisar pelo ano.")
+            logger.error("Erro ao pesquisar pelo ano.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
@@ -359,31 +388,33 @@ class PerfilDeAcessoPage:
                                  CONS_PROD_SUBMERCADO, CONS_PROD_TIPO_DE_PROD)
 
         try:
-            logging.info("Selecionando o produto de acordo com as especificações.")
+            logger.info("Selecionando o produto de acordo com as especificações.")
             # Implementar lógica para selecionar o produto com base nos valores de CONS_PROD_MES, CONS_PROD_PERFIL, CONS_PROD_SUBMERCADO e CONS_PROD_TIPO_DE_PROD
         except TimeoutException:
-            logging.error("Erro ao selecionar o produto estipulado.")
+            logger.error("Erro ao selecionar o produto estipulado.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
     def clicar_botao_editar(self):
         """Clica no botão editar."""
         try:
-            logging.info("Clicando no botão editar.")
+            logger.info("Clicando no botão editar.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.BTN_EDITAR_PROD
                 )
             ).click()
         except TimeoutException:
-            logging.error("Erro ao clicar no botão editar.")
+            logger.error("Erro ao clicar no botão editar.")
+            logger.debug(traceback.format_exc())
             raise
         sleep(2)
 
     def validar_pagina_edicao_produto(self):
         """Valida se o título da página de edição do produto está visível."""
         try:
-            logging.info(
+            logger.info(
                 "Validando a existência do título da página de edição do produto."
             )
             WebDriverWait(self.driver, 10).until(
@@ -391,57 +422,61 @@ class PerfilDeAcessoPage:
                     PerfilDeAcessoPortfolioTradingLocators.TITULO_PAGINA_EDICAO_PRODUTO
                 )
             )
-            logging.info(
+            logger.info(
                 "Título da página de edição do produto encontrado com sucesso."
             )
             return True
         except TimeoutException:
-            logging.error("Título da página de edição do produto não encontrado.")
+            logger.error("Título da página de edição do produto não encontrado.")
+            logger.debug(traceback.format_exc())
             return False
         sleep(2)
 
     def clicar_botao_excluir(self):
         """Clica no botão excluir."""
         try:
-            logging.info("Clicando no botão excluir.")
+            logger.info("Clicando no botão excluir.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.EXCLUIR_PRODUTO
                 )
             ).click()
-            logging.info("Botão excluir clicado com sucesso.")
+            logger.info("Botão excluir clicado com sucesso.")
         except TimeoutException:
-            logging.error("Erro ao clicar no botão excluir.")
+            logger.error("Erro ao clicar no botão excluir.")
+            logger.debug(traceback.format_exc())
             raise
 
     def validar_tela_exclusao_produto(self):
         """Valida se a tela de exclusão do produto está visível."""
         try:
-            logging.info("Validando a existência da tela de exclusão do produto.")
+            logger.info("Validando a existência da tela de exclusão do produto.")
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     PerfilDeAcessoPortfolioTradingLocators.VALIDAR_TELA_EXCLUSAO_PRODUTOS
                 )
             )
-            logging.info("Tela de exclusão do produto validada com sucesso.")
+            logger.info("Tela de exclusão do produto validada com sucesso.")
             return True
         except TimeoutException:
-            logging.error("Tela de exclusão do produto não encontrada.")
+            logger.error("Tela de exclusão do produto não encontrada.")
+            logger.debug(traceback.format_exc())
             return False
         sleep(2)
 
     def clicar_em_cadastrar_produto(self):
         """Clica no botão 'Cadastrar Produto'."""
         try:
-            logging.info("Clicando no botão 'Cadastrar Produto'.")
+            logger.info("Clicando no botão 'Cadastrar Produto'.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     PerfilDeAcessoPortfolioTradingLocators.BTN_CADASTRAR_PRODUTO
                 )
             ).click()
-            logging.info("Botão 'Cadastrar Produto' clicado com sucesso.")
+            logger.info("Botão 'Cadastrar Produto' clicado com sucesso.")
         except TimeoutException:
-            logging.error("Erro ao clicar no botão 'Cadastrar Produto'.")
+            logger.error("Erro ao clicar no botão 'Cadastrar Produto'.")
+            logger.debug(traceback.format_exc())
             raise
 
     def preencher_campos_obrigatorios(self):
@@ -452,11 +487,11 @@ class PerfilDeAcessoPage:
 
         try:
             # Selecionar o mês
-            logging.info("Abrindo o dropdown de mês.")
+            logger.info("Abrindo o dropdown de mês.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_MES
             )
-            logging.info(f"Selecionando o mês: {MES_NOVO_PRODUTO}.")
+            logger.info(f"Selecionando o mês: {MES_NOVO_PRODUTO}.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.MES_NOVO_PRODUTO(
                     MES_NOVO_PRODUTO
@@ -464,7 +499,7 @@ class PerfilDeAcessoPage:
             )
 
             # Informar o ano
-            logging.info(f"Informando o ano: {ANO_NOVO_PRODUTO}.")
+            logger.info(f"Informando o ano: {ANO_NOVO_PRODUTO}.")
             ano_input = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     PerfilDeAcessoPortfolioTradingLocators.ANO_NOVO_PRODUTO
@@ -474,11 +509,11 @@ class PerfilDeAcessoPage:
             ano_input.send_keys(ANO_NOVO_PRODUTO)
 
             # Selecionar o perfil
-            logging.info("Abrindo o dropdown de perfil.")
+            logger.info("Abrindo o dropdown de perfil.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_PERFIL
             )
-            logging.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
+            logger.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.PERFIL_NOVO_PRODUTO(
                     PERFIL_NOVO_PRODUTO
@@ -486,11 +521,11 @@ class PerfilDeAcessoPage:
             )
 
             # Selecionar o submercado
-            logging.info("Abrindo o dropdown de submercado.")
+            logger.info("Abrindo o dropdown de submercado.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_SUBMERCADO
             )
-            logging.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
+            logger.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.SUBMERCADO_NOVO_PRODUTO(
                     SUBMERCADO_NOVO_PRODUTO
@@ -498,11 +533,11 @@ class PerfilDeAcessoPage:
             )
 
             # Selecionar o tipo de produto
-            logging.info("Abrindo o dropdown de tipo de produto.")
+            logger.info("Abrindo o dropdown de tipo de produto.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.DROPDOWN_TIPOPRODUTO
             )
-            logging.info(f"Selecionando o tipo de produto: {TIPOPRODUTO_NOVO_PRODUTO}.")
+            logger.info(f"Selecionando o tipo de produto: {TIPOPRODUTO_NOVO_PRODUTO}.")
             self._interagir_com_elemento(
                 PerfilDeAcessoPortfolioTradingLocators.TIPOPRODUTO_NOVO_PRODUTO(
                     TIPOPRODUTO_NOVO_PRODUTO
@@ -510,7 +545,8 @@ class PerfilDeAcessoPage:
             )
 
         except TimeoutException as e:
-            logging.error(f"Erro ao preencher os campos obrigatórios: {e}")
+            logger.error(f"Erro ao preencher os campos obrigatórios: {e}")
+            logger.debug(traceback.format_exc())
             raise
 
     def _interagir_com_elemento(self, locator):
@@ -521,6 +557,6 @@ class PerfilDeAcessoPage:
             )
             elemento.click()
         except Exception:
-            logging.warning("Interagindo com o elemento via JavaScript.")
+            logger.warning("Interagindo com o elemento via JavaScript.")
             elemento = self.driver.find_element(*locator)
             self.driver.execute_script("arguments[0].click();", elemento)

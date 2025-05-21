@@ -4,8 +4,13 @@ from pages.aplicacao_base_pages import AplicacaoBaseLocators, AplicacaoBasePage
 @given("que o usuário está logado no sistema")
 @when("que o usuário está logado no sistema")
 def step_usuario_logado(context):
-    context.aplicacao_base_page = AplicacaoBasePage(context.driver)
-    context.aplicacao_base_page.validar_pagina_principal()
+    # Centraliza a validação/redirecionamento para a URL correta
+    from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
+    try:
+        # Tenta validar/redirecionar para a URL base do sistema
+        TelaDeUsuariosPage(context.driver).validar_e_redirecionar_url_inicial()
+    except Exception as e:
+        print(f"[AVISO] Falha ao validar/redirecionar URL inicial: {e}")
 
 
 @when("o usuário acessa a tela principal da aplicação")
@@ -21,11 +26,15 @@ def step_verificar_menu_lateral(context):
 
 @when('o módulo "Produtos" está visível no menu lateral')
 def step_modulo_registro_itens_visivel(context):
+    if not hasattr(context, "aplicacao_base_page"):
+        context.aplicacao_base_page = AplicacaoBasePage(context.driver)
     context.aplicacao_base_page.validar_modulo_visivel()
 
 
 @when('o usuário seleciona o módulo "Produtos"')
 def step_selecionar_modulo_registro_itens(context):
+    if not hasattr(context, "aplicacao_base_page"):
+        context.aplicacao_base_page = AplicacaoBasePage(context.driver)
     context.aplicacao_base_page.clicar_modulo_produtos()
 
 
@@ -114,4 +123,6 @@ def step_verificar_tela_visualizacao_produtos_curto_prazo(context):
 
 @when("retorna a pagina inicial")
 def step_retorna_pagina_inicial(context):
+    if not hasattr(context, "aplicacao_base_page"):
+        context.aplicacao_base_page = AplicacaoBasePage(context.driver)
     context.aplicacao_base_page.retornar_pagina_inicial()

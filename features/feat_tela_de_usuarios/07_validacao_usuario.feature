@@ -6,8 +6,6 @@ Feature: Validação de Usuário
   Background:
     Given que o usuário está logado no sistema
 
-@diretriz_curto_prazo
-
 # Scenario: Usuário autenticado sem perfil cadastrado
 #     Given que o usuário "usuario@exemplo.com" está registrado no Active Directory
 #  	And o usuário não possui um perfil cadastrado no sistema

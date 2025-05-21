@@ -1,5 +1,8 @@
 import logging
 import traceback  # Import necessário para capturar detalhes do erro
+
+# Logger padronizado para o módulo
+logger = logging.getLogger(__name__)
 from time import sleep
 
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -115,20 +118,22 @@ class PerfilDeAcessoPage:
     def executar_com_erro_controlado(self, funcao, *args, **kwargs):
         """Executa uma função, captura erros e continua a execução."""
         try:
+            logger.info(f"Executando função '{funcao.__name__}' com args={args}, kwargs={kwargs}")
             funcao(*args, **kwargs)
         except Exception as e:
-            logging.error(f"Erro ao executar {funcao.__name__}: {e}")
-            logging.debug(traceback.format_exc())  # Log detalhado do erro
+            logger.error(f"Erro ao executar {funcao.__name__}: {e}")
+            logger.debug(traceback.format_exc())  # Log detalhado do erro
 
     def validar_usuario_administrador(self):
         self.executar_com_erro_controlado(self._validar_usuario_administrador)
 
     def _validar_usuario_administrador(self):
+        logger.info("Validando se o usuário está logado como Administrador.")
         elemento = self.driver.find_element(
             *PerfilDeAcessoPageLocators.VALIDAR_ADMINISTRADOR
         )
         assert elemento is not None, "Usuário não está logado como Administrador."
-        print("Usuário validado como Administrador.")
+        logger.info("Usuário validado como Administrador.")
 
     def visualizar_todas_as_telas(self):
         """Valida se os acessos especificados estão sendo exibidos na tela."""
@@ -168,14 +173,14 @@ class PerfilDeAcessoPage:
             self.executar_com_erro_controlado(self._validar_acesso, acesso)
 
     def _validar_acesso(self, acesso):
-        logging.info(f"Validando exibição do acesso: {acesso['nome']}")
+        logger.info(f"Validando exibição do acesso: {acesso['nome']}")
         elemento = WebDriverWait(self.driver, 2).until(
             EC.presence_of_element_located(acesso["locator"])
         )
         assert (
             elemento.is_displayed()
         ), f"O acesso '{acesso['nome']}' não está sendo exibido na tela."
-        logging.info(f"Confirmação: o acesso '{acesso['nome']}' está sendo exibido.")
+        logger.info(f"Confirmação: o acesso '{acesso['nome']}' está sendo exibido.")
 
     def possui_acesso_total(self):
         """Clica e valida a exibição das telas especificadas."""
@@ -242,26 +247,30 @@ class PerfilDeAcessoPage:
             self.executar_com_erro_controlado(self._visualizar_tela, tela)
 
     def _visualizar_tela(self, tela):
-        logging.info(f"Clicando na tela: {tela['nome']}")
-        WebDriverWait(self.driver, 2).until(
-            EC.element_to_be_clickable(tela["botao"])
-        ).click()
-        logging.info(f"Validando exibição da tela: {tela['nome']}")
+        logger.info(f"Clicando na tela: {tela['nome']}")
+        try:
+            WebDriverWait(self.driver, 2).until(
+                EC.element_to_be_clickable(tela["botao"])
+            ).click()
+            logger.info(f"Validando exibição da tela: {tela['nome']}")
 
-        # Corrige a validação para lidar com diferentes tipos de validação
-        if callable(tela["validacao"]):
-            assert tela["validacao"](
-                self.driver
-            ), f"A tela '{tela['nome']}' não está sendo exibida."
-        else:
-            elemento = WebDriverWait(self.driver, 2).until(
-                EC.presence_of_element_located(tela["validacao"])
-            )
-            assert (
-                elemento.is_displayed()
-            ), f"A tela '{tela['nome']}' não está sendo exibida."
+            # Corrige a validação para lidar com diferentes tipos de validação
+            if callable(tela["validacao"]):
+                assert tela["validacao"](
+                    self.driver
+                ), f"A tela '{tela['nome']}' não está sendo exibida."
+            else:
+                elemento = WebDriverWait(self.driver, 2).until(
+                    EC.presence_of_element_located(tela["validacao"])
+                )
+                assert (
+                    elemento.is_displayed()
+                ), f"A tela '{tela['nome']}' não está sendo exibida."
 
-        logging.info(f"A tela '{tela['nome']}' está sendo exibida.")
+            logger.info(f"A tela '{tela['nome']}' está sendo exibida.")
+        except Exception as e:
+            logger.error(f"Erro ao visualizar a tela '{tela['nome']}': {e}")
+            logger.debug(traceback.format_exc())
 
     def validar_exibicao_telas(self):
         """Valida se os elementos das telas estão sendo exibidos sem realizar cliques."""
@@ -301,14 +310,18 @@ class PerfilDeAcessoPage:
             self.executar_com_erro_controlado(self._validar_exibicao, tela)
 
     def _validar_exibicao(self, tela):
-        logging.info(f"Validando exibição do elemento: {tela['nome']}")
-        elemento = WebDriverWait(self.driver, 2).until(
-            EC.presence_of_element_located(tela["locator"])
-        )
-        assert (
-            elemento.is_displayed()
-        ), f"O elemento '{tela['nome']}' não está sendo exibido na tela."
-        logging.info(f"Confirmação: o elemento '{tela['nome']}' está sendo exibido.")
+        logger.info(f"Validando exibição do elemento: {tela['nome']}")
+        try:
+            elemento = WebDriverWait(self.driver, 2).until(
+                EC.presence_of_element_located(tela["locator"])
+            )
+            assert (
+                elemento.is_displayed()
+            ), f"O elemento '{tela['nome']}' não está sendo exibido na tela."
+            logger.info(f"Confirmação: o elemento '{tela['nome']}' está sendo exibido.")
+        except Exception as e:
+            logger.error(f"Erro ao validar exibição do elemento '{tela['nome']}': {e}")
+            logger.debug(traceback.format_exc())
 
     def realizar_operacoes_trading_portfolio(self):
         """Valida os acessos necessários para operações de Trading/Portifólio, excluindo o elemento 'Perfil'."""

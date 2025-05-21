@@ -1,3 +1,4 @@
+
 import logging
 
 from selenium.common.exceptions import TimeoutException
@@ -37,6 +38,7 @@ class TelaDeProdutosPageLocators:
         By.XPATH,
         "//p-toast//div[contains(., 'Produto Deletado') and @data-pc-section='detail']",
     )
+
     URL_TELA_PRODUTOS = "https://diretrizes.dev.neoenergia.net/pages/default-products"
     DROPDOWN_PERFIL_DE_ENERGIA = (
         By.XPATH,
@@ -49,11 +51,19 @@ class TelaDeProdutosPageLocators:
 
 
 class TelaDeProdutosPage:
+    logger = logging.getLogger(__name__)
+
+    def __init__(self, driver):
+        self.driver = driver
+
+
+
+    logger = logging.getLogger(__name__)
 
     def validar_tela_cadastro(self):
         """Valida se o elemento da tela de cadastro de produtos está presente."""
         try:
-            logging.info(
+            self.logger.info(
                 "Validando a presença do elemento da tela de cadastro de produtos."
             )
             WebDriverWait(self.driver, 10).until(
@@ -66,14 +76,13 @@ class TelaDeProdutosPage:
             )
             return True
         except TimeoutException:
-            logging.error("Elemento da tela de cadastro de produtos não encontrado.")
+            self.logger.error("Elemento da tela de cadastro de produtos não encontrado.")
             return False
 
     def obter_opcoes_disponiveis_no_dropdown(self):
         """Abre o dropdown de perfil e extrai as opções disponíveis."""
         try:
-            # Abre o dropdown
-            logging.info(
+            self.logger.info(
                 "Abrindo o dropdown de perfil para extrair as opções disponíveis."
             )
             WebDriverWait(self.driver, 10).until(
@@ -93,10 +102,10 @@ class TelaDeProdutosPage:
             opcoes_texto = [
                 opcao.text.strip() for opcao in opcoes if opcao.text.strip()
             ]
-            logging.info(f"Opções disponíveis no dropdown: {opcoes_texto}")
+            self.logger.info(f"Opções disponíveis no dropdown: {opcoes_texto}")
             return opcoes_texto
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao extrair as opções do dropdown de perfil: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao extrair as opções do dropdown de perfil.")
@@ -104,8 +113,7 @@ class TelaDeProdutosPage:
     def escolher_perfil(self):
         """Abre o dropdown de perfil e seleciona o perfil de acordo com o arquivo .env."""
         try:
-            # Clica no dropdown para abrir as opções
-            logging.info("Abrindo o dropdown de perfil.")
+            self.logger.info("Abrindo o dropdown de perfil.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TelaDeProdutosPageLocators.DROPDOWN_ESCOLHER_PERFIL
@@ -126,22 +134,20 @@ class TelaDeProdutosPage:
             else:
                 raise ValueError(f"Perfil desconhecido: {PERFIL_NOVO_PRODUTO}")
 
-            # Clica no perfil selecionado
-            logging.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
+            self.logger.info(f"Selecionando o perfil: {PERFIL_NOVO_PRODUTO}.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(perfil)
             ).click()
-            logging.info(f"Perfil '{PERFIL_NOVO_PRODUTO}' selecionado com sucesso.")
+            self.logger.info(f"Perfil '{PERFIL_NOVO_PRODUTO}' selecionado com sucesso.")
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao selecionar o perfil do produto: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao selecionar o perfil do produto.")
 
     def escolher_perfil_invalido(self):
         try:
-            # Abre o dropdown de perfil
-            logging.info(
+            self.logger.info(
                 "Abrindo o dropdown de perfil para selecionar perfil inválido."
             )
             WebDriverWait(self.driver, 10).until(
@@ -149,28 +155,25 @@ class TelaDeProdutosPage:
                     TelaDeProdutosPageLocators.DROPDOWN_ESCOLHER_PERFIL
                 )
             ).click()
-            # Seleciona o perfil inválido
             perfil = PERFIL_NOVO_PRODUTO_INVALIDO
             xpath_opcao = f"//li[@aria-label='{perfil}']"
             opcao = self.driver.find_element(By.XPATH, xpath_opcao)
             opcao.click()
-            logging.info(f"Perfil inválido '{perfil}' selecionado.")
+            self.logger.info(f"Perfil inválido '{perfil}' selecionado.")
         except Exception as e:
-            logging.error(f"Erro ao selecionar perfil inválido: {e}")
+            self.logger.error(f"Erro ao selecionar perfil inválido: {e}")
             raise AssertionError(f"Erro ao selecionar perfil inválido: {e}")
 
     def escolher_submercado(self):
         """Abre o dropdown de submercado e seleciona o submercado de acordo com o arquivo .env."""
         try:
-            # Abre o dropdown
-            logging.info("Abrindo o dropdown de submercado.")
+            self.logger.info("Abrindo o dropdown de submercado.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TelaDeProdutosPageLocators.DROPDOWN_ESCOLHER_SUBMERCADO
                 )
             ).click()
 
-            # Seleciona o submercado com base no valor de SUBMERCADO_NOVO_PRODUTO
             if SUBMERCADO_NOVO_PRODUTO == "NE":
                 submercado = TelaDeProdutosPageLocators.SUBMERCADO_NE
             elif SUBMERCADO_NOVO_PRODUTO == "SE":
@@ -182,24 +185,22 @@ class TelaDeProdutosPage:
             else:
                 raise ValueError(f"Submercado desconhecido: {SUBMERCADO_NOVO_PRODUTO}")
 
-            # Clica no submercado selecionado
-            logging.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
+            self.logger.info(f"Selecionando o submercado: {SUBMERCADO_NOVO_PRODUTO}.")
             WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(submercado)
             ).click()
-            logging.info(
+            self.logger.info(
                 f"Submercado '{SUBMERCADO_NOVO_PRODUTO}' selecionado com sucesso."
             )
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao selecionar o submercado: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao selecionar o submercado.")
 
     def escolher_submercado_invalido(self):
         try:
-            # Abre o dropdown de submercado
-            logging.info(
+            self.logger.info(
                 "Abrindo o dropdown de submercado para selecionar submercado inválido."
             )
             WebDriverWait(self.driver, 10).until(
@@ -207,21 +208,19 @@ class TelaDeProdutosPage:
                     TelaDeProdutosPageLocators.DROPDOWN_ESCOLHER_SUBMERCADO
                 )
             ).click()
-            # Seleciona o submercado inválido
             submercado = SUBMERCADO_NOVO_PROD_INVALIDO
             xpath_opcao = f"//li[@aria-label='{submercado}']"
             opcao = self.driver.find_element(By.XPATH, xpath_opcao)
             opcao.click()
-            logging.info(f"Submercado inválido '{submercado}' selecionado.")
+            self.logger.info(f"Submercado inválido '{submercado}' selecionado.")
         except Exception as e:
-            logging.error(f"Erro ao selecionar submercado inválido: {e}")
+            self.logger.error(f"Erro ao selecionar submercado inválido: {e}")
             raise AssertionError(f"Erro ao selecionar submercado inválido: {e}")
 
     def obter_opcoes_disponiveis_submercado(self):
         """Abre o dropdown de submercado e extrai as opções disponíveis."""
         try:
-            # Abre o dropdown
-            logging.info(
+            self.logger.info(
                 "Abrindo o dropdown de submercado para extrair as opções disponíveis."
             )
             WebDriverWait(self.driver, 10).until(
@@ -230,23 +229,21 @@ class TelaDeProdutosPage:
                 )
             ).click()
 
-            # Localiza todas as opções dentro do dropdown
             opcoes = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located(
                     (By.XPATH, "//li[contains(@class, 'p-dropdown-item')]")
                 )
             )
 
-            # Extrai o texto de cada opção
             opcoes_texto = [
                 opcao.text.strip() for opcao in opcoes if opcao.text.strip()
             ]
-            logging.info(
+            self.logger.info(
                 f"Opções disponíveis no dropdown de submercado: {opcoes_texto}"
             )
             return opcoes_texto
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao extrair as opções do dropdown de submercado: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao extrair as opções do dropdown de submercado.")
@@ -254,9 +251,8 @@ class TelaDeProdutosPage:
     def obter_dados_produtos(self):
         """Coleta os dados de todos os produtos listados na tabela."""
         try:
-            logging.info("Coletando dados dos produtos listados na tabela.")
+            self.logger.info("Coletando dados dos produtos listados na tabela.")
 
-            # Localiza todas as linhas da tabela
             linhas = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located(
                     (By.XPATH, "//tbody/tr[@class='ng-star-inserted']")
@@ -294,10 +290,10 @@ class TelaDeProdutosPage:
                     }
                 )
 
-            logging.info(f"Dados coletados: {produtos}")
+            self.logger.info(f"Dados coletados: {produtos}")
             return produtos
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao coletar os dados dos produtos: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao coletar os dados dos produtos.")
@@ -305,10 +301,9 @@ class TelaDeProdutosPage:
     def obter_novos_produtos(self, produtos_anteriores):
         """Compara a lista atual de produtos com a lista anterior e retorna os novos produtos."""
         try:
-            logging.info("Coletando a lista atual de produtos para comparação.")
+            self.logger.info("Coletando a lista atual de produtos para comparação.")
             produtos_atuais = self.obter_dados_produtos()
 
-            # Filtra os novos produtos
             novos_produtos = [
                 produto
                 for produto in produtos_atuais
@@ -316,21 +311,20 @@ class TelaDeProdutosPage:
             ]
 
             if novos_produtos:
-                logging.info(f"Novos produtos encontrados: {novos_produtos}")
+                self.logger.info(f"Novos produtos encontrados: {novos_produtos}")
             else:
-                logging.info("Nenhum novo produto foi encontrado.")
+                self.logger.info("Nenhum novo produto foi encontrado.")
 
             return novos_produtos
         except Exception as e:
-            logging.error(f"Erro ao comparar listas de produtos: {e}")
+            self.logger.error(f"Erro ao comparar listas de produtos: {e}")
             raise
 
     def inativar_produto(self):
         """Seleciona o botão de inativação de um produto e confirma a ação."""
         try:
-            logging.info("Tentando inativar o produto da primeira linha.")
+            self.logger.info("Tentando inativar o produto da primeira linha.")
 
-            # Localiza e clica no botão de inativação
             botao_inativar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     (
@@ -341,9 +335,8 @@ class TelaDeProdutosPage:
             )
             botao_inativar.click()
 
-            logging.info("Botão de inativação clicado com sucesso.")
+            self.logger.info("Botão de inativação clicado com sucesso.")
 
-            # Localiza e clica no botão "Sim" para confirmar
             botao_confirmar = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     (
@@ -354,9 +347,9 @@ class TelaDeProdutosPage:
             )
             botao_confirmar.click()
 
-            logging.info("Produto inativado com sucesso.")
+            self.logger.info("Produto inativado com sucesso.")
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao tentar inativar o produto: elemento não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao tentar inativar o produto.")
@@ -364,25 +357,24 @@ class TelaDeProdutosPage:
     def validar_mensagem_inativacao(self):
         """Valida se a mensagem de inativação do produto é exibida e retorna o texto."""
         try:
-            logging.info("Validando a exibição da mensagem de inativação do produto.")
+            self.logger.info("Validando a exibição da mensagem de inativação do produto.")
             mensagem_elemento = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
                     (By.XPATH, "//div[contains(@class, 'p-toast-detail')]")
                 )
             )
             mensagem_texto = mensagem_elemento.text.strip()
-            logging.info(f"Mensagem exibida: {mensagem_texto}")
+            self.logger.info(f"Mensagem exibida: {mensagem_texto}")
             return mensagem_texto
         except TimeoutException:
-            logging.error("Mensagem de inativação do produto não foi exibida.")
+            self.logger.error("Mensagem de inativação do produto não foi exibida.")
             return None
 
     def obter_produtos_inativos(self):
         """Coleta os dados dos produtos inativos listados na tabela."""
         try:
-            logging.info("Coletando dados dos produtos inativos.")
+            self.logger.info("Coletando dados dos produtos inativos.")
 
-            # Localiza os produtos inativos
             produtos_inativos_elementos = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_all_elements_located(
                     TelaDeProdutosPageLocators.PRODUTOS_INATIVOS
@@ -401,25 +393,25 @@ class TelaDeProdutosPage:
 
                 produtos_inativos.append({"mes": mes, "ano": ano})
 
-            logging.info(f"Produtos inativos encontrados: {produtos_inativos}")
+            self.logger.info(f"Produtos inativos encontrados: {produtos_inativos}")
             return produtos_inativos
         except TimeoutException:
-            logging.info("Nenhum produto inativo foi encontrado.")
+            self.logger.info("Nenhum produto inativo foi encontrado.")
             return []
 
     def confirmar_exclusao_produto(self):
         """Clica no botão 'Sim' para confirmar a exclusão de um produto."""
         try:
-            logging.info("Confirmando a exclusão do produto.")
+            self.logger.info("Confirmando a exclusão do produto.")
             botao_sim = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TelaDeProdutosPageLocators.BTN_SIM_EXCLUIR_PROD
                 )
             )
             botao_sim.click()
-            logging.info("Exclusão do produto confirmada com sucesso.")
+            self.logger.info("Exclusão do produto confirmada com sucesso.")
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao tentar confirmar a exclusão do produto: botão 'Sim' não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao tentar confirmar a exclusão do produto.")
@@ -427,7 +419,7 @@ class TelaDeProdutosPage:
     def validar_mensagem_confirmacao_exclusao(self):
         """Valida se a mensagem de confirmação da exclusão do produto é exibida e retorna o texto."""
         try:
-            logging.info(
+            self.logger.info(
                 "Validando a exibição da mensagem de confirmação da exclusão do produto."
             )
             mensagem_elemento = WebDriverWait(self.driver, 10).until(
@@ -436,10 +428,10 @@ class TelaDeProdutosPage:
                 )
             )
             mensagem_texto = mensagem_elemento.text.strip()
-            logging.info(f"Mensagem exibida: {mensagem_texto}")
+            self.logger.info(f"Mensagem exibida: {mensagem_texto}")
             return mensagem_texto
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Mensagem de confirmação da exclusão do produto não foi exibida."
             )
             return None
@@ -447,16 +439,16 @@ class TelaDeProdutosPage:
     def nao_confirmar_exclusao_produto(self):
         """Não confirma a exclusão de um produto clicando no botão 'Não'."""
         try:
-            logging.info("Clicando no botão não para a exclusão do produto.")
+            self.logger.info("Clicando no botão não para a exclusão do produto.")
             botao_nao = WebDriverWait(self.driver, 10).until(
                 EC.element_to_be_clickable(
                     TelaDeProdutosPageLocators.BTN_NAO_EXCLUIR_PROD
                 )
             )
             botao_nao.click()
-            logging.info("Exclusão do produto não confirmada com sucesso.")
+            self.logger.info("Exclusão do produto não confirmada com sucesso.")
         except TimeoutException:
-            logging.error(
+            self.logger.error(
                 "Erro ao tentar não confirmar a exclusão do produto: botão 'Não' não encontrado ou não clicável."
             )
             raise AssertionError("Erro ao tentar não confirmar a exclusão do produto.")
@@ -464,18 +456,18 @@ class TelaDeProdutosPage:
     def validar_tela_produtos(self):
         """Valida se o usuário está na tela de produtos pelo link da página."""
         try:
-            logging.info("Validando se o usuário está na tela de produtos.")
+            self.logger.info("Validando se o usuário está na tela de produtos.")
             current_url = self.driver.current_url
             if current_url == TelaDeProdutosPageLocators.URL_TELA_PRODUTOS:
-                logging.info("Usuário retornou à tela de produtos com sucesso.")
+                self.logger.info("Usuário retornou à tela de produtos com sucesso.")
                 return True
             else:
-                logging.error(
+                self.logger.error(
                     f"URL atual ({current_url}) não corresponde à esperada ({TelaDeProdutosPageLocators.URL_TELA_PRODUTOS})."
                 )
                 return False
         except Exception as e:
-            logging.error(f"Erro ao validar a tela de produtos: {e}")
+            self.logger.error(f"Erro ao validar a tela de produtos: {e}")
             return False
 
     # def escolher_perfil_de_energia(self):
@@ -497,17 +489,15 @@ class TelaDeProdutosPage:
 
     def escolher_submercado_dropdown(self):
         try:
-            # Abre o dropdown de submercado
             dropdown = self.driver.find_element(
                 *TelaDeProdutosPageLocators.DROPDOWN_SUBMERCADO
             )
             dropdown.click()
-            # Seleciona o submercado conforme o valor do .env
             submercado = ESCOLHER_SUBMERCADO.upper()
             xpath_opcao = f"//div[@class='p-dropdown-items-wrapper']//li[span[text()='{submercado}']]"
             opcao = self.driver.find_element(By.XPATH, xpath_opcao)
             opcao.click()
-            logging.info(f"Submercado '{submercado}' selecionado com sucesso.")
+            self.logger.info(f"Submercado '{submercado}' selecionado com sucesso.")
         except Exception as e:
-            logging.error(f"Erro ao selecionar submercado: {e}")
+            self.logger.error(f"Erro ao selecionar submercado: {e}")
             raise AssertionError(f"Erro ao selecionar submercado: {e}")

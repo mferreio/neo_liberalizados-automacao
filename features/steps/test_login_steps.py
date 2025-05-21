@@ -19,7 +19,8 @@ logging.basicConfig(level=logging.INFO)
 
 @given("que eu acesso a página de login")
 def step_impl(context):
-    esperar_e_executar(context.login_page.navegar_para_pagina_de_login)
+    from pages.login_page import LoginPageLocators
+    esperar_e_executar(context, LoginPageLocators.BOTAO_ENTRAR, context.login_page.navegar_para_pagina_de_login)
 
 
 @when("eu clico no botão Entrar")

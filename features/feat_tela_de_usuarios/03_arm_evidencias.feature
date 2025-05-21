@@ -3,7 +3,7 @@ Feature: Armazenamento de evidências
   Quero gerenciar arquivos de evidências
   Para garantir o armazenamento e consulta de forma segura
 
-
+@testaragora
 Scenario: Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo
   Given que o usuário está logado no sistema
   When o usuário acessa a aba "diretriz Curto Prazo"

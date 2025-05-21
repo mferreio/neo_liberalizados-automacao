@@ -33,7 +33,7 @@ def step_acessar_aplicacao_com_login(context):
 def step_redirecionado_tela_login(context):
     assert (
         context.perfil_nao_logado_page.validar_redirecionamento_para_login()
-    ), "Usuário não foi redirecionado para a tela de login."
+    ), "Usuário não foi redirecionado para a tela de login Microsoft (login.microsoftonline.com)."
     sleep(3)
 
 

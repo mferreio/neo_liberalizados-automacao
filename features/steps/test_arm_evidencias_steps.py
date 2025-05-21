@@ -133,9 +133,10 @@ def step_preencher_campos_obrigatorios(context):
         raise
 
 
+
 @when("usuário retorna a tela inicial")
 def step_retorna_tela_inicial(context):
-    """Retorna para a página inicial."""
+    """Retorna para a página inicial, se necessário."""
     try:
         evidencias_page = ArmEvidenciasPage(context.driver)
         evidencias_page.retorna_tela_inicial()
@@ -143,3 +144,4 @@ def step_retorna_tela_inicial(context):
     except Exception as e:
         print(f"Erro ao retornar para a página inicial: {e}")
         raise
+

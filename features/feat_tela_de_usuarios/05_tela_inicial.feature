@@ -37,7 +37,7 @@ Scenario: Verificar apresentação do histórico dos dados de diretrizes semanai
     Given que eu estou na Página Inicial
  	When eu clico no botão "Ver Histórico" para diretrizes semanais
  	Then eu sou direcionado para a tela de histórico da diretriz semanal
- 	When eu devo poder visualizar dados históricos de maneira gráfica
+ 	When eu devo poder visualizar dado histórico de maneira gráfica
     When usuário retorna a tela inicial
 
 Scenario: Verificar apresentação de dados BBCE do histórico dos dados de diretrizes diárias
@@ -51,7 +51,7 @@ Scenario: Verificar apresentação de dados BBCE do histórico dos dados de dire
     Given que eu estou na Página Inicial
  	When eu clico no botão "Ver Histórico" para diretrizes semanais
  	Then eu sou direcionado para a tela de dados BBCE do histórico dos dados de diretrizes semanal
- 	When eu devo poder visualizar dados históricos de maneira gráfica
+ 	When eu devo poder visualizar dado histórico de maneira gráfica
     When usuário retorna a tela inicial
 
 Scenario: Verificar apresentação de dados DCIDE do histórico dos dados de diretrizes diárias
@@ -65,7 +65,7 @@ Scenario: Verificar apresentação de dados DCIDE do histórico dos dados de dir
     Given que eu estou na Página Inicial
 	When eu clico no botão "Ver Histórico" para diretrizes semanais
  	Then eu sou direcionado para a tela de dados DCIDE do histórico dos dados de diretrizes semanal
- 	When eu devo poder visualizar dados históricos de maneira gráfica
+ 	When eu devo poder visualizar dado histórico de maneira gráfica
     When usuário retorna a tela inicial
 
 Scenario: Exportar dados da diretriz diária apresentados em XLSX
@@ -97,3 +97,4 @@ Scenario: Visualizar prêmios padrões
     Given que eu estou na Página Inicial
     When eu visualizo a barra de lateral
  	Then eu devo ver os prêmios para "prêmio Sazo" e "prêmio Flex"
+	When usuário retorna a tela inicial

@@ -28,7 +28,6 @@ Feature: Perfil de acesso Administrador
    Scenario: Administrador acessa a aplicação operações módulo Comercial
     Given que o usuário está logado como "Administrador"
     Then eu devo ter acesso total ao sistema
-    # And eu devo conseguir realizar todas as operações do módulo Comercial
 
    Scenario: Acesso ao menu pelo Administrador
     Given que o usuário está logado como "Administrador"

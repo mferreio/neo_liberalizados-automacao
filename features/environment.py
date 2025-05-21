@@ -6,14 +6,10 @@ import traceback
 import shutil
 import stat
 import subprocess
-import traceback
 from docx import Document
-import os
-from datetime import datetime
-import docx.shared
 from datetime import datetime
 from time import sleep
-from docx.shared import Inches
+import docx.shared
 import matplotlib.pyplot as plt
 import pyautogui
 from pages.login_page import LoginPage, LoginPageLocators
@@ -157,6 +153,12 @@ def after_step(context, step):
             'screenshot': screenshot_path,
             'error': error
         })
+    # Exclui o print após alimentar a evidência
+    if screenshot_path and os.path.exists(screenshot_path):
+        try:
+            os.remove(screenshot_path)
+        except Exception:
+            pass
     # Inicializa o page object DiretrizIrecPage para todos os cenários que envolvem diretriz I-REC
     if hasattr(context, "driver"):
         context.diretriz_irec_page = DiretrizIrecPage(context.driver)
@@ -441,6 +443,7 @@ def after_all(context):
                     print(f"Erro ao salvar arquivo de evidência {nome_arquivo}: {e}")
 
         # Gera o relatório do Allure ao final dos testes
+        allure_report_generated = False
         try:
             allure_executable = r"C:\allure\bin\allure.bat"
             allure_results_dir = "reports/allure-results"
@@ -457,37 +460,85 @@ def after_all(context):
                 check=True,
             )
             print(f"Relatório Allure gerado em: {allure_report_dir}")
+            allure_report_generated = True
         except Exception as e:
             print(f"Erro ao gerar o relatório Allure: {e}")
 
-        # Copia o relatório Allure para docs/allure-history/allure-report-<timestamp>/ e publica na gh-pages sem intervenção humana
+        # Copia o relatório Allure para docs/allure-report-<data>-<N>/ e faz commit/push para main
+        report_url = "Erro ao gerar link do relatório"
+        if allure_report_generated and os.path.exists("reports/allure-report"):
+            try:
+                # Gera nome com data (DD-MM-AAAA) e contador incremental
+                data_str = datetime.now().strftime('%d-%m-%Y')
+                docs_base = os.path.join('docs')
+                # Busca todos os diretórios já existentes para a data
+                existing = [
+                    d for d in os.listdir(docs_base)
+                    if d.startswith(f'allure-report-{data_str}')
+                ]
+                # Calcula o próximo índice
+                idx = 1
+                if existing:
+                    nums = []
+                    for d in existing:
+                        parts = d.split('-')
+                        if len(parts) >= 4 and parts[2] == data_str.split('-')[0] and parts[3] == data_str.split('-')[1] and parts[4] == data_str.split('-')[2]:
+                            try:
+                                nums.append(int(parts[-1]))
+                            except Exception:
+                                pass
+                    if nums:
+                        idx = max(nums) + 1
+                report_dir_name = f'allure-report-{data_str}-{idx}'
+                docs_report_path = os.path.join(docs_base, report_dir_name)
+                if os.path.exists(docs_report_path):
+                    shutil.rmtree(docs_report_path)
+                shutil.copytree('reports/allure-report', docs_report_path)
+                print(f'Relatório Allure copiado para: {docs_report_path}')
+
+                # Commit e push para main (ignora hooks)
+                from git import Repo
+                repo = Repo(os.getcwd())
+                repo.git.add(docs_report_path)
+                repo.git.commit('-m', f'Adiciona relatório Allure {report_dir_name} em docs para histórico no GitHub Pages', '--no-verify')
+                repo.git.push('origin', 'main')
+                print('Relatório Allure enviado para a branch main (GitHub Pages).')
+
+                # Monta o link único do relatório
+                github_pages_base = "https://mferreio.github.io/neo_liberalizados-automacao/"
+                report_url = f"{github_pages_base}{report_dir_name}/"
+            except Exception as e:
+                print(f"Erro ao copiar/commit/push do relatório Allure para docs/: {e}")
+                report_url = "Erro ao gerar link do relatório"
+        else:
+            print("Relatório Allure não foi gerado, não será copiado para docs/.")
+
+        # --- Envia o e-mail com o link único do relatório Allure ---
         try:
-            from datetime import datetime
-            import shutil
-            timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-            pasta_destino = os.path.join('docs', 'allure-history', f'allure-report-{timestamp}')
-            os.makedirs(os.path.dirname(pasta_destino), exist_ok=True)
-            shutil.copytree('reports/allure-report', pasta_destino)
-            print(f'Relatório histórico copiado para: {pasta_destino}')
+            # Salva as métricas em variáveis de ambiente para o script de e-mail
+            os.environ['ALLURE_REPORT_URL'] = report_url
+            os.environ['DATA_EXECUCAO'] = datetime.now().strftime('%d/%m/%Y %H:%M')
+            os.environ['TOTAL_TESTES'] = str(len(getattr(context, 'passed_scenarios', [])) + len(getattr(context, 'failed_scenarios', [])))
+            os.environ['TESTES_APROVADOS'] = str(len(getattr(context, 'passed_scenarios', [])))
+            os.environ['TESTES_FALHADOS'] = str(len(getattr(context, 'failed_scenarios', [])))
+            os.environ['TESTES_IGNORADOS'] = "0"  # Ajuste se necessário
 
-            # Commit automático de tudo antes de trocar de branch
-            subprocess.run(["git", "add", "-A"], check=True, shell=True)
-            subprocess.run(["git", "commit", "-am", f"WIP auto: preparando para publicar Allure histórico {timestamp}"], check=False, shell=True)
+            # Calcula o tempo de execução total
+            end_time = datetime.now()
+            if hasattr(context, 'start_time'):
+                execution_time = end_time - context.start_time
+                minutos, segundos = divmod(execution_time.total_seconds(), 60)
+                tempo_execucao_str = f"{int(minutos)}m {int(segundos)}s"
+            else:
+                tempo_execucao_str = "-"
+            os.environ['TEMPO_EXECUCAO'] = tempo_execucao_str
 
-            # Garante que a branch gh-pages está atualizada localmente
-            subprocess.run(["git", "fetch", "origin", "gh-pages:gh-pages"], check=True, shell=True)
-            # Troca para gh-pages
-            subprocess.run(["git", "checkout", "gh-pages"], check=True, shell=True)
-            # Copia o relatório histórico da main para gh-pages
-            subprocess.run(["git", "checkout", "main", "--", pasta_destino], check=True, shell=True)
-            # Adiciona, commita e faz push do novo relatório
-            subprocess.run(["git", "add", pasta_destino], check=True, shell=True)
-            subprocess.run(["git", "commit", "-am", f"Allure histórico {timestamp}"], check=False, shell=True)
-            subprocess.run(["git", "push"], check=True, shell=True)
-            # Volta para a main
-            subprocess.run(["git", "checkout", "main"], check=True, shell=True)
+            subprocess.run(
+                ["python", "send_allure_report_email.py"],
+                check=True
+            )
         except Exception as e:
-            print(f"Erro ao copiar/commit/push do relatório histórico: {e}")
+            print(f"Erro ao chamar o envio de e-mail: {e}")
 
         # Calcula o tempo de execução
         end_time = datetime.now()

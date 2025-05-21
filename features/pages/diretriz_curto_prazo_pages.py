@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -13,30 +15,31 @@ class DiretrizCurtoPrazoPage:
 
     def __init__(self, driver):
         self.driver = driver
+        logger.info("Instanciando page object: DiretrizCurtoPrazoPage")
 
     def validar_ou_redirecionar_tela_diretriz_curto_prazo(self):
         url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-irec/listar"
         if self.driver.current_url != url_esperada:
-            print(f"Usuário NÃO foi encaminhado para a página correta. Redirecionando para: {url_esperada}")
+            logger.info(f"Usuário NÃO foi encaminhado para a página correta. Redirecionando para: {url_esperada}")
             self.driver.get(url_esperada)
         else:
-            print(f"Usuário já está na página correta: {url_esperada}")
+            logger.info(f"Usuário já está na página correta: {url_esperada}")
 
     def validar_ou_redirecionar_tela_diretriz_curto_prazo_curto(self):
         url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-curto-prazo/listar"
         if self.driver.current_url != url_esperada:
-            print(f"Usuário NÃO foi encaminhado para a página correta. Redirecionando para: {url_esperada}")
+            logger.info(f"Usuário NÃO foi encaminhado para a página correta. Redirecionando para: {url_esperada}")
             self.driver.get(url_esperada)
         else:
-            print(f"Usuário já está na página correta: {url_esperada}")
+            logger.info(f"Usuário já está na página correta: {url_esperada}")
 
     def validar_ou_redirecionar_tela_cadastro_diretriz_curto_prazo(self):
         url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-curto-prazo/novo"
         if self.driver.current_url != url_esperada:
-            print(f"Usuário NÃO foi encaminhado para a tela de cadastro correta. Redirecionando para: {url_esperada}")
+            logger.info(f"Usuário NÃO foi encaminhado para a tela de cadastro correta. Redirecionando para: {url_esperada}")
             self.driver.get(url_esperada)
         else:
-            print(f"Usuário já está na tela de cadastro correta: {url_esperada}")
+            logger.info(f"Usuário já está na tela de cadastro correta: {url_esperada}")
 
     def preencher_campos_obrigatorios(self, premio="10", descricao="Teste automatizado", data_inicio=None):
         """
@@ -74,15 +77,16 @@ class DiretrizCurtoPrazoPage:
         """
         Valida se a mensagem de erro de data inválida é exibida e imprime o texto.
         """
+        logger.info("Validando mensagem de erro de data inválida.")
         xpath = "//small[text()=' A data não pode ser menor que a atual ']"
         try:
             elemento = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located((By.XPATH, xpath))
             )
-            print(f"Mensagem exibida: {elemento.text}")
+            logger.info(f"Mensagem exibida: {elemento.text}")
             return elemento.text
         except Exception:
-            print("Mensagem de erro de data inválida não foi exibida!")
+            logger.warning("Mensagem de erro de data inválida não foi exibida!")
             return None
 
     def inserir_intervalo_data_para_busca(self):
@@ -106,6 +110,7 @@ class DiretrizCurtoPrazoPage:
         """
         Valida se todas as diretrizes exibidas estão dentro do intervalo de 01/03 a 15/05.
         """
+        logger.info("Validando se todas as diretrizes exibidas estão dentro do intervalo de 01/03/2025 a 15/05/2025.")
         from datetime import datetime
         linhas = self.driver.find_elements(By.XPATH, "//tbody/tr[contains(@class, 'ng-star-inserted')]")
         fora_periodo = []
@@ -125,46 +130,49 @@ class DiretrizCurtoPrazoPage:
                 if not (data_inicio_periodo <= data_inicio <= data_fim_periodo and data_inicio_periodo <= data_fim <= data_fim_periodo):
                     fora_periodo.append({"inicio": inicio_vig, "fim": fim_vig, "motivo": "fora do período"})
         if fora_periodo:
-            print("Diretrizes fora do período 01/03/2025 a 15/05/2025:")
+            logger.warning("Diretrizes fora do período 01/03/2025 a 15/05/2025:")
             for d in fora_periodo:
-                print(f"Início Vigência: {d['inicio']} | Fim Vigência: {d['fim']} | Motivo: {d['motivo']}")
+                logger.warning(f"Início Vigência: {d['inicio']} | Fim Vigência: {d['fim']} | Motivo: {d['motivo']}")
         else:
-            print("Todas as diretrizes exibidas estão dentro do período 01/03/2025 a 15/05/2025.")
+            logger.info("Todas as diretrizes exibidas estão dentro do período 01/03/2025 a 15/05/2025.")
 
     def clicar_botao_detalhamento_diretriz(self):
+        logger.info("Clicando no botão de detalhamento da diretriz.")
         btn = WebDriverWait(self.driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, self.BTN_DETALHAMENTO_DIRETRIZ))
         )
         btn.click()
-        print("Botão de detalhamento da diretriz clicado.")
+        logger.info("Botão de detalhamento da diretriz clicado.")
 
     def exibir_detalhes_diretriz(self):
+        logger.info("Exibindo detalhes da diretriz.")
         # Início Vigência
         spans_inicio = self.driver.find_elements(By.XPATH, self.DETALHAMENTO_INICIO_VIGENCIA)
         for idx, span in enumerate(spans_inicio, 1):
-            print(f"Início Vigência {idx}: {span.text}")
+            logger.info(f"Início Vigência {idx}: {span.text}")
         # Fim Vigência
         spans_fim = self.driver.find_elements(By.XPATH, self.DETALHAMENTO_FIM_VIGENCIA)
         for idx, span in enumerate(spans_fim, 1):
-            print(f"Fim Vigência {idx}: {span.text}")
+            logger.info(f"Fim Vigência {idx}: {span.text}")
         # Produtos
         linhas_produtos = self.driver.find_elements(By.XPATH, self.DETALHAMENTO_PRODUTOS)
         for idx, linha in enumerate(linhas_produtos, 1):
             colunas = linha.find_elements(By.TAG_NAME, "td")
             valores = [col.text for col in colunas]
-            print(f"Produto {idx}: {valores}")
+            logger.info(f"Produto {idx}: {valores}")
         # Descrição
         try:
             descricao = self.driver.find_element(By.XPATH, self.DETALHAMENTO_DESCRICAO)
-            print(f"Descrição: {descricao.get_attribute('value')}")
+            logger.info(f"Descrição: {descricao.get_attribute('value')}")
         except Exception:
-            print("Descrição não encontrada.")
+            logger.warning("Descrição não encontrada.")
 
     def exibir_arquivos_anexados(self):
+        logger.info("Exibindo arquivos anexados.")
         linhas = self.driver.find_elements(By.XPATH, self.DETALHAMENTO_ARQUIVOS_ANEXADOS)
         for idx, linha in enumerate(linhas, 1):
             colunas = linha.find_elements(By.TAG_NAME, "td")
             for col in colunas:
                 texto = col.text.strip()
                 if texto:
-                    print(f"Arquivo anexo {idx}: {texto}")
+                    logger.info(f"Arquivo anexo {idx}: {texto}")

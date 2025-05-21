@@ -1,4 +1,5 @@
 import logging
+logger = logging.getLogger(__name__)
 import os
 
 from selenium.common.exceptions import TimeoutException
@@ -39,14 +40,15 @@ class ArmEvidenciasPage:
         Valida que não existe nenhum arquivo anexo na tela.
         Se não houver, exibe mensagem de sucesso.
         """
+        logger.info("Validando ausência de arquivo anexo na tela.")
         try:
             WebDriverWait(self.driver, 5).until(
                 EC.presence_of_element_located((By.XPATH, ArmEvidenciasSelectors.ARQUIVO_JPG_ANEXADO_ELEMENTO))
             )
-            # Se encontrou o elemento, falha o teste
+            logger.error("Foi encontrado um arquivo anexo, mas não deveria haver nenhum.")
             raise AssertionError("Foi encontrado um arquivo anexo, mas não deveria haver nenhum.")
         except TimeoutException:
-            print("Não existem arquivos anexados na tela (OK)")
+            logger.info("Não existem arquivos anexados na tela (OK)")
             return True
     def __init__(self, driver):
         self.driver = driver
@@ -138,15 +140,16 @@ class ArmEvidenciasPage:
         """
         Valida se a mensagem de limite de tamanho do arquivo foi exibida e imprime o texto.
         """
+        logger.info("Validando mensagem de limite de tamanho do arquivo.")
         xpath = ArmEvidenciasSelectors.MSG_LIMITE_TAMANHO_ARQUIVO
         try:
             elemento = WebDriverWait(self.driver, 10).until(
                 EC.visibility_of_element_located((By.XPATH, xpath))
             )
-            print(f"Mensagem exibida: {elemento.text}")
+            logger.info(f"Mensagem exibida: {elemento.text}")
             return elemento.text
         except Exception:
-            print("Mensagem de limite de tamanho de arquivo não foi exibida!")
+            logger.warning("Mensagem de limite de tamanho de arquivo não foi exibida!")
             return None
 
     def clicar_em_salvar(self):
@@ -225,14 +228,24 @@ class ArmEvidenciasPage:
             raise
 
     def retorna_tela_inicial(self):
-        """Retorna para a página inicial."""
+        """Verifica se está na página inicial, se não estiver, navega para ela."""
+        url_inicial = "https://diretrizes.dev.neoenergia.net/"
         try:
-            logging.info("Navegando para a página inicial.")
-            self.driver.get("https://diretrizes.dev.neoenergia.net/")
-            WebDriverWait(self.driver, 10).until(
-                EC.url_to_be("https://diretrizes.dev.neoenergia.net/")
-            )
-            logging.info("Usuário retornou para a página inicial com sucesso.")
+            if self.driver.current_url != url_inicial:
+                logger.info("Navegando para a página inicial.")
+                self.driver.get(url_inicial)
+                WebDriverWait(self.driver, 10).until(
+                    EC.url_to_be(url_inicial)
+                )
+                logger.info("Usuário retornou para a página inicial com sucesso.")
+            else:
+                logger.info("Usuário já está na página inicial.")
         except TimeoutException:
-            logging.error("Erro ao retornar para a página inicial.")
+            logger.error("Erro ao retornar para a página inicial.")
             raise
+
+    def validar_pagina_inicial(self):
+        """Valida se o usuário está na página inicial."""
+        url_inicial = "https://diretrizes.dev.neoenergia.net/"
+        if self.driver.current_url != url_inicial:
+            raise AssertionError(f"Usuário não está na página inicial. URL atual: {self.driver.current_url}")

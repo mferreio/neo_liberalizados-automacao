@@ -2,8 +2,12 @@ from behave import given, then, when
 from pages.perfil_de_acesso_pages import PerfilDeAcessoPage
 
 
+
 @when("eu devo ter acesso total ao sistema")
+@then("eu devo ter acesso total ao sistema")
 def step_then_acesso_total(context):
+    if not hasattr(context, 'perfil_de_acesso_pages'):
+        context.perfil_de_acesso_pages = PerfilDeAcessoPage(context.driver)
     context.perfil_de_acesso_pages.possui_acesso_total()
 
 
