@@ -1,0 +1,1 @@
+{"0a5dde2e96d3fe356bca7cdea65a3c6a":{"statistic":{"failed":1,"broken":0,"skipped":0,"passed":0,"unknown":0,"total":1},"items":[{"uid":"17d9e322609bb161","status":"failed","statusDetails":"AssertionError: Mensagem de formato de e-mail inválido não foi exibida.\n","time":{"start":1747846445821,"stop":1747846481451,"duration":35630}}]}}
