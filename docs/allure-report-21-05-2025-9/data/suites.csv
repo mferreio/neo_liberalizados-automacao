@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","20797","Administrador acessa a aplicação operações Trading/Portifólio","","Wed May 21 10:33:46 BRT 2025","passed","Wed May 21 10:34:06 BRT 2025","","","",""
+"","22980","Administrador acessa a aplicação visualização das telas","","Wed May 21 10:33:23 BRT 2025","passed","Wed May 21 10:33:45 BRT 2025","","","",""
+"","41132","Administrador acessa a aplicação cadastro de usuário com perfis","","Wed May 21 10:32:41 BRT 2025","passed","Wed May 21 10:33:23 BRT 2025","","","",""
+"","20468","Administrador acessa a aplicação operações módulo Comercial","","Wed May 21 10:34:06 BRT 2025","passed","Wed May 21 10:34:27 BRT 2025","","","",""
+"","1125","Acesso ao menu pelo Administrador","","Wed May 21 10:34:27 BRT 2025","passed","Wed May 21 10:34:28 BRT 2025","","","",""
