@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","27068","Cadastro de usuário com sucesso","","Wed May 21 11:49:03 BRT 2025","passed","Wed May 21 11:49:30 BRT 2025","","","",""
+"","14010","Alteração de dados do usuário com sucesso","","Wed May 21 11:49:52 BRT 2025","broken","Wed May 21 11:50:06 BRT 2025","","","",""
+"","14261","Erro ao tentar cadastrar usuário que já existe","","Wed May 21 11:50:06 BRT 2025","broken","Wed May 21 11:50:20 BRT 2025","","","",""
+"","21555","Cadastro de usuário com e-mail inválido","","Wed May 21 11:49:30 BRT 2025","broken","Wed May 21 11:49:52 BRT 2025","","","",""
+"","11825","Campos obrigatórios não preenchidos","","Wed May 21 11:50:20 BRT 2025","broken","Wed May 21 11:50:32 BRT 2025","","","",""
