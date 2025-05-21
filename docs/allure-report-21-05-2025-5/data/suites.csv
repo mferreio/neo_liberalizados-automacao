@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2348","Cadastro de produto de diretriz I-REC sem preencher campos obrigatórios","","Wed May 21 09:30:50 BRT 2025","broken","Wed May 21 09:30:52 BRT 2025","","","",""
+"","10953","Cadastro de produto de diretriz I-REC com sucesso","","Wed May 21 09:30:39 BRT 2025","broken","Wed May 21 09:30:50 BRT 2025","","","",""
