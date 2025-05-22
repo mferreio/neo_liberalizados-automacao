@@ -13,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class PerfilDeAcessoPortfolioTradingLocators:
+    TABELA_DE_NAVEGACAO = (By.XPATH, "//li[div[contains(text(), 'Páginas')]]")
     # Locators para validação do menu restrito
     ABA_PREMIO_SAZO = (By.XPATH, "//li/a[span[contains(text(),'Prêmio Sazonal')]]")
     ABA_PREMIO_FLEX = (By.XPATH, "//li/a[span[contains(text(),'Prêmio Flexível')]]")
@@ -48,7 +49,7 @@ class PerfilDeAcessoPortfolioTradingLocators:
     PRODUTO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
     VALIDAR_PAGINA_PRODUTOS_DIARIOS = (By.XPATH,"//h5[text()='Gerenciar Produtos Diário/Semanal']",)
     PESQUISAR_PROD_POR_ANO = (By.XPATH, "//span/input[@placeholder='Procurar por Ano']")
-    BTN_EDITAR_PROD = (By.XPATH,"//td/div/button[@icon='pi pi-pencil']",)
+    BTN_EDITAR_PROD = (By.XPATH,"//tbody//button[@icon='pi pi-pencil']",)
     ABRIR_MODULO_PRODUTOS = (By.XPATH,"//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]",)
     TITULO_PAGINA_EDICAO_PRODUTO = (By.XPATH,"//form/*[self::p and contains(text(), 'Editar Produto')]",)
     EXCLUIR_PRODUTO = (By.XPATH, "//button[contains(@class, 'p-button-warning')]")
@@ -66,6 +67,41 @@ class PerfilDeAcessoPortfolioTradingLocators:
 
 
 class PerfilDeAcessoPage:
+
+    def verificar_opcoes_menu(self):
+        """Valida se a TABELA_DE_NAVEGACAO contém todos os itens esperados no menu lateral."""
+        itens_esperados = [
+            "Perfil",
+            "Diretriz Curto Prazo",
+            "Diretriz I-REC",
+            "Diretriz Semanal",
+            "Diretriz Diária",
+            "Diretriz Varejista",
+            "Prêmio Sazo",
+            "Prêmio Flex",
+            "Preços de Mercado e Diretriz",
+            "BBCE",
+            "CNAE",
+            "Shape Determinístico",
+            "Produtos"
+        ]
+        try:
+            logger.info("Validando itens do menu lateral na TABELA_DE_NAVEGACAO...")
+            tabela = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(PerfilDeAcessoPortfolioTradingLocators.TABELA_DE_NAVEGACAO)
+            )
+            textos = [el.text.strip() for el in tabela.find_elements(By.XPATH, ".//li | .//span | .//a | .//div") if el.text.strip()]
+            logger.info(f"Itens encontrados no menu: {textos}")
+            for item in itens_esperados:
+                if not any(item in texto for texto in textos):
+                    logger.error(f"Item '{item}' não encontrado no menu lateral!")
+                    raise AssertionError(f"Item '{item}' não encontrado no menu lateral!")
+            logger.info("Todos os itens esperados estão presentes no menu lateral.")
+            return True
+        except Exception as e:
+            logger.error(f"Erro ao validar itens do menu lateral: {e}")
+            raise AssertionError(f"Erro ao validar itens do menu lateral: {e}")
+
     def validar_menu_produtos_premios_diretrizes(self):
         """Valida se o menu apresenta apenas as opções de Produtos, Prêmios (Sazonal e Flexível) e Diretrizes (Curto Prazo, I-REC, Semanal)."""
         try:
@@ -268,9 +304,6 @@ class PerfilDeAcessoPage:
             raise AssertionError("Erro ao criar dados.")
         sleep(2)
 
-    def verificar_opcoes_menu(self):
-        """Verifica se o menu apresenta apenas as opções de produtos, prêmios e diretrizes."""
-        return self.validar_menu_produtos_premios_diretrizes()
 
     def validar_texto_perfil(self, texto_esperado):
         """Valida se o texto do elemento IDENTIFICADOR_DE_PERFIL corresponde ao texto esperado."""
@@ -399,14 +432,27 @@ class PerfilDeAcessoPage:
     def clicar_botao_editar(self):
         """Clica no botão editar."""
         try:
-            logger.info("Clicando no botão editar.")
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable(
+            logger.info("Buscando todos os botões editar na tela.")
+            botoes_editar = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_all_elements_located(
                     PerfilDeAcessoPortfolioTradingLocators.BTN_EDITAR_PROD
                 )
-            ).click()
+            )
+            if not botoes_editar:
+                logger.error("Nenhum botão editar encontrado na tela.")
+                raise AssertionError("Nenhum botão editar encontrado na tela.")
+            primeiro_botao = botoes_editar[0]
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(
+                PerfilDeAcessoPortfolioTradingLocators.BTN_EDITAR_PROD
+            ))
+            primeiro_botao.click()
+            logger.info("Primeiro botão editar clicado com sucesso.")
         except TimeoutException:
-            logger.error("Erro ao clicar no botão editar.")
+            logger.error("Timeout ao buscar ou clicar no botão editar.")
+            logger.debug(traceback.format_exc())
+            raise
+        except Exception as e:
+            logger.error(f"Erro inesperado ao clicar no botão editar: {e}")
             logger.debug(traceback.format_exc())
             raise
         sleep(2)

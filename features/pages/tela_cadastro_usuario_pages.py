@@ -12,8 +12,9 @@ from credentials import (EDITAR_EMAIL, EDITAR_NOME, EDITAR_PERFIL, EMAIL,
 
 logger = logging.getLogger(__name__)
 class TelaCadastroUsuarioPage:
+    BTN_FECHAR = "//div[@role='dialog']//button[contains(@class, 'p-dialog-header-close')]"
     FORMATO_EMAIL_INVALIDO = "//small[text()='Formato de e-mail inválido.']"
-    USUARIO_JA_EXISTE = ".//div[@data-pc-section='text']/div[text()='Usuário já existe!']"
+    USUARIO_JA_EXISTE = "//div[text()='Usuário já existe!']"
     MSG_PERFIL_OBRIGATORIO = "//small[text()='Perfil é obrigatório.']"
     MSG_NOME_OBRIGATORIO = "//small[text()='Nome é obrigatório.']"
     MSG_EMAIL_OBRIGATORIO = "//small[text()='E-mail é obrigatório.']"
@@ -40,7 +41,7 @@ class TelaCadastroUsuarioPage:
 
     def selecionar_perfil_administrador_e_inserir_dados_invalidos(self):
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 5).until(
                 EC.element_to_be_clickable(
                     TeladeUsuariosPageLocators.PERFIL_ADMINISTRADOR
                 )
@@ -267,3 +268,15 @@ class TelaCadastroUsuarioPage:
         assert aba_sazo is not None, "Aba Prêmio Sazo não encontrada."
         assert aba_flex is not None, "Aba Prêmio Flex não encontrada."
         logger.info("Abas 'Prêmio Sazo' e 'Prêmio Flex' encontradas.")
+
+    def clicar_fechar_janela_cadastro(self):
+        """Clica no botão de fechar (X) da janela de cadastro."""
+        try:
+            btn_fechar = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, self.BTN_FECHAR))
+            )
+            btn_fechar.click()
+            logger.info("Botão de fechar janela de cadastro clicado.")
+        except Exception as e:
+            logger.error(f"Erro ao clicar no botão de fechar janela de cadastro: {e}")
+            raise AssertionError("Não foi possível clicar no botão de fechar a janela de cadastro.")

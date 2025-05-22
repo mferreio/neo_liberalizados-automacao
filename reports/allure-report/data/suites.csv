@@ -1,2 +1,4 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","47344","Cadastro de usuário com e-mail inválido","","Wed May 21 13:59:29 BRT 2025","broken","Wed May 21 14:00:17 BRT 2025","","","",""
+"","25954","Consultar um arquivo que não existe","","Wed May 21 19:59:18 BRT 2025","passed","Wed May 21 19:59:44 BRT 2025","","","",""
+"","25004","Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo","","Wed May 21 19:58:24 BRT 2025","broken","Wed May 21 19:58:49 BRT 2025","","","",""
+"","29189","Consultar um arquivo de evidências com sucesso","","Wed May 21 19:58:49 BRT 2025","passed","Wed May 21 19:59:18 BRT 2025","","","",""

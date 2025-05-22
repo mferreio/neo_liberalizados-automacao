@@ -1,14 +1,16 @@
+
+import logging
+from time import sleep
+
+from behave import given, then, when
+from pages.perfil_de_acesso_portfolio_trading_pages import PerfilDeAcessoPage
+
 @when("Usuário acessa o produto Diario Semanal na aba produtos")
 def step_acessar_produto_diario_semanal(context):
     """Acessa o produto Diario Semanal na aba produtos (menu lateral)."""
     context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
     context.perfil_de_acesso_page.acessar_produto_diario_semanal()
     logging.info("Usuário acessou o produto Diario Semanal na aba produtos.")
-import logging
-from time import sleep
-
-from behave import given, then, when
-from pages.perfil_de_acesso_portfolio_trading_pages import PerfilDeAcessoPage
 
 
 @given('que o usuário está logado como "Trading Portifólio"')
@@ -102,6 +104,7 @@ def step_selecionar_produto_estipulado(context):
 @when("Usuário clica no botão editar")
 def step_clicar_botao_editar(context):
     """Clica no botão editar."""
+    context.perfil_de_acesso_page = PerfilDeAcessoPage(context.driver)
     context.perfil_de_acesso_page.clicar_botao_editar()
     logging.info("Usuário clicou no botão editar.")
 

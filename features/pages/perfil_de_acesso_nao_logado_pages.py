@@ -26,6 +26,16 @@ class PerfilDeAcessoNaoLogadoLocators:
 
 
 class PerfilDeAcessoNaoLogadoPage:
+
+    def __init__(self, driver):
+        self.driver = driver
+        logger.info("Instanciando page object: PerfilDeAcessoNaoLogadoPage")
+
+    def acessar_aplicacao(self):
+        """Acessa a URL da aplicação sem realizar login."""
+        logger.info("Acessando a aplicação sem realizar login.")
+        self.driver.get(PerfilDeAcessoNaoLogadoLocators.URL_LOGIN)
+
     def esperar_overlay_sumir(self, timeout=10):
         """Espera o overlay/modal sumir antes de interagir com a tela."""
         try:
@@ -36,14 +46,6 @@ class PerfilDeAcessoNaoLogadoPage:
             logger.debug("Overlay não encontrado ou já sumiu.")
             pass  # Se não existir overlay, segue normalmente
 
-    def __init__(self, driver):
-        self.driver = driver
-        logger.info("Instanciando page object: PerfilDeAcessoNaoLogadoPage")
-
-    def acessar_aplicacao(self):
-        """Acessa a URL da aplicação sem realizar login."""
-        logger.info("Acessando a aplicação sem realizar login.")
-        self.driver.get(PerfilDeAcessoNaoLogadoLocators.URL_LOGIN)
 
     def clicar_botao_entrar(self):
         """Clica no botão 'Entrar', aguardando o overlay sumir se necessário."""

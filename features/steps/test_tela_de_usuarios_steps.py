@@ -7,10 +7,8 @@ from pages.tela_de_usuarios_pages import TelaDeUsuariosPage
 from credentials import (EDITAR_EMAIL, EDITAR_NOME, EXCLUIR_NOME, LOGIN_EMAIL,
                          LOGIN_PASSWORD, LOGIN_USUARIO,
                          PESQUISAR_NOME_CADASTRADO, TIPO_DE_PERFIL)
-from features.environment import (
-    gerar_documento_evidencia,
-    gerar_resumo_testes
-)
+from features.environment import (gerar_documento_evidencia, gerar_resumo_testes)
+from features.pages.tela_cadastro_usuario_pages import TelaCadastroUsuarioPage
 
 
 @then("navega até a tela de usuários - Perfil")
@@ -102,6 +100,7 @@ def step_seleciona_perfil_administrador(context):
 
 
 @when('o usuário clica em "Salvar" para salvar o novo usuário')
+@then('o usuário clica em "Salvar" para salvar o novo usuário')
 def step_clica_salvar_cadastro(context):
     # Garante que o dropdown de perfil seja clicado
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
@@ -165,6 +164,11 @@ def step_clica_em_excluir_e_cancela(context):
 def step_clica_em_excluir_e_cancela(context):
     context.tela_de_usuarios_page = TelaDeUsuariosPage(context.driver)
     context.tela_de_usuarios_page.clicar_cancelar_exclusao_usuario()
+
+@when('o usuário clica em "Fechar" para fechar a janela de cadastro')
+def step_clicar_fechar_janela_cadastro(context):
+    page = TelaCadastroUsuarioPage(context.driver)
+    page.clicar_fechar_janela_cadastro()
 
 
 @when("clica em sim para confirmar a exclusao")

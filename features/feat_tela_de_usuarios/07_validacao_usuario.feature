@@ -4,7 +4,8 @@ Feature: Validação de Usuário
   Para garantir que apenas usuários válidos possam acessar o sistema
 
   Background:
-    Given que o usuário está logado no sistema
+    Given que o usuário está logado como "Administrador"
+    When navega até a tela de usuários - Perfil
 
 # Scenario: Usuário autenticado sem perfil cadastrado
 #     Given que o usuário "usuario@exemplo.com" está registrado no Active Directory
@@ -14,27 +15,22 @@ Feature: Validação de Usuário
 #  	And a mensagem deve ser "Perfil não encontrado. Por favor, entre em contato com o administrador."
 
 Scenario: Administrador cadastra um novo usuário
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
     When o usuário clica no botão "Novo" para adicionar usuario
     When clica no dropdown de perfil
     When o usuário seleciona o perfil de administrador, escreve o nome e email
-    When o usuário clica em "Salvar" para salvar o novo usuário
-    Then navega até a tela de usuários - Perfil
+    Then o usuário clica em "Salvar" para salvar o novo usuário
+
+
+Scenario: Administrador tenta cadastrar um usuário já existente
+    When o usuário clica no botão "Novo" para adicionar usuario
+    When clica no dropdown de perfil
+    When o usuário seleciona o perfil de administrador, escreve o nome e email
+    Then o usuário clica em "Salvar" para salvar o novo usuário
+    Then a notificação "Usuário já existe" deve ser exibida
 
 Scenario: Usuário autenticado e associado ao perfil
     Given que o usuário foi cadastrado no sistema
     Then o usuário deve ser exibido na tela de usuários
-
-Scenario: Administrador tenta cadastrar um usuário já existente
-    Given que o usuário está logado como "Administrador"
-    When navega até a tela de usuários - Perfil
-    When clica no botão "Editar"
-    When edita o tipo de perfil do usuário
-    When edita o nome e email do usuário
-    When clica em Salvar para salvar as alterações
-    Then a notificação "Usuário já existe" deve ser exibida
-    Then navega até a tela de usuários - Perfil
 
 # Scenario: Falha na autenticação do Active Directory
 #    Given que o serviço do Active Directory está indisponível

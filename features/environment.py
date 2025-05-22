@@ -108,7 +108,7 @@ def before_feature(context, feature):
     # logging removido
 
     # Verifica se a feature é '07_perfil_de_acesso_nao_logado.feature'
-    if "07_perfil_de_acesso_nao_logado.feature" in feature.filename:
+    if "08_perfil_de_acesso_nao_logado.feature" in feature.filename:
         try:
             # logging removido
             context.driver.delete_all_cookies()  # Limpa o cache do navegador

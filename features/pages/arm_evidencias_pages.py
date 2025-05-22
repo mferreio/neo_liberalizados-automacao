@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 import os
-
+import ipdb
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -33,11 +33,12 @@ class ArmEvidenciasSelectors:
     )
     MSG_LIMITE_TAMANHO_ARQUIVO = "//span[@class='p-message-summary ng-tns-c3633978228-28 ng-star-inserted']"
     # XPATH para mensagem de upload concluído com sucesso
-    MG_UPLOAD_ARQUIVO_SUCESSO = "//div[text()='Upload concluído com sucesso.']"
+    MG_UPLOAD_ARQUIVO_SUCESSO = "//div[text()='Arquivos Enviados']"
 
 
 class ArmEvidenciasPage:
     def validar_mensagem_upload_sucesso(self):
+        ipdb.set_trace()
         """Valida se a mensagem de upload concluído com sucesso foi exibida na tela."""
         logger.info("Validando se a mensagem de upload concluído com sucesso está visível.")
         try:
@@ -49,6 +50,7 @@ class ArmEvidenciasPage:
         except Exception:
             logger.error("Mensagem de upload concluído com sucesso NÃO foi exibida!")
             return False
+
     def validar_ausencia_arquivo_anexado(self):
         """
         Valida que não existe nenhum arquivo anexo na tela.
