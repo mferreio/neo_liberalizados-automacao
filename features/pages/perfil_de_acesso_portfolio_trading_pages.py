@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from credentials import (CONS_PROD_MES, CONS_PROD_PERFIL,CONS_PROD_SUBMERCADO, CONS_PROD_TIPO_DE_PROD)
 
 logger = logging.getLogger(__name__)
 class PerfilDeAcessoPortfolioTradingLocators:
@@ -412,10 +413,6 @@ class PerfilDeAcessoPage:
         sleep(2)
 
     def selecionar_produto_estipulado(self):
-        """Seleciona o produto de acordo com os valores estipulados no arquivo credentials."""
-        from credentials import (CONS_PROD_MES, CONS_PROD_PERFIL,
-                                 CONS_PROD_SUBMERCADO, CONS_PROD_TIPO_DE_PROD)
-
         try:
             logger.info("Selecionando o produto de acordo com as especificações.")
             # Implementar lógica para selecionar o produto com base nos valores de CONS_PROD_MES, CONS_PROD_PERFIL, CONS_PROD_SUBMERCADO e CONS_PROD_TIPO_DE_PROD

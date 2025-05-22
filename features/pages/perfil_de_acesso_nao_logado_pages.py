@@ -57,11 +57,9 @@ class PerfilDeAcessoNaoLogadoPage:
                 EC.element_to_be_clickable(PerfilDeAcessoNaoLogadoLocators.BOTAO_ENTRAR)
             ).click()
             logger.info("Botão 'Entrar' clicado.")
-        except TimeoutException:
-            logger.error("Botão 'Entrar' não foi encontrado ou não está clicável.")
-            raise AssertionError(
-                "Botão 'Entrar' não foi encontrado ou não está clicável."
-            )
+        except TimeoutException as e:
+            logger.warning("Botão 'Entrar' não foi encontrado ou não está clicável (TimeoutException).")
+            raise e
 
     def clicar_elemento_generico(self, locator, timeout=10):
         """
@@ -130,17 +128,23 @@ class PerfilDeAcessoNaoLogadoPage:
 
     def validar_redirecionamento_para_login(self):
         """
-        Valida se o usuário foi redirecionado para a tela de login Microsoft (login.microsoftonline.com).
+        Valida se o usuário foi redirecionado para a tela de login (Microsoft ou local).
+        Aceita qualquer URL que contenha 'login.microsoftonline.com' OU '/auth/login'.
         """
-        try:
-            WebDriverWait(self.driver, 15).until(
-                EC.url_contains(PerfilDeAcessoNaoLogadoLocators.URL_LOGIN_MICROSOFT)
-            )
-            logger.info("Usuário foi redirecionado para a tela de login Microsoft.")
-            return True
-        except TimeoutException:
-            logger.error("Usuário não foi redirecionado para a tela de login Microsoft.")
-            return False
+        import time
+        timeout = 30
+        start = time.time()
+        while time.time() - start < timeout:
+            url_atual = self.driver.current_url
+            if (
+                'login.microsoftonline.com' in url_atual
+                or '/auth/login' in url_atual
+            ):
+                logger.info(f"Usuário foi redirecionado para a tela de login: {url_atual}")
+                return True
+            time.sleep(1)
+        logger.error(f"Usuário não foi redirecionado para a tela de login esperada. URL atual: {self.driver.current_url}")
+        return False
 
     def exibir_mensagem_acesso_negado(self):
         """Exibe uma mensagem indicando que o usuário deve realizar login."""

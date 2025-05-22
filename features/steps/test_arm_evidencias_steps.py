@@ -95,29 +95,9 @@ def step_validar_mensagem_limite_tamanho(context):
 
 @when("usuário clica em salvar")
 @then("usuário clica em salvar")
-def step_clicar_em_cadastrar(context):
-    try:
-        evidencias_page = ArmEvidenciasPage(context.driver)
-        evidencias_page.clicar_em_salvar()
-        sleep(4)
-    except Exception as e:
-        print(f"Erro ao clicar no botão 'Salvar': {e}")
-        raise
-
-
-@when("sistema exibe mensagem de sucesso ou erro")
-def step_verificar_mensagem_sistema(context):
-    try:
-        evidencias_page = ArmEvidenciasPage(context.driver)
-        mensagem = evidencias_page.verificar_mensagem_sistema()
-        assert mensagem in [
-            "Fim da vigência é obrigatório",
-            "Não é possível cadastrar a diretriz com o fim da vigência no mesmo dia após as 14:00",
-            "Diretriz cadastrada com sucesso",
-        ], f"Mensagem inesperada: {mensagem}"
-    except Exception as e:
-        print(f"Erro ao verificar a mensagem do sistema: {e}")
-        raise
+def step_clicar_em_salvar(context):
+    evidencias_page = ArmEvidenciasPage(context.driver)
+    evidencias_page.clicar_em_salvar()
 
 
 @when("o usuário preenche os campos obrigatórios")

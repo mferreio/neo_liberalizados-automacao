@@ -1,4 +1,5 @@
 import logging
+import time
 import os
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -26,16 +27,16 @@ class ArmEvidenciasSelectors:
     MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA = ("/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[2]")
     MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = ("/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]")
     MSG_LIMITE_TAMANHO_ARQUIVO = "//span[@class='p-message-summary ng-tns-c3633978228-28 ng-star-inserted']"
-    MG_UPLOAD_ARQUIVO_SUCESSO = "//div[text()='Arquivos Enviados']"
+    MG_UPLOAD_ARQUIVO_SUCESSO = (By.XPATH, "//div[text()='Upload concluído com sucesso.']")
 
 
 class ArmEvidenciasPage:
     def validar_mensagem_upload_sucesso(self):
-        """Valida se a mensagem de upload concluído com sucesso foi exibida na tela."""
-        logger.info("Validando se a mensagem de upload concluído com sucesso está visível.")
+        logger.info("Validando se a mensagem de upload concluído com sucesso está visível (toast).")
+        xpath = "//div[contains(@class, 'p-toast-message-text')]//div[contains(@class, 'p-toast-detail') and contains(text(), 'Upload concluído com sucesso.')]"
         try:
             elemento = WebDriverWait(self.driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, ArmEvidenciasSelectors.MG_UPLOAD_ARQUIVO_SUCESSO))
+                EC.visibility_of_element_located((By.XPATH, xpath))
             )
             logger.info("Mensagem de upload concluído com sucesso exibida.")
             return elemento.is_displayed()

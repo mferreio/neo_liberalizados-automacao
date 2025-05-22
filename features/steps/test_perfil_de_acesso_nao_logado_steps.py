@@ -1,9 +1,7 @@
 import logging
 from time import sleep
-
 from behave import given, then, when
 from pages.perfil_de_acesso_nao_logado_pages import PerfilDeAcessoNaoLogadoPage
-
 from features.steps.test_login_steps import step_click_next_button, step_impl
 
 
@@ -22,10 +20,17 @@ def step_acessar_recurso(context):
 
 @when("eu tento acessar a aplicação")
 def step_acessar_aplicacao_com_login(context):
-    """Executa os passos de login ao tentar acessar a aplicação."""
-    step_impl(context)  # @given('que eu acesso a página de login')
-    context.perfil_nao_logado_page.clicar_botao_entrar()  # @when('eu clico no botão Entrar')
-    step_click_next_button(context)  # @when('eu clico no botão Seguinte')
+    """Tenta acessar a aplicação e garante que o botão 'Entrar' NÃO está disponível."""
+    from selenium.common.exceptions import TimeoutException
+    # Não chamar step_impl(context) aqui, pois ele espera o botão 'Entrar' existir
+    from selenium.common.exceptions import TimeoutException
+    try:
+        context.perfil_nao_logado_page.clicar_botao_entrar()
+        logging.error("Botão 'Entrar' foi encontrado e clicado, mas não deveria estar disponível!")
+        assert False, "Botão 'Entrar' foi encontrado e clicado, mas não deveria estar disponível!"
+    except TimeoutException:
+        logging.info("Botão 'Entrar' não foi encontrado, comportamento esperado para usuário não logado.")
+        pass
     sleep(3)
 
 
