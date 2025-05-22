@@ -107,21 +107,22 @@ def before_feature(context, feature):
     """Executa ações antes de cada feature."""
     # logging removido
 
-    # Verifica se a feature é '07_perfil_de_acesso_nao_logado.feature'
-    if "08_perfil_de_acesso_nao_logado.feature" in feature.filename:
+    # Verifica se a feature é '09_perfil_de_acesso_nao_logado.feature'
+    if "09_perfil_de_acesso_nao_logado.feature" in feature.filename:
         try:
-            # logging removido
-            context.driver.delete_all_cookies()  # Limpa o cache do navegador
-            context.driver.get(
-                "https://diretrizes.dev.neoenergia.net/"
-            )  # Acessa a URL inicial
-            # logging removido
+            # Encerra o navegador para garantir que não há sessão logada
+            if hasattr(context, "driver") and context.driver is not None:
+                try:
+                    context.driver.quit()
+                except Exception:
+                    pass
+                context.driver = None
+            # O driver será criado no primeiro step dessa feature, garantindo navegador limpo
         except Exception as e:
-            # logging removido
             raise
     else:
-        context.driver.get("https://diretrizes.dev.neoenergia.net/")
-        # logging removido
+        if hasattr(context, "driver") and context.driver is not None:
+            context.driver.get("https://diretrizes.dev.neoenergia.net/")
 
 
 def before_scenario(context, scenario):
@@ -133,6 +134,21 @@ def before_scenario(context, scenario):
     feature_path = scenario.feature.filename
     if feature_path not in context.evidencias_features:
         context.evidencias_features[feature_path] = []
+
+    # --- INÍCIO DO AJUSTE: cria driver limpo para feature de não logado ---
+    if (
+        "09_perfil_de_acesso_nao_logado.feature" in feature_path
+        and (not hasattr(context, "driver") or context.driver is None)
+    ):
+        chrome_options = Options()
+        chrome_options.add_argument("--start-maximized")
+        chrome_options.add_argument("--incognito")
+        chrome_options.add_argument("--ignore-certificate-errors")
+        chrome_options.add_argument("--remote-debugging-port=8080")
+        context.driver = webdriver.Chrome(options=chrome_options)
+        context.driver.delete_all_cookies()
+        # Não executa login!
+    # --- FIM DO AJUSTE ---
 
 def after_step(context, step):
     """Captura evidência (screenshot) e status de todos os passos, independente de sucesso ou falha."""
