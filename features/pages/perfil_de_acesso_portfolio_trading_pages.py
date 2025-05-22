@@ -1,9 +1,5 @@
 import logging
 import traceback
-import ipdb
-
-# Logger padronizado para o módulo
-logger = logging.getLogger(__name__)
 from time import sleep
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
@@ -11,7 +7,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-
+logger = logging.getLogger(__name__)
 class PerfilDeAcessoPortfolioTradingLocators:
     TABELA_DE_NAVEGACAO = (By.XPATH, "//li[div[contains(text(), 'Páginas')]]")
     # Locators para validação do menu restrito

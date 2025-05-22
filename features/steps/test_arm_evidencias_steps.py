@@ -1,3 +1,8 @@
+from behave import given, then, when
+from pages.arm_evidencias_pages import ArmEvidenciasPage
+
+from credentials import DATA_FIM_DIRETRIZ
+
 @when("o sistema exibe uma mensagem de upload concluido com sucesso")
 def step_verifica_mensagem_upload_sucesso(context):
     evidencias_page = ArmEvidenciasPage(context.driver)
@@ -9,12 +14,6 @@ def step_validar_ausencia_arquivo_anexado(context):
     evidencias_page = ArmEvidenciasPage(context.driver)
     assert evidencias_page.validar_ausencia_arquivo_anexado(), "Foi encontrado um arquivo anexo, mas não deveria haver nenhum."
 from time import sleep
-
-import ipdb
-from behave import given, then, when
-from pages.arm_evidencias_pages import ArmEvidenciasPage
-
-from credentials import DATA_FIM_DIRETRIZ
 
 
 @when('o usuário acessa a aba "diretriz Curto Prazo"')

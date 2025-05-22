@@ -1,14 +1,12 @@
 import logging
-logger = logging.getLogger(__name__)
 import os
-import ipdb
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-
+logger = logging.getLogger(__name__)
 class ArmEvidenciasSelectors:
     """Classe para armazenar os seletores da página de evidências."""
 
@@ -25,20 +23,14 @@ class ArmEvidenciasSelectors:
     CAMPO_DESCRICAO = "//textarea[@id='descricao']"
     CAMPO_PREMIO = "//input[@role='spinbutton']"
     MENSAGEM_ERRO_FIM_VIGENCIA_OBRIGATORIO = "//div[@data-pc-section='text']//div[@data-pc-section='detail' and text()='Fim da vigência é obrigatório.']"
-    MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA = (
-        "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[2]"
-    )
-    MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = (
-        "/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]"
-    )
+    MENSAGEM_ERRO_FIM_VIGENCIA_MESMO_DIA = ("/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[2]")
+    MENSAGEM_SUCESSO_DIRETRIZ_CADASTRADA = ("/html/body/app-root/app-layout/div/p-toast/div/p-toastitem/div/div/div/div[1]")
     MSG_LIMITE_TAMANHO_ARQUIVO = "//span[@class='p-message-summary ng-tns-c3633978228-28 ng-star-inserted']"
-    # XPATH para mensagem de upload concluído com sucesso
     MG_UPLOAD_ARQUIVO_SUCESSO = "//div[text()='Arquivos Enviados']"
 
 
 class ArmEvidenciasPage:
     def validar_mensagem_upload_sucesso(self):
-        ipdb.set_trace()
         """Valida se a mensagem de upload concluído com sucesso foi exibida na tela."""
         logger.info("Validando se a mensagem de upload concluído com sucesso está visível.")
         try:

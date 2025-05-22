@@ -1,7 +1,5 @@
 import logging
-logger = logging.getLogger(__name__)
 from time import sleep
-
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,27 +7,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class LoginPageLocators:
-    BOTAO_ENTRAR = (
-        By.XPATH,
-        "/html/body/app-root/app-login/div/div/div/div/div[2]/button",
-    )
+    BOTAO_ENTRAR = (By.XPATH,"/html/body/app-root/app-login/div/div/div/div/div[2]/button",)
     EMAIL_FIELD = (By.XPATH, "//*[@id='i0116']")
     NEXT_BUTTON = (By.XPATH, "//*[@id='idSIButton9']")
     AVANCED_OPTIONS_BUTTON = (By.XPATH, "//*[@id='details-button']")
     GO_TO_NEOENERGIA_BUTTON = (By.XPATH, "//*[@id='proceed-link']")
-    ADFS_USERNAME_FIELD = (
-        By.XPATH,
-        "//input[@type='text' and @placeholder='Nome de usuário']",
-    )
+    ADFS_USERNAME_FIELD = (By.XPATH,"//input[@type='text' and @placeholder='Nome de usuário']",)
     ADFS_PASSWORD_FIELD = (By.XPATH, "//*[@id='passwordInput']")
     ADFS_LOGIN_BUTTON = (By.XPATH, "//*[@id='submitButton']")
     VALIDAR_ADMINISTRADOR = (By.XPATH, "//span[text()='Administrador']")
-    VALIDAR_TRADING_E_PORTIFOLIO = (
-        By.CSS_SELECTOR,
-        "div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",
-    )  # Exemplo de locator para validar portfólio
+    VALIDAR_TRADING_E_PORTIFOLIO = (By.CSS_SELECTOR,"div.p-toolbar-group-left.flex.flex-column.align-items-start.justify-content-center > div.flex.align-items-center.justify-content-between > span.font-bold.text-primary",)
 
 
+logger = logging.getLogger(__name__)
 class LoginPage:
     def __init__(self, driver):
         self.driver = driver

@@ -3,7 +3,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import logging
-logger = logging.getLogger(__name__)
 import time
 import os
 
@@ -31,6 +30,7 @@ class DiretrizIrecLocators:
     MSG_SUCESSO_ANEXAR_ARQUIVO = (By.XPATH, "//div[@data-pc-section='text']/div[@data-pc-section='detail' and contains(text(), 'Upload concluído')]")
     MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//div[@class='p-message-wrapper ng-tns-c3633978228-28']")
 
+logger = logging.getLogger(__name__)
 class DiretrizIrecPage:
     def __init__(self, driver):
         self.driver = driver
