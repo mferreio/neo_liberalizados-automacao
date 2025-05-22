@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","28469","Consultar um arquivo de evidências com sucesso","","Thu May 22 15:25:02 BRT 2025","passed","Thu May 22 15:25:31 BRT 2025","","","",""
+"","26821","Consultar um arquivo que não existe","","Thu May 22 15:25:31 BRT 2025","passed","Thu May 22 15:25:58 BRT 2025","","","",""
+"","31311","Enviar um arquivo de evidências com sucesso ao cadastrar a diretriz Curto Prazo","","Thu May 22 15:24:31 BRT 2025","passed","Thu May 22 15:25:02 BRT 2025","","","",""
