@@ -46,7 +46,7 @@ class PerfilDeAcessoPortfolioTradingLocators:
     PRODUTO_CURTO_PRAZO = (By.XPATH, "//span[text()='Curto Prazo']")
     VALIDAR_PAGINA_PRODUTOS_DIARIOS = (By.XPATH,"//h5[text()='Gerenciar Produtos Diário/Semanal']",)
     PESQUISAR_PROD_POR_ANO = (By.XPATH, "//span/input[@placeholder='Procurar por Ano']")
-    BTN_EDITAR_PROD = (By.XPATH,"//tbody//button[@icon='pi pi-pencil']",)
+    BTN_EDITAR_PROD = (By.XPATH,"(//button[contains(@class, 'p-button-success') and contains(@class, 'p-button-icon-only') and .//span[contains(@class, 'pi-pencil')]])[1]",)
     ABRIR_MODULO_PRODUTOS = (By.XPATH,"//a[contains(@class, 'p-ripple') and contains(@class, 'p-element') and contains(@class, 'ng-tns-c183498709-14')]",)
     TITULO_PAGINA_EDICAO_PRODUTO = (By.XPATH,"//form/*[self::p and contains(text(), 'Editar Produto')]",)
     EXCLUIR_PRODUTO = (By.XPATH, "//button[contains(@class, 'p-button-warning')]")

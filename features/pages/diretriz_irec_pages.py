@@ -29,8 +29,7 @@ class DiretrizIrecLocators:
     INICIO_VIGENCIA = (By.XPATH, "//input[@id='inicioVigencia' or contains(@aria-label, 'Início da Vigência') or contains(@placeholder, 'Início da Vigência')]")
     VALIDA_DATA_ATUAL = (By.XPATH, "//span[contains(@class, 'p-calendar') and contains(@class, 'p-calendar-disabled')]//input[@type='text' and @role='combobox' and @aria-controls and @disabled]")
     MSG_SUCESSO_ANEXAR_ARQUIVO = (By.XPATH, "//div[@data-pc-section='text']/div[@data-pc-section='detail' and contains(text(), 'Upload concluído')]")
-    # Locator exato para a mensagem de número máximo de arquivos excedido
-    MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//span[text()='Número máximo de arquivos excedido,' and @class='p-message-summary ng-tns-c3633978228-29 ng-star-inserted']")
+    MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//span[contains(@class, 'p-message-summary') and contains(text(), 'Número máximo de arquivos excedido')]")
 
 logger = logging.getLogger(__name__)
 class DiretrizIrecPage:
@@ -498,12 +497,18 @@ class DiretrizIrecPage:
             logger.info("Não foi exibida mensagem de erro informando os campos obrigatórios.")
 
     def fazer_upload_evidencia(self, nome_arquivo):
-        btn_anexar = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//span[contains(@class, 'p-fileupload-choose') and span[contains(@class, 'p-button-label') and text()='Anexar Evidência']]")
-        ))
-        btn_anexar.click()
+        """
+        Realiza o upload de um arquivo de evidência sem abrir o explorador do Windows.
+        Garante que o input[type='file'] está visível e habilitado antes de usar send_keys.
+        """
         caminho_arquivo = os.path.abspath(nome_arquivo)
-        input_file = self.driver.find_element(By.CSS_SELECTOR, "input[type='file']")
+        # Garante que o input está presente e habilitado
+        input_file = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']"))
+        )
+        # Remove o atributo 'hidden' via JS se necessário (caso o input esteja oculto)
+        self.driver.execute_script("arguments[0].removeAttribute('hidden');", input_file)
+        self.driver.execute_script("arguments[0].style.display = 'block';", input_file)
         input_file.send_keys(caminho_arquivo)
         logger.info(f"Arquivo de evidência '{nome_arquivo}' anexado.")
 
@@ -513,6 +518,7 @@ class DiretrizIrecPage:
         """
         arquivos = [
             "evidencia_texto.txt",
+            "evidencia_texto - Copia.txt",
             "evidencia_texto - Copia (2).txt",
             "evidencia_texto - Copia (3).txt",
             "evidencia_texto - Copia (4).txt",
