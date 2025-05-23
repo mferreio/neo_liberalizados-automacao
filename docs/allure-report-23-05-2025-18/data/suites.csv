@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1881","Visualização de diretrizes cadastradas","","Fri May 23 10:34:10 BRT 2025","passed","Fri May 23 10:34:12 BRT 2025","","","",""
+"","6129","Cadastro de uma nova diretriz I-REC","","Fri May 23 10:33:59 BRT 2025","passed","Fri May 23 10:34:05 BRT 2025","","","",""
+"","3944","Tentativa de cadastrar múltiplas diretrizes vigentes","","Fri May 23 10:34:05 BRT 2025","broken","Fri May 23 10:34:09 BRT 2025","","","",""
+"","3310","Exibição de data de vigência da diretriz","","Fri May 23 10:34:29 BRT 2025","passed","Fri May 23 10:34:33 BRT 2025","","","",""
+"","1756","Mantendo diretrizes invalidas para histórico","","Fri May 23 10:34:09 BRT 2025","passed","Fri May 23 10:34:10 BRT 2025","","","",""
+"","17143","Anexação de arquivos durante o cadastro","","Fri May 23 10:34:12 BRT 2025","passed","Fri May 23 10:34:29 BRT 2025","","","",""
