@@ -459,7 +459,9 @@ class DiretrizIrecPage:
             logger.info("Não foi identificada nenhuma mensagem de erro ao inserir uma data inválida")
 
     def abrir_detalhamento_diretriz(self):
-        btn = self.driver.find_element(*DiretrizIrecLocators.BTN_DETALHE_DIRETRIZ)
+        btn = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(DiretrizIrecLocators.BTN_DETALHE_DIRETRIZ)
+        )
         btn.click()
         logger.info("Detalhamento da diretriz aberto.")
 
