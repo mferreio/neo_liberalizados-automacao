@@ -1,0 +1,7 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","1927","Visualização dos arquivos anexados","","Fri May 23 14:57:37 BRT 2025","passed","Fri May 23 14:57:39 BRT 2025","","","",""
+"","3890","Validação de campos obrigatórios ao cadastrar nova diretriz","","Fri May 23 14:57:39 BRT 2025","passed","Fri May 23 14:57:43 BRT 2025","","","",""
+"","2937","Navegação entre páginas de diretrizes","","Fri May 23 14:57:15 BRT 2025","passed","Fri May 23 14:57:18 BRT 2025","","","",""
+"","2001","Limite de caracteres na busca por intervalo de data","","Fri May 23 14:57:18 BRT 2025","passed","Fri May 23 14:57:20 BRT 2025","","","",""
+"","17054","Anexação de arquivos durante o cadastro","","Fri May 23 14:57:20 BRT 2025","passed","Fri May 23 14:57:37 BRT 2025","","","",""
+"","2106","Mensagem de ausência de diretrizes","","Fri May 23 14:57:13 BRT 2025","passed","Fri May 23 14:57:15 BRT 2025","","","",""
