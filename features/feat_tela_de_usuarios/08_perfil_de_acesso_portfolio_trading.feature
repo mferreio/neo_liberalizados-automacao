@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Perfil de acesso Portifólio/Trading
   Como usuário Trading/Portifólio
   Quero acessar a aplicação com permissões específicas

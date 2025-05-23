@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Perfil de acesso não logado
   Como administrador
   Quero acessar a aplicação com permissões específicas

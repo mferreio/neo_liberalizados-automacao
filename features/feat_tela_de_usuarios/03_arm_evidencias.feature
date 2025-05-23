@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Armazenamento de evidências
   Como usuário
   Quero gerenciar arquivos de evidências

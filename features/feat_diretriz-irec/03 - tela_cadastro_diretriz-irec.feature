@@ -1,20 +1,23 @@
+@diretriz_irec
 Feature: Tela de Cadastro de Diretriz I-REC
 
-Scenario: Acesso à tela de cadastro de nova diretriz
+Background:
     Given que o usuário está logado no sistema
     When o usuário acessa ao módulo de diretrizes I-REC
+
+Scenario: Acesso à tela de cadastro de nova diretriz
     When o usuário clica no botão "Nova Diretriz"
  	Then o usuário deve ser direcionado para a tela de cadastro de diretriz I-REC
     When retorna para a tela de diretriz I-REC
 
 Scenario: Exibição dos produtos cadastrados na tela de cadastro
-    Given o usuário clica no botão "Nova Diretriz"
+    When o usuário clica no botão "Nova Diretriz"
  	Then o usuário deve ser direcionado para a tela de cadastro de diretriz I-REC
  	Then todos os produtos cadastrados devem estar visíveis
     When retorna para a tela de diretriz I-REC
 
 Scenario: Data de início da vigência válida
-    Given o usuário clica no botão "Nova Diretriz"
+    When o usuário clica no botão "Nova Diretriz"
  	Then o usuário deve ser direcionado para a tela de cadastro de diretriz I-REC
  	Then valida se a data de inicio da vigência é igual a data atual
     When retorna para a tela de diretriz I-REC
@@ -28,8 +31,6 @@ Scenario: Anexação de arquivos durante o cadastro
     Then o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
 
 Scenario: Salvar nova diretriz com sucesso
-    Given que o usuário está logado no sistema
-    When o usuário acessa ao módulo de diretrizes I-REC
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário informa os dados da nova diretriz I-REC
@@ -43,8 +44,7 @@ Scenario: Salvar nova diretriz com sucesso
 # 	Then uma notificação de falha deve ser exibida
 # 	When o usuário deve permanecer na tela de cadastro de diretriz I-REC
 
-# Scenario: Campo de preço obrigatório
-    Given que o usuário está na tela de diretriz I-REC
+Scenario: Campo de preço obrigatório
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário não preenche os campos de preço obrigatório
@@ -59,7 +59,6 @@ Scenario: Salvar nova diretriz com sucesso
 # 	When o usuário deve ser notificado sobre a atualização bem-sucedida
 
 Scenario: Limite de anexos
-    Given que o usuário está na tela de diretriz I-REC
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário preenche os campos obrigatórios
@@ -72,9 +71,7 @@ Scenario: Limite de anexos
 # 	Then uma mensagem de erro deve ser exibida informando que o formato do arquivo não é suportado
 # 	When o arquivo não deve ser anexado
 
-# Scenario: Cancelamento do cadastro de nova diretriz // não é exibido um modal para confirmar o cancelamento
-    Given que o usuário está logado no sistema
-    When o usuário acessa ao módulo de diretrizes I-REC
+Scenario: Cancelamento do cadastro de nova diretriz // não é exibido um modal para confirmar o cancelamento
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário preenche os campos obrigatórios
@@ -92,8 +89,6 @@ Scenario: Limite de anexos
 # 	And o sistema deve permitir que essa informação seja atualizada posteriormente
 
 Scenario: Visualização de mensagem de sucesso ao anexar arquivos
-    Given que o usuário está logado no sistema
-    When o usuário acessa ao módulo de diretrizes I-REC
     When o usuário clica no botão "Nova Diretriz"
     When que o usuário está na tela de cadastro de nova diretriz I-REC
     When o usuário informa os dados da nova diretriz I-REC
@@ -102,7 +97,7 @@ Scenario: Visualização de mensagem de sucesso ao anexar arquivos
     When deve exibir a mensagem "Arquivo enviado com sucesso"
     When retorna para a tela de diretriz I-REC
 
-# Scenario: Limpeza dos campos após cadastro bem-sucedido
+Scenario: Limpeza dos campos após cadastro bem-sucedido
     Given que o usuário cadastrou uma nova diretriz I-Rec
     When o usuário clica no botão "Nova Diretriz"
  	Then todos os campos da tela de cadastro de diretriz I-REC estar vazios

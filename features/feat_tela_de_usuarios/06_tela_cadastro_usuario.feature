@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Tela de cadastro de usuário
   Como administrador
   Quero cadastrar usuários com perfis específicos

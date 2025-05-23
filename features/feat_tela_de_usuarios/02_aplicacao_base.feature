@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Aplicação Base - Tela de usuários
   Como administrador
   Quero acessar a aplicação com permissões específicas

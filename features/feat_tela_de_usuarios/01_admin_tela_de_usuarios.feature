@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Acessar a página de login e testar fluxo de tela de usuários
 
   Scenario: Administrador acessa a tela de usuários

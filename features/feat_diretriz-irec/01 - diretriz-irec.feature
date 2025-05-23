@@ -1,3 +1,4 @@
+@diretriz_irec
 Feature: Diretrizes I-REC
 
 Scenario: Cadastro de uma nova diretriz I-REC
@@ -11,14 +12,14 @@ Scenario: Cadastro de uma nova diretriz I-REC
     When retorna para a tela de diretriz I-REC
 
 Scenario: Tentativa de cadastrar múltiplas diretrizes vigentes
-   Given que o usuário está na tela de diretriz I-REC
-   When o usuário clica no botão "Nova Diretriz"
-   When existe uma diretriz I-REC vigente no sistema
-   When o usuário informa os dados da nova diretriz I-REC
-   When clica no botão Salvar
-   Then a nova diretriz deve invalidar a anterior
-   When o sistema deve garantir que apenas uma diretriz esteja vigente
-   When retorna para a tela de diretriz I-REC
+    Given que o usuário está na tela de diretriz I-REC
+    When o usuário clica no botão "Nova Diretriz"
+    When existe uma diretriz I-REC vigente no sistema
+    When o usuário informa os dados da nova diretriz I-REC
+    When clica no botão Salvar
+    Then a nova diretriz deve invalidar a anterior
+    When o sistema deve garantir que apenas uma diretriz esteja vigente
+    When retorna para a tela de diretriz I-REC
 
 Scenario: Mantendo diretrizes invalidas para histórico
     Given que uma diretriz I-REC foi invalidada

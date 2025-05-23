@@ -9,7 +9,7 @@ import os
 class DiretrizIrecLocators:
     ABA_DIR_IREC = (By.XPATH, "//a[span[text()='Diretriz I-REC']]")
     BTN_NOVA_DIR = (By.XPATH, "//button[span[text()='Novo']]")
-    DATA_FIM_VIGENCIA = (By.XPATH, "//div[@class='grid my-4']//input[@class='ng-tns-c4209099177-22 p-inputtext p-component ng-star-inserted' and @aria-controls='pn_id_5_panel']")
+    DATA_FIM_VIGENCIA = (By.XPATH, "//*[@id='fimVigencia']/span[1]/input[1]")
     CAMPOS_TABELA_DE_CALCULOS = (By.XPATH, "//tbody[@class='p-element p-datatable-tbody']//input[@class='p-inputtext p-component p-element p-inputnumber-input']")
     DESCRICAO_DAS_DIRETRIZ = (By.XPATH, "//textarea[@id='descricao']")
     SALVAR_DIR_IREC = (By.XPATH, "//button[span[text()='Salvar']]")
@@ -18,20 +18,90 @@ class DiretrizIrecLocators:
     CONSULTAR_DIR_CADASTRADAS = (By.XPATH, "//tbody/tr[contains(@class, 'ng-star-inserted')]")
     AVANCAR_PGN_DIRETRIZ = (By.XPATH, "//button[@aria-label='Next Page']")
     RETORNAR_PGN_DIRETRIZ = (By.XPATH, "//button[@aria-label='Previous Page']")
-    CONSULTAR_DATA_INICIO_VIGENCIA = (By.XPATH, "//input[contains(@aria-controls, 'pn_id_74_panel')]")
-    CONSULTAR_DATA_FIM_VIGENCIA = (By.XPATH, "//input[contains(@aria-controls, 'pn_id_75_panel')]")
+    CONSULTAR_DATA_INICIO_VIGENCIA = (By.XPATH, "//input[@type='text' and @placeholder='Procurar por datas' and contains(@aria-controls, 'pn_id_7_panel')]")
+    CONSULTAR_DATA_FIM_VIGENCIA = (By.XPATH, "//input[@type='text' and @placeholder='Procurar por datas' and contains(@aria-controls, 'pn_id_8_panel')]")
     MENSAGEM_ERRO_DATA_INVALIDA = (By.XPATH, "//div[@id='pn_id_70']")
-    BTN_DETALHE_DIRETRIZ = (By.XPATH, "//button[@data-pc-name='button']")
+    BTN_DETALHE_DIRETRIZ = (By.XPATH, "(//button[@type='button' and @data-pc-name='button' and .//span[contains(@class, 'pi-chevron-right')]])[1]")
     ANEXO_TXT = (By.XPATH, "//div[text()='evidencia_texto.txt']")
     ANEXO_JPG = (By.XPATH, "//div[text()='evidencia_imagem.jpg']")
     MSG_ERRO_CAMPOS_OBRIGATORIOS = (By.XPATH, "//div[@data-pc-section='text']")
     PROD_DIR_IREC = (By.XPATH, "//tr[@class='ng-star-inserted']/td[1]/strong")
-    VALIDA_DATA_ATUAL = (By.XPATH, "//span[@class='ng-tns-c4209099177-26 p-calendar p-calendar-w-btn p-calendar-disabled']/input[@aria-controls='pn_id_15_panel']")
+    INICIO_VIGENCIA = (By.XPATH, "//input[@id='inicioVigencia' or contains(@aria-label, 'Início da Vigência') or contains(@placeholder, 'Início da Vigência')]")
+    VALIDA_DATA_ATUAL = (By.XPATH, "//span[contains(@class, 'p-calendar') and contains(@class, 'p-calendar-disabled')]//input[@type='text' and @role='combobox' and @aria-controls and @disabled]")
     MSG_SUCESSO_ANEXAR_ARQUIVO = (By.XPATH, "//div[@data-pc-section='text']/div[@data-pc-section='detail' and contains(text(), 'Upload concluído')]")
-    MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//div[@class='p-message-wrapper ng-tns-c3633978228-28']")
+    # Locator exato para a mensagem de número máximo de arquivos excedido
+    MSG_LIMITE_DE_EVIDENCIA = (By.XPATH, "//span[text()='Número máximo de arquivos excedido,' and @class='p-message-summary ng-tns-c3633978228-29 ng-star-inserted']")
 
 logger = logging.getLogger(__name__)
 class DiretrizIrecPage:
+
+    def exibir_modal_confirmar_cancelar(self):
+        """
+        Aguarda a exibição do modal de confirmação/cancelamento do cadastro de diretriz.
+        """
+        try:
+            WebDriverWait(self.driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, "//div[contains(@class, 'p-dialog') and .//span[contains(text(), 'Confirmar') or contains(text(), 'Cancelar')]]"))
+            )
+            logger.info("Modal de confirmação/cancelamento exibido.")
+        except TimeoutException:
+            logger.warning("Modal de confirmação/cancelamento NÃO foi exibido.")
+            raise AssertionError("Modal de confirmação/cancelamento não exibido.")
+
+    def clicar_cancelar_modal(self):
+        """
+        Clica no botão 'Cancelar' dentro do modal de confirmação/cancelamento.
+        """
+        try:
+            btn_cancelar = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[.//span[contains(text(), 'Cancelar')]]"))
+            )
+            btn_cancelar.click()
+            logger.info("Botão 'Cancelar' do modal clicado.")
+        except TimeoutException:
+            logger.warning("Botão 'Cancelar' do modal NÃO foi encontrado/clicado.")
+            raise AssertionError("Botão 'Cancelar' do modal não encontrado.")
+
+    def validar_retorno_tela_diretriz_curto_prazo(self):
+        """
+        Valida se o usuário foi redirecionado para a tela de diretriz Curto Prazo após cancelar.
+        """
+        url_esperada = "https://diretrizes.dev.neoenergia.net/pages/diretriz-curto-prazo"
+        WebDriverWait(self.driver, 10).until(lambda d: d.current_url == url_esperada)
+        if self.driver.current_url == url_esperada:
+            logger.info("Usuário retornou para a tela de diretriz Curto Prazo.")
+        else:
+            logger.warning(f"URL incorreta após cancelar. Esperado: {url_esperada}, Atual: {self.driver.current_url}")
+            raise AssertionError(f"URL incorreta após cancelar. Esperado: {url_esperada}, Atual: {self.driver.current_url}")
+    def exibir_fim_prematuro_vigencia_todas(self):
+        """
+        Exibe no log o valor do campo 'Fim Prematuro Vigência' de todas as diretrizes cadastradas.
+        """
+        linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
+        encontrou = False
+        for idx, linha in enumerate(linhas, 1):
+            colunas = linha.find_elements(By.TAG_NAME, "td")
+            if len(colunas) > 2:
+                fim_prematuro = colunas[2].text.strip()
+                logger.info(f"Linha {idx} - Fim Prematuro Vigência: {fim_prematuro}")
+                encontrou = True
+        if not encontrou:
+            logger.warning("Nenhuma informação de fim prematuro de vigência encontrada nas diretrizes.")
+    def exibir_diretrizes_invalidas_para_historico(self):
+        """
+        Exibe no log as diretrizes que foram invalidadas (ou seja, possuem fim de vigência prematuro definido).
+        """
+        linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
+        encontradas = False
+        for idx, linha in enumerate(linhas, 1):
+            colunas = linha.find_elements(By.TAG_NAME, "td")
+            if len(colunas) > 2:
+                fim_prematuro = colunas[2].text.strip()
+                if fim_prematuro and fim_prematuro != "Não Definido":
+                    logger.info(f"Diretriz INVALIDADA encontrada para histórico: Linha {idx} | Fim Prematuro: {fim_prematuro}")
+                    encontradas = True
+        if not encontradas:
+            logger.warning("Nenhuma diretriz invalidada encontrada para histórico.")
     def __init__(self, driver):
         self.driver = driver
         logger.info("Instanciando page object: DiretrizIrecPage")
@@ -137,10 +207,10 @@ class DiretrizIrecPage:
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
         diretrizes_vigentes = []
         for linha in linhas:
-            if "Não Definido" in linha.text:
-                colunas = linha.find_elements(By.TAG_NAME, "td")
-                inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
-                fim_vig = colunas[2].text if len(colunas) > 2 else "?"
+            colunas = linha.find_elements(By.TAG_NAME, "td")
+            if len(colunas) > 2 and colunas[2].text.strip() == "Não Definido":
+                inicio_vig = colunas[0].text if len(colunas) > 0 else "?"
+                fim_vig = colunas[1].text if len(colunas) > 1 else "?"
                 diretrizes_vigentes.append({
                     "linha": linha,
                     "inicio_vig": inicio_vig,
@@ -158,28 +228,47 @@ class DiretrizIrecPage:
             logger.info("Não foram encontradas nenhuma diretriz vigente")
 
     def validar_invalida_anterior(self):
+        """
+        Valida se a última diretriz cadastrada está vigente (primeira linha, Fim Prematuro = 'Não Definido')
+        e se a anterior foi invalidada (segunda linha, Fim Prematuro = data/hora).
+        """
+        import re
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        for linha in linhas:
-            colunas = linha.find_elements(By.TAG_NAME, "td")
-            if len(colunas) > 3:
-                fim_prematuro = colunas[3].text
-                if fim_prematuro and fim_prematuro != "Não Definido":
-                    logger.info("Diretriz anterior inválidada com sucesso")
-                    return True
-                elif fim_prematuro == "Não Definido":
-                    logger.warning("Parece que a Diretriz anterior não foi invalidada corretamente, Verifique!")
-                    return False
-        logger.warning("Não foi possível validar a invalidação da diretriz anterior.")
-        return False
+        if len(linhas) < 2:
+            logger.warning("Não há diretrizes suficientes para validar a invalidação da anterior.")
+            return False
+
+        colunas_primeira = linhas[0].find_elements(By.TAG_NAME, "td")
+        colunas_segunda = linhas[1].find_elements(By.TAG_NAME, "td")
+        if len(colunas_primeira) < 3 or len(colunas_segunda) < 3:
+            logger.warning("Não foi possível encontrar todas as colunas necessárias para validação.")
+            return False
+
+        fim_prematuro_primeira = colunas_primeira[2].text.strip()
+        fim_prematuro_segunda = colunas_segunda[2].text.strip()
+
+        # Primeira linha deve estar vigente
+        if fim_prematuro_primeira != "Não Definido":
+            logger.warning(f"A última diretriz cadastrada não está vigente! Fim Prematuro: {fim_prematuro_primeira}")
+            return False
+
+        # Segunda linha deve estar invalidada (data/hora)
+        formato_data_hora = re.compile(r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$")
+        if not formato_data_hora.match(fim_prematuro_segunda):
+            logger.warning(f"A diretriz anterior não foi invalidada corretamente! Fim Prematuro: {fim_prematuro_segunda}")
+            return False
+
+        logger.info("Diretriz anterior invalidada corretamente e nova diretriz vigente.")
+        return True
 
     def garantir_apenas_uma_vigente(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
         diretrizes_vigentes = []
         for linha in linhas:
-            if "Não Definido" in linha.text:
-                colunas = linha.find_elements(By.TAG_NAME, "td")
-                inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
-                fim_vig = colunas[2].text if len(colunas) > 2 else "?"
+            colunas = linha.find_elements(By.TAG_NAME, "td")
+            if len(colunas) > 2 and colunas[2].text.strip() == "Não Definido":
+                inicio_vig = colunas[0].text if len(colunas) > 0 else "?"
+                fim_vig = colunas[1].text if len(colunas) > 1 else "?"
                 diretrizes_vigentes.append({
                     "inicio_vig": inicio_vig,
                     "fim_vig": fim_vig
@@ -210,11 +299,11 @@ class DiretrizIrecPage:
         diretrizes = []
         for linha in linhas:
             colunas = linha.find_elements(By.TAG_NAME, "td")
-            if len(colunas) > 3:
+            if len(colunas) > 2:
                 diretrizes.append({
-                    "inicio_vig": colunas[1].text if len(colunas) > 1 else "?",
-                    "fim_vig": colunas[2].text if len(colunas) > 2 else "?",
-                    "fim_prematuro": colunas[3].text
+                    "inicio_vig": colunas[0].text if len(colunas) > 0 else "?",
+                    "fim_vig": colunas[1].text if len(colunas) > 1 else "?",
+                    "fim_prematuro": colunas[2].text
                 })
         return diretrizes
 
@@ -223,10 +312,10 @@ class DiretrizIrecPage:
         logger.info("Todas as diretrizes cadastradas:")
         for linha in linhas:
             colunas = linha.find_elements(By.TAG_NAME, "td")
-            if len(colunas) > 3:
-                inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
-                fim_vig = colunas[2].text if len(colunas) > 2 else "?"
-                fim_prematuro = colunas[3].text
+            if len(colunas) > 2:
+                inicio_vig = colunas[0].text if len(colunas) > 0 else "?"
+                fim_vig = colunas[1].text if len(colunas) > 1 else "?"
+                fim_prematuro = colunas[2].text
                 logger.info(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
 
     def identificar_diretriz_vigente_visual(self):
@@ -249,24 +338,39 @@ class DiretrizIrecPage:
         logger.info("Lista de datas de início e fim de vigência:")
         for idx, linha in enumerate(linhas, 1):
             colunas = linha.find_elements(By.TAG_NAME, "td")
-            if len(colunas) > 2:
-                inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
-                fim_vig = colunas[2].text if len(colunas) > 2 else "?"
+            if len(colunas) > 1:
+                inicio_vig = colunas[0].text if len(colunas) > 0 else "?"
+                fim_vig = colunas[1].text if len(colunas) > 1 else "?"
                 logger.info(f"Dir{idx} - {inicio_vig} | {fim_vig}")
 
     def validar_formato_datas_vigencia(self):
         import re
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
-        formato = re.compile(r"^\d{2}/\d{2}/\d{4}$")
+        formato_data = re.compile(r"^\d{2}/\d{2}/\d{4}$")
+        formato_data_hora = re.compile(r"^\d{2}/\d{2}/\d{4} \d{2}:\d{2}$")
         for idx, linha in enumerate(linhas, 1):
             colunas = linha.find_elements(By.TAG_NAME, "td")
             if len(colunas) > 2:
-                inicio_vig = colunas[1].text.strip() if len(colunas) > 1 else ""
-                fim_vig = colunas[2].text.strip() if len(colunas) > 2 else ""
-                if not (formato.match(inicio_vig) and formato.match(fim_vig)):
-                    logger.warning(f"Atenção: Data(s) da Dir{idx} não estão no formato correto: {inicio_vig} | {fim_vig}")
+                inicio_vig = colunas[0].text.strip() if len(colunas) > 0 else ""
+                fim_vig = colunas[1].text.strip() if len(colunas) > 1 else ""
+                fim_prematuro = colunas[2].text.strip() if len(colunas) > 2 else ""
+
+                # Validação das datas (apenas data)
+                if not formato_data.match(inicio_vig):
+                    logger.warning(f"Linha {idx}: Início Vigência fora do formato esperado (dd/MM/yyyy): {inicio_vig}")
+                if not formato_data.match(fim_vig):
+                    logger.warning(f"Linha {idx}: Fim Vigência fora do formato esperado (dd/MM/yyyy): {fim_vig}")
                 else:
-                    logger.info(f"Datas da Dir{idx} estão no formato correto: {inicio_vig} | {fim_vig}")
+                    logger.info(f"Linha {idx}: Início/Fim Vigência OK: {inicio_vig} | {fim_vig}")
+
+                # Validação do fim prematuro (data+hora ou 'Não Definido')
+                if fim_prematuro != "Não Definido" and fim_prematuro != "":
+                    if not formato_data_hora.match(fim_prematuro):
+                        logger.warning(f"Linha {idx}: Fim Prematuro Vigência fora do formato esperado (dd/MM/yyyy HH:mm): {fim_prematuro}")
+                    else:
+                        logger.info(f"Linha {idx}: Fim Prematuro Vigência OK: {fim_prematuro}")
+                else:
+                    logger.info(f"Linha {idx}: Fim Prematuro Vigência: {fim_prematuro}")
 
     def validar_ausencia_diretrizes(self):
         linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
@@ -303,14 +407,25 @@ class DiretrizIrecPage:
 
     def exibir_diretrizes_proxima_pagina(self, pode_avancar):
         if pode_avancar:
+            btn_avancar = self.driver.find_element(*DiretrizIrecLocators.AVANCAR_PGN_DIRETRIZ)
+            # Captura a primeira linha antes de avançar
+            linhas_antes = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
+            primeira_linha_antes = linhas_antes[0] if linhas_antes else None
+            btn_avancar.click()
+            # Aguarda a tabela ser atualizada (primeira linha antiga ficar "stale")
+            if primeira_linha_antes:
+                WebDriverWait(self.driver, 10).until(
+                    EC.staleness_of(primeira_linha_antes)
+                )
+            # Busca novamente as linhas da tabela já atualizada
             linhas = self.driver.find_elements(*DiretrizIrecLocators.CONSULTAR_DIR_CADASTRADAS)
             logger.info("Diretrizes da próxima página:")
             for linha in linhas:
                 colunas = linha.find_elements(By.TAG_NAME, "td")
-                if len(colunas) > 3:
-                    inicio_vig = colunas[1].text if len(colunas) > 1 else "?"
-                    fim_vig = colunas[2].text if len(colunas) > 2 else "?"
-                    fim_prematuro = colunas[3].text
+                if len(colunas) > 2:
+                    inicio_vig = colunas[0].text if len(colunas) > 0 else "?"
+                    fim_vig = colunas[1].text if len(colunas) > 1 else "?"
+                    fim_prematuro = colunas[2].text
                     logger.info(f"Início Vigência: {inicio_vig} | Fim Vigência: {fim_vig} | Fim Prematuro Vigência: {fim_prematuro}")
         else:
             logger.info("Não é possivel exibir as diretrizes da próxima página, por que existe apenas uma página com diretrizes cadastradas")
@@ -420,7 +535,14 @@ class DiretrizIrecPage:
             logger.info(f"Mensagem exibida: {elemento.text}")
             return elemento.text
         except Exception:
-            logger.info("Mensagem de limite de anexos não foi exibida!")
+            # Captura o HTML da tela para facilitar diagnóstico
+            try:
+                html = self.driver.page_source
+                logger.warning("Mensagem de limite de anexos não foi exibida! HTML da tela capturado para diagnóstico.")
+                with open("reports/evidencias/html_limite_anexos.html", "w", encoding="utf-8") as f:
+                    f.write(html)
+            except Exception as e:
+                logger.warning(f"Falha ao capturar HTML da tela: {e}")
             return None
 
     def exibir_produtos_visiveis(self):

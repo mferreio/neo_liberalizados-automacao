@@ -1,3 +1,4 @@
+@diretriz_irec
 Feature: Tela de Diretriz I-REC
 
 Scenario: Mensagem de ausência de diretrizes
@@ -16,6 +17,14 @@ Scenario: Limite de caracteres na busca por intervalo de data
     Given que o usuário está na tela de diretriz I-REC
  	When o usuário insere um intervalo de data inválido
  	Then sistema exibe mensagem de erro
+
+Scenario: Anexação de arquivos durante o cadastro
+    Given que o usuário está na tela de diretriz I-REC
+    When o usuário clica no botão "Nova Diretriz"
+    When que o usuário está na tela de cadastro de nova diretriz I-REC
+    When o usuário preenche os campos obrigatórios
+    When o usuário faz o upload de um arquivo de evidência "evidencia_imagem.jpg"
+    Then o sistema deve validar que o arquivo "evidencia_imagem.jpg" foi anexado
 
 Scenario: Visualização dos arquivos anexados
     Given que o usuário está na tela de diretriz I-REC

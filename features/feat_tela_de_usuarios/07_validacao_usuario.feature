@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Validação de Usuário
   Como um administrador do sistema
   Eu quero validar o cadastro de usuários no Active Directory

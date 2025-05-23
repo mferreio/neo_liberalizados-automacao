@@ -1,3 +1,4 @@
+@tela_de_usuarios
 Feature: Tela Inicial
 
 Scenario: Visualizar dashboard com diretrizes
